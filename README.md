@@ -16,6 +16,7 @@ src/        common, features (sin fuga), models, etiquetas,
             seleccion_variables, train, tune, register, promote
 tests/      datos sintéticos
 docs/       01_decisiones.md (qué se decidió), 02_plan.md (en qué orden se construye)
+            arquitectura_ml.html y promocion_modelos.html (diagramas interactivos; fuente en los .json)
 ```
 
 ## Cómo ejecutar
