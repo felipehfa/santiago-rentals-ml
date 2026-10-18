@@ -45,7 +45,17 @@ Referencia: `github.com/jcbf08/Webninar_SDC_mlflow`. Se copia la estructura de p
 
 ### Quality gate
 
-Umbrales en `config.yaml`: error máximo aceptable, no empeorar al `@champion` actual por más de un margen, y estabilidad entre particiones (coeficiente de variación del MAE). Los valores numéricos se fijan después de la primera corrida base.
+Los datos crecen con el tiempo, así que champion y challenger no comparten test. Se comparan sobre **las mismas filas**: el test del challenger sin los avisos con que se entrenó el champion (train y val). Cada run guarda `ids.json` con sus splits para poder hacerlo.
+
+- **Mejora:** se promueve si el challenger baja el MAE del champion en esas filas.
+- **Degradación:** si el MAE del champion en esas filas supera su MAE de test original en más de `degradacion_umbral` (5 %), se promueve al challenger siempre que no sea peor que `margen_vs_champion` (2 %). Sin ese margen se promovería un modelo claramente peor solo porque el anterior envejeció.
+- Se informa también la diferencia de MAE con su intervalo de confianza del 95 % (bootstrap). Con pocos avisos comunes el intervalo suele cruzar 0: la diferencia puede ser ruido.
+- Criterios absolutos opcionales (MAPE máximo, estabilidad entre particiones); `null` mientras no haya datos para calibrarlos.
+- Con menos de `n_minimo_comparacion` avisos comunes no se compara y se rechaza.
+
+`src/monitoreo.py` mide el champion sobre avisos que nunca vio (llegados después de entrenarlo), desglosa el error por semana y registra la degradación en MLflow. Sale con código 3 si supera el umbral, señal de que conviene reentrenar.
+
+`register.py` elige entre algoritmos por `cv_mae` solo entre runs con los mismos datos (el `cv_mae` se mide sobre train); la comparación entre tiempos distintos es la del gate.
 
 ## 5. Sin fuga de datos
 

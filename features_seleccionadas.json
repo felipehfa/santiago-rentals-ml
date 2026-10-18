@@ -1,0 +1,34 @@
+{
+  "features": [
+    "superficie_total_m2",
+    "comuna_precio_m2",
+    "precio_m2_sector",
+    "banos",
+    "rank_nac",
+    "estacionamientos",
+    "latitud",
+    "amoblado",
+    "barrio_precio_m2",
+    "longitud",
+    "antiguedad_anos",
+    "dormitorios",
+    "bodegas",
+    "distancia_min_m_centros_comerciales",
+    "distancia_min_m_jardines_infantiles",
+    "distancia_min_m_paraderos",
+    "distancia_min_m_farmacias",
+    "distancia_min_m_plazas",
+    "piso_unidad",
+    "cantidad_paraderos"
+  ],
+  "n_filas": 4384,
+  "huella_datos": "dec547e1de857ef5",
+  "constantes": [
+    "condominio_cerrado",
+    "estacionamiento_visitas",
+    "quincho"
+  ],
+  "quitadas_por_correlacion": [
+    "superficie_util_m2"
+  ]
+}

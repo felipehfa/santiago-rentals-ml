@@ -10,10 +10,31 @@ Etapa de desarrollo del modelo de ML para estimar si un arriendo de departamento
 
 ## Estructura
 
-- `01_features/`: ingeniería de variables.
-- `02_entrenamiento/`: entrenamiento y selección de modelos.
-- `03_evaluacion/`: métricas, validación y análisis de errores.
-- `notebooks/`: exploración.
+```
+config.yaml · Makefile · requirements.txt · features_seleccionadas.json
+src/        common, features (sin fuga), models, etiquetas,
+            seleccion_variables, train, tune, register, promote
+tests/      datos sintéticos
+docs/       01_decisiones.md (qué se decidió), 02_plan.md (en qué orden se construye)
+```
+
+## Cómo ejecutar
+
+Con el entorno conda `data-science` y, mientras no exista el rol de solo lectura,
+`ENV_FILE` apuntando al `.env` del ELT (el connection string no se copia a este repo):
+
+```bash
+python -m src.seleccion_variables   # una vez, o al cambiar mucho los datos
+python -m src.train                 # modelos base
+python -m src.tune                  # Optuna (50 trials) por algoritmo
+python -m src.register              # mejor por cv_mae -> @challenger
+python -m src.promote               # quality gate -> @champion (0 promueve, 1 sin challenger, 2 rechaza)
+python -m src.monitoreo            # degradación del champion con avisos nuevos (3 = degradado)
+python -m pytest && python -m ruff check src tests
+mlflow ui --backend-store-uri sqlite:///mlflow.db
+```
+
+La primera corrida descarga Gold a `data/` (fuera de git) y las siguientes la reutilizan.
 
 ## Decisiones tomadas
 

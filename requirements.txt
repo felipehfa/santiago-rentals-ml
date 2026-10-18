@@ -1,8 +1,15 @@
 psycopg2-binary
 python-dotenv
+pyyaml
 numpy
 pandas
+pyarrow
+scipy
 scikit-learn
+xgboost
 lightgbm
-shap
-matplotlib
+optuna
+mlflow
+boto3
+pytest
+ruff

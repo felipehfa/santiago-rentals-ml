@@ -1,0 +1,73 @@
+# Configuración única del repo de modelo. Todo lo que cambia entre corridas vive acá,
+# para que el PC y GitHub Actions ejecuten exactamente lo mismo.
+
+semilla: 42
+
+mlflow:
+  experimento: santiago-rentals-costo-total
+  modelo_registrado: santiago-rentals-costo-total
+  # Sin MLFLOW_TRACKING_URI se usa SQLite local; al automatizar apunta a Postgres de Supabase.
+  tracking_uri_local: sqlite:///mlflow.db
+
+datos:
+  tabla: gold.aviso_entrenamiento
+  snapshot: data/gold_aviso_entrenamiento.parquet
+  # Cota provisional: hay un aviso con gastos comunes de 95 millones (error de captura que Silver no marca).
+  costo_total_max_clp: 10000000
+  # Gastos comunes sobre el arriendo: sobre este porcentaje el aviso se descarta (error de captura).
+  # Los gastos típicos son ~20 % del arriendo (mediana 19,7 %, tercer cuartil 24 %), así que 0,25
+  # descartaría ~20 % de los avisos válidos; 0,5 deja fuera solo ~21 casos claramente absurdos.
+  gastos_comunes_max_pct_arriendo: 0.5
+
+target: costo_total_clp
+
+split:
+  test: 0.15
+  val: 0.15
+  n_estratos: 5          # quintiles de costo total, como en Concepción
+
+variables:
+  radio_sector_m: 300    # radio del comparador de precio por m2
+  multiplicador_iqr: 3   # descarta precios por m2 anómalos del comparador
+  k_suavizado: 20        # avisos "virtuales" del promedio general al suavizar barrios y comunas
+  n_niveles_barrio: 5
+  seleccion: features_seleccionadas.json   # si no existe, se usan todas
+
+optuna:
+  n_trials: 50
+  cv_splits: 5
+  early_stopping: 50
+  max_rondas: 500
+
+bagging:
+  n_modelos: 10
+  max_rondas: 1000
+  early_stopping: 50
+
+seleccion_variables:
+  n_modelos: 30
+  cv_folds: 5
+  umbral_presencia: 0.6
+  umbral_correlacion: 0.95
+  k_min: 3
+  n_semillas_curva: 5
+
+etiquetas:
+  n_deciles: 10
+  umbral_oportunidad: 1.0
+  umbral_caro: 1.0
+
+# Quality gate. Champion y challenger se comparan sobre las mismas filas (el test del challenger sin
+# los avisos con que se entrenó el champion), porque los datos crecen con el tiempo.
+# Provisional: se recalibra con más datos. null = el criterio no se aplica.
+gate:
+  mape_max: null                  # error porcentual medio máximo aceptable en el test propio (%)
+  estabilidad_cv_max: null        # coeficiente de variación del MAE entre particiones
+  mejora_min: 0.0                 # el challenger promueve si baja el MAE del champion más que esto
+  degradacion_umbral: 0.05        # el champion está degradado si su MAE sube más de 5 % vs su test original
+  margen_vs_champion: 0.02        # si el champion está degradado, el challenger no puede ser peor que 2 %
+  n_minimo_comparacion: 100       # avisos comunes necesarios para poder comparar
+
+# Monitoreo del champion sobre avisos llegados después de su entrenamiento.
+monitoreo:
+  n_minimo: 50                    # con menos avisos nuevos no se concluye nada
