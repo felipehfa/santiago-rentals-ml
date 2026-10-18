@@ -2,33 +2,38 @@
   "features": [
     "superficie_total_m2",
     "comuna_precio_m2",
+    "superficie_util_m2",
     "precio_m2_sector",
     "banos",
     "rank_nac",
-    "estacionamientos",
-    "latitud",
-    "amoblado",
     "barrio_precio_m2",
+    "amoblado",
+    "latitud",
+    "estacionamientos",
+    "dormitorios",
     "longitud",
     "antiguedad_anos",
-    "dormitorios",
-    "bodegas",
+    "n_comparables_sector",
     "distancia_min_m_centros_comerciales",
-    "distancia_min_m_jardines_infantiles",
+    "bodegas",
+    "deptos_por_piso",
     "distancia_min_m_paraderos",
     "distancia_min_m_farmacias",
-    "distancia_min_m_plazas",
+    "p_urbano",
     "piso_unidad",
-    "cantidad_paraderos"
+    "distancia_min_m_jardines_infantiles",
+    "pob_rsh_uv",
+    "cantidad_paraderos",
+    "distancia_min_m_plazas",
+    "cantidad_farmacias",
+    "distancia_min_m_universidades"
   ],
-  "n_filas": 4384,
-  "huella_datos": "dec547e1de857ef5",
+  "n_filas": 7719,
+  "huella_datos": "274b93df92c60731",
   "constantes": [
     "condominio_cerrado",
     "estacionamiento_visitas",
     "quincho"
   ],
-  "quitadas_por_correlacion": [
-    "superficie_util_m2"
-  ]
+  "quitadas_por_correlacion": []
 }
