@@ -5,7 +5,7 @@ Etapa de desarrollo del modelo de ML para estimar si un arriendo de departamento
 ## Contrato con `santiago-rentals-elt`
 
 - La única entrada es `gold.aviso_entrenamiento` (filtrar `apto_entrenamiento`). Este repo nunca lee Bronce ni Silver.
-- Los scrapers y la construcción de Silver/Gold viven en `santiago-rentals-elt`; aquí no se escribe en esas capas.
+- Los scrapers y la construcción de Silver/Gold viven en `santiago-rentals-elt`; aquí solo se lee Gold; la única escritura prevista es `gold.predicciones`, con el rol `ml_scoring`.
 - Las variables que usan estadísticos del conjunto (`nivel_barrio`, `precio_m2_sector`, imputación de superficie) se ajustan **solo con train**, para no repetir la fuga de datos de Concepción (ver `docs/01_antecedentes_concepcion_y_databricks.md` en el repo ELT).
 
 ## Estructura
@@ -22,9 +22,9 @@ docs/       01_decisiones.md (qué se decidió), 02_plan.md (en qué orden se co
 ## Cómo ejecutar
 
 Con el entorno conda `data-science` y un `.env` propio con `BD_STRING_READ`, el connection string del rol
-`ml_lectura` (solo `SELECT` sobre `gold.aviso_entrenamiento`; ver
-`santiago-rentals-elt/scripts/roles_minimo_privilegio.sql`). `BD_STRING_SCORING` es el del rol `ml_scoring`,
-para el scoring por lotes que aún no existe. El `.env` no se versiona.
+`ml_lectura` (solo `SELECT` sobre `gold.aviso_entrenamiento`). `BD_STRING_SCORING` es el del rol `ml_scoring`
+(ese `SELECT` más `INSERT` en `gold.predicciones`), para el scoring por lotes que aún no existe. El `.env` no
+se versiona.
 
 ```bash
 python -m src.tune                  # reselecciona variables y luego Optuna (50 trials) por algoritmo
