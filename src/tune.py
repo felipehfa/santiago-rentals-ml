@@ -1,4 +1,7 @@
-"""Paso 2: Optuna por algoritmo. Un run padre por algoritmo y un run hijo por trial.
+"""Paso 2: selección de variables y Optuna por algoritmo. Un run padre por algoritmo y un run hijo por trial.
+
+Primero se reselecciona el conjunto de variables con los datos actuales (a menos que se pase
+`--sin-seleccion`), y con esa lista se hace la búsqueda de hiperparámetros.
 
 Se optimiza el MAE de una CV sobre train (el constructor de variables se reajusta en cada fold).
 Con los mejores parámetros se entrena el ensamble final y se registra el modelo en el mismo run.
@@ -12,6 +15,7 @@ import optuna
 
 from .common import cargar_config, setup_mlflow
 from .models import ALGORITMOS, espacio_busqueda
+from .seleccion_variables import main as seleccionar
 from .train import construir_folds, cv_mae, preparar, registrar_modelo_final
 
 optuna.logging.set_verbosity(optuna.logging.WARNING)
@@ -37,12 +41,17 @@ def main():
     ap.add_argument("--algoritmos", nargs="+", default=list(ALGORITMOS), choices=ALGORITMOS)
     ap.add_argument("--n-trials", type=int, help="reemplaza optuna.n_trials de config.yaml")
     ap.add_argument("--refrescar", action="store_true", help="vuelve a descargar Gold")
+    ap.add_argument("--sin-seleccion", action="store_true",
+                    help="no reselecciona variables; usa features_seleccionadas.json (debe ser de estos datos)")
     args = ap.parse_args()
 
     cfg = cargar_config()
     n_trials = args.n_trials or cfg["optuna"]["n_trials"]
     setup_mlflow(cfg)
-    d = preparar(cfg, args.refrescar)
+    if not args.sin_seleccion:  # la selección se rehace en cada entrenamiento, con sus mismos datos
+        print("Selección de variables con los datos actuales...", flush=True)
+        seleccionar(args.refrescar)
+    d = preparar(cfg, args.refrescar and args.sin_seleccion)
     print(f"Datos: {d['huella']['n_filas']} avisos | {len(d['variables'])} variables | "
           f"{n_trials} trials por algoritmo")
     folds = construir_folds(cfg, d["train"], d["variables"])

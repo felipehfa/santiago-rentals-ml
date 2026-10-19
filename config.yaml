@@ -18,6 +18,11 @@ datos:
   # Los gastos típicos son ~20 % del arriendo (mediana 19,7 %, tercer cuartil 24 %), así que 0,25
   # descartaría ~20 % de los avisos válidos; 0,5 deja fuera solo ~21 casos claramente absurdos.
   gastos_comunes_max_pct_arriendo: 0.5
+  # Ventana de entrenamiento: solo entrenan los avisos publicados hasta N días antes de la última visita
+  # registrada; val y test quedan completos, para comparar contra el champion en las mismas filas.
+  # Los precios de oferta viejos suelen estar desactualizados (en pruebas, 60 días bajó el MAE ~5 %).
+  # null = sin ventana.
+  ventana_dias: 60
 
 target: costo_total_clp
 
@@ -32,6 +37,13 @@ variables:
   k_suavizado: 20        # avisos "virtuales" del promedio general al suavizar barrios y comunas
   n_niveles_barrio: 5
   seleccion: features_seleccionadas.json   # si no existe, se usan todas
+  # Puntos de referencia [latitud, longitud] para las distancias en km. Son aproximados (unos 300 m de
+  # margen) y se pueden afinar. La distancia al centro de la comuna sale de los avisos de train.
+  puntos_referencia:
+    plaza_armas: [-33.4378, -70.6505]       # centro de Santiago
+    el_golf: [-33.4165, -70.5946]           # eje de oficinas y vivienda de alto precio
+    centro_las_condes: [-33.4097, -70.5776] # municipalidad de Las Condes
+    centro_providencia: [-33.4260, -70.6170] # municipalidad de Providencia
 
 optuna:
   n_trials: 50

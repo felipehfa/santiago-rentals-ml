@@ -62,16 +62,27 @@ def _a_float(serie: pd.Series) -> pd.Series:
     return serie.map(conv).astype(float)
 
 
+def _haversine_km(lat, lon, lat0, lon0):
+    """Distancia en km entre pares de coordenadas en grados (NaN si falta alguna)."""
+    p = np.pi / 180
+    a = np.sin((lat0 - lat) * p / 2) ** 2 + np.cos(lat * p) * np.cos(lat0 * p) * np.sin((lon0 - lon) * p / 2) ** 2
+    return 2 * (RADIO_TIERRA_M / 1000) * np.arcsin(np.sqrt(a))
+
+
 class ConstructorVariables:
     """Se ajusta con train (`fit`) y transforma cualquier conjunto (`transform`)."""
 
     def __init__(self, radio_sector_m=300, multiplicador_iqr=3, k_suavizado=20, n_niveles_barrio=5,
-                 target="costo_total_clp"):
+                 target="costo_total_clp", puntos_referencia=None):
         self.radio_sector_m = radio_sector_m
         self.multiplicador_iqr = multiplicador_iqr
         self.k_suavizado = k_suavizado
         self.n_niveles_barrio = n_niveles_barrio
         self.target = target
+        self.puntos_referencia = puntos_referencia or {}
+        # Los constructores pickleados de modelos anteriores no tienen este atributo: transform lo lee
+        # con getattr y, sin él, no agrega las variables nuevas (así el champion viejo sigue funcionando).
+        self.variables_derivadas = True
 
     # ── superficie ────────────────────────────────────────────────────────────
     def _superficie(self, df: pd.DataFrame) -> pd.Series:
@@ -151,6 +162,13 @@ class ConstructorVariables:
 
         self.ids_train_ = set(df[ID_COL])
         self.pm2_propio_ = dict(zip(df[ID_COL], pm2, strict=False))
+
+        # Centro de cada comuna: mediana de las coordenadas de sus avisos de train (solo posiciones, no precios).
+        coords = df[["latitud", "longitud"]].astype(float).assign(comuna=comuna)
+        self.centros_comuna_ = {
+            c: (float(g["latitud"].median()), float(g["longitud"].median()))
+            for c, g in coords.dropna().groupby("comuna") if len(g) >= 5
+        }
         return self
 
     # ── transformación ────────────────────────────────────────────────────────
@@ -191,4 +209,35 @@ class ConstructorVariables:
                     n_vecinos[pos[j]] = len(idx)
         X["precio_m2_sector"] = sector
         X["n_comparables_sector"] = n_vecinos
+        if getattr(self, "variables_derivadas", False):
+            X = self._derivadas(X, df, comuna)
+        return X
+
+    # ── variables derivadas ───────────────────────────────────────────────────
+    def _derivadas(self, X: pd.DataFrame, df: pd.DataFrame, comuna: pd.Series) -> pd.DataFrame:
+        """Razones de superficie, equipamiento agregado y distancias a puntos de referencia.
+        Solo usan atributos del propio aviso y posiciones de train (nada del precio)."""
+        X = X.copy()
+        dorm = df["dormitorios"].astype(float).clip(lower=1)
+        util = df["superficie_util_m2"].astype(float)
+        total = df["superficie_total_m2"].astype(float).replace(0, np.nan)
+        X["sup_por_dorm"] = X["superficie_util_m2"] / dorm
+        X["banos_por_dorm"] = df["banos"].astype(float) / dorm
+        X["ratio_util_total"] = util / total
+        X["log_sup_util"] = np.log(X["superficie_util_m2"].clip(lower=1))
+        X["est_por_dorm"] = df["estacionamientos"].astype(float) / dorm
+        X["extras"] = df["estacionamientos"].astype(float).fillna(0) + df["bodegas"].astype(float).fillna(0)
+        X["amenidades"] = X[["piscina", "quincho", "conserjeria", "ascensor", "tiene_bodega", "condominio_cerrado",
+                             "estacionamiento_visitas"]].sum(axis=1)
+        X["piso_rel"] = X["piso_unidad"] / X["deptos_por_piso"].replace(0, np.nan)
+        X["nuevo_con_ascensor"] = (X["antiguedad_anos"].fillna(99) <= 3).astype(float) * X["ascensor"].fillna(0)
+        X["servicios_cerca"] = X[[c for c in X.columns if c.startswith("cantidad_")]].sum(axis=1, min_count=1)
+        X["dist_media_servicios"] = X[[c for c in X.columns if c.startswith("distancia_min_m_")]].mean(axis=1)
+
+        lat, lon = df["latitud"].astype(float).to_numpy(), df["longitud"].astype(float).to_numpy()
+        for nombre, (lat0, lon0) in self.puntos_referencia.items():
+            X[f"dist_{nombre}_km"] = _haversine_km(lat, lon, lat0, lon0)
+        c_lat = comuna.map(lambda c: self.centros_comuna_.get(c, (np.nan, np.nan))[0]).to_numpy(dtype=float)
+        c_lon = comuna.map(lambda c: self.centros_comuna_.get(c, (np.nan, np.nan))[1]).to_numpy(dtype=float)
+        X["dist_centro_comuna_km"] = _haversine_km(lat, lon, c_lat, c_lon)
         return X

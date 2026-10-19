@@ -21,13 +21,15 @@ docs/       01_decisiones.md (qué se decidió), 02_plan.md (en qué orden se co
 
 ## Cómo ejecutar
 
-Con el entorno conda `data-science` y, mientras no exista el rol de solo lectura,
-`ENV_FILE` apuntando al `.env` del ELT (el connection string no se copia a este repo):
+Con el entorno conda `data-science` y un `.env` propio con `BD_STRING_READ`, el connection string del rol
+`ml_lectura` (solo `SELECT` sobre `gold.aviso_entrenamiento`; ver
+`santiago-rentals-elt/scripts/roles_minimo_privilegio.sql`). `BD_STRING_SCORING` es el del rol `ml_scoring`,
+para el scoring por lotes que aún no existe. El `.env` no se versiona.
 
 ```bash
-python -m src.seleccion_variables   # una vez, o al cambiar mucho los datos
+python -m src.tune                  # reselecciona variables y luego Optuna (50 trials) por algoritmo
+python -m src.seleccion_variables   # solo la selección (tune ya la ejecuta; --sin-seleccion la omite)
 python -m src.train                 # modelos base
-python -m src.tune                  # Optuna (50 trials) por algoritmo
 python -m src.register              # mejor por cv_mae -> @challenger
 python -m src.promote               # quality gate -> @champion (0 promueve, 1 sin challenger, 2 rechaza)
 python -m src.monitoreo            # degradación del champion con avisos nuevos (3 = degradado)
@@ -43,6 +45,12 @@ Detalle en `docs/01_decisiones.md`. En resumen:
 
 - Dos repos separados (`elt` local, `modelo` en GitHub Actions); el contacto es solo Gold.
 - Modelos: XGBoost y LightGBM de Concepción, cada uno con Optuna (50 trials, KFold 5 solo sobre train).
+- La selección de variables se rehace en cada entrenamiento (`tune`), con los mismos datos; una lista calculada
+  con otros datos hace fallar la corrida.
+- Train usa solo avisos publicados hasta 60 días antes de la última visita (`datos.ventana_dias`): los precios de
+  oferta viejos suelen estar desactualizados. Validación y test quedan completos, para comparar con el champion.
+- Variables derivadas: razones de superficie, equipamiento agregado y distancias en km al centro de la comuna,
+  Plaza de Armas, El Golf, Las Condes y Providencia (puntos en `config.yaml`).
 - Target: `costo_total_clp`.
 - Arquitectura del webinar `jcbf08/Webninar_SDC_mlflow`: `train` → `tune` → `register` → `promote` (quality gate) → `predict`, con MLflow y alias `@challenger` / `@champion`.
 - MLflow local al inicio; Postgres y Storage de Supabase al automatizar.

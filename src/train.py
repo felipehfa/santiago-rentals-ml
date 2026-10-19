@@ -37,15 +37,34 @@ def nuevo_constructor(cfg: dict) -> ConstructorVariables:
     return ConstructorVariables(
         radio_sector_m=v["radio_sector_m"], multiplicador_iqr=v["multiplicador_iqr"],
         k_suavizado=v["k_suavizado"], n_niveles_barrio=v["n_niveles_barrio"], target=cfg["target"],
+        puntos_referencia=v.get("puntos_referencia"),
     )
 
 
-def variables_seleccionadas(cfg: dict, disponibles: list) -> list:
-    """Lista fija de `features_seleccionadas.json`; si no existe todavía, todas las variables."""
+def aplicar_ventana(train: pd.DataFrame, df: pd.DataFrame, dias: int | None) -> pd.DataFrame:
+    """Deja en train solo los avisos publicados hasta `dias` días antes de la última visita registrada en
+    los datos (referencia reproducible, no la fecha de hoy). Sin fecha de publicación se conservan."""
+    if not dias:
+        return train
+    ref = pd.to_datetime(df["ultima_vez_visto"], utc=True).max()
+    edad = (ref - pd.to_datetime(train["fecha_publicacion_aprox"], utc=True)).dt.days
+    return train[edad.isna() | (edad <= dias)].reset_index(drop=True)
+
+
+def variables_seleccionadas(cfg: dict, disponibles: list, huella: str | None = None) -> list:
+    """Lista de `features_seleccionadas.json`; si no existe todavía, todas las variables.
+
+    Si se pasa la huella de los datos y la lista se calculó con otros, falla: una selección vieja
+    aplicada a datos nuevos pasa inadvertida (python -m src.seleccion_variables la rehace)."""
     ruta = RAIZ / cfg["variables"]["seleccion"]
     if not ruta.exists():
         return list(disponibles)
-    elegidas = json.loads(ruta.read_text(encoding="utf-8"))["features"]
+    guardada = json.loads(ruta.read_text(encoding="utf-8"))
+    if huella and guardada.get("huella_datos") not in (None, huella):
+        raise ValueError("features_seleccionadas.json se calculó con otros datos "
+                         f"({guardada['huella_datos']} y los actuales son {huella}); "
+                         "rehacerla con `python -m src.seleccion_variables` o usar `python -m src.tune`")
+    elegidas = guardada["features"]
     faltan = [c for c in elegidas if c not in disponibles]
     if faltan:
         raise ValueError(f"Variables seleccionadas que ya no existen: {faltan}")
@@ -55,18 +74,21 @@ def variables_seleccionadas(cfg: dict, disponibles: list) -> list:
 def preparar(cfg: dict, refrescar: bool = False) -> dict:
     """Carga Gold, aplica filtros, divide y construye las variables ajustando SOLO con train."""
     df = preparar_datos(cargar_gold(cfg, refrescar), cfg)
-    train, val, test = dividir(df, cfg)
+    train_completo, val, test = dividir(df, cfg)
+    train = aplicar_ventana(train_completo, df, cfg["datos"].get("ventana_dias"))
     constructor = nuevo_constructor(cfg).fit(train)
     X = {"train": constructor.transform(train), "val": constructor.transform(val),
          "test": constructor.transform(test)}
-    variables = variables_seleccionadas(cfg, list(X["train"].columns))
     t = cfg["target"]
+    huella = huella_datos(df, t)
+    variables = variables_seleccionadas(cfg, list(X["train"].columns), huella["huella"])
     return {
-        "df": df, "train": train, "val": val, "test": test, "constructor": constructor,
-        "variables": variables, "X_train": X["train"][variables], "X_val": X["val"][variables],
+        "df": df, "train": train, "train_completo": train_completo, "val": val, "test": test,
+        "constructor": constructor, "variables": variables,
+        "X_train": X["train"][variables], "X_val": X["val"][variables],
         "X_test": X["test"][variables], "X_completo_train": X["train"], "X_completo_test": X["test"],
         "y_train": train[t].astype(float), "y_val": val[t].astype(float), "y_test": test[t].astype(float),
-        "huella": huella_datos(df, t),
+        "huella": huella,
     }
 
 
@@ -120,7 +142,9 @@ def registrar_modelo_final(cfg: dict, algoritmo: str, params: dict, d: dict) -> 
     mlflow.log_params({f"p_{k}": v for k, v in params.items()})
     mlflow.log_params({"algoritmo": algoritmo, "n_variables": len(d["variables"]),
                        "n_modelos_bagging": b["n_modelos"], "semilla": cfg["semilla"],
-                       "n_train": len(d["train"]), "n_val": len(d["val"]), "n_test": len(d["test"])})
+                       "n_train": len(d["train"]), "n_train_sin_ventana": len(d["train_completo"]),
+                       "ventana_dias": cfg["datos"].get("ventana_dias"),
+                       "n_val": len(d["val"]), "n_test": len(d["test"])})
     # Dos runs solo son comparables (cv_mae) si usaron los mismos datos y las mismas variables.
     huella_vars = hashlib.sha256(json.dumps(d["variables"]).encode()).hexdigest()[:8]
     mlflow.set_tags({"algoritmo": algoritmo, "huella_datos": d["huella"]["huella"],
@@ -129,7 +153,10 @@ def registrar_modelo_final(cfg: dict, algoritmo: str, params: dict, d: dict) -> 
     registrar_reproducibilidad()
     mlflow.log_dict({"variables": d["variables"]}, "variables.json")
     # Qué avisos vio cada conjunto: permite evaluar después a otro modelo solo con avisos que no usó.
-    mlflow.log_dict({k: d[k][ID_COL].tolist() for k in ("train", "val", "test")}, "ids.json")
+    # "train" lista también los avisos que la ventana dejó fuera del ajuste: el modelo los conoce como
+    # parte de su conjunto y no deben contarse como "avisos nuevos" en el gate ni en el monitoreo.
+    mlflow.log_dict({"train": d["train_completo"][ID_COL].tolist(), "val": d["val"][ID_COL].tolist(),
+                     "test": d["test"][ID_COL].tolist()}, "ids.json")
     mlflow.log_dict({k: float(v) for k, v in ens.shap_nativo(d["X_test"]).items()}, "shap_importancia.json")
 
     # Referencia del etiquetado: residuos de validación (la validación solo decide el early

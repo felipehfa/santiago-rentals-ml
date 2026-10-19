@@ -1,4 +1,4 @@
-"""Selección de variables (paso offline). Portado de Concepción (02_seleccion_variables.py).
+"""Selección de variables. Portado de Concepción (02_seleccion_variables.py).
 
 1. Descarta variables constantes.
 2. Estabilidad: N modelos XGBoost con KFold aleatorio y semillas distintas; la importancia es el
@@ -13,10 +13,12 @@ train; dentro de la CV de este paso las filas de un fold sí aportan a las varia
 demás (leave-one-out sobre todo train), una holgura aceptable para elegir variables y que
 Optuna no tiene porque reajusta el constructor en cada fold.
 
-Escribe `features_seleccionadas.json`, que usan train y tune, y lo registra en MLflow.
+Escribe `features_seleccionadas.json`, que usan train y tune, y lo registra en MLflow. `tune` lo corre
+antes de la búsqueda de hiperparámetros, así que cada entrenamiento reselecciona con sus datos.
 """
 
 import json
+import sys
 import time
 
 import mlflow
@@ -107,7 +109,7 @@ def podar_correlacion(X: pd.DataFrame, elegidas: list, est: pd.DataFrame, umbral
     return mantiene, quitadas
 
 
-def main():
+def main(refrescar: bool = False):
     cfg = cargar_config()
     s = cfg["seleccion_variables"]
     setup_mlflow(cfg)
@@ -116,7 +118,7 @@ def main():
     if ruta.exists():  # la selección debe partir de todas las variables, no de la anterior
         ruta.rename(ruta_previa)
     try:
-        d = preparar(cfg)
+        d = preparar(cfg, refrescar)
     finally:
         if ruta_previa.exists():
             ruta_previa.rename(ruta)
@@ -149,4 +151,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main("--refrescar" in sys.argv[1:])

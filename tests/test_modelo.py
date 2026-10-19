@@ -101,6 +101,7 @@ def test_preparar_de_punta_a_punta(gold_sintetico, cfg, tmp_path, monkeypatch):
     gold_sintetico.to_parquet(ruta, index=False)
     cfg["datos"]["snapshot"] = str(ruta)
     monkeypatch.setattr("src.common.RAIZ", tmp_path)
+    monkeypatch.setattr("src.train.RAIZ", tmp_path)  # aísla también la lista de variables seleccionadas
     d = preparar(cfg)
     assert len(d["X_train"]) == len(d["train"]) and list(d["X_train"].columns) == d["variables"]
     assert not d["X_train"].columns.duplicated().any()
@@ -112,3 +113,27 @@ def test_preparar_descarta_gastos_comunes_absurdos(gold_sintetico, cfg):
     gold_sintetico.loc[1, "gastos_comunes"] = None  # sin dato: se conserva
     out = preparar_datos(gold_sintetico, cfg)
     assert "MLC-0" not in set(out["id_aviso"]) and "MLC-1" in set(out["id_aviso"])
+
+
+def test_ventana_deja_solo_avisos_recientes_y_los_sin_fecha(gold_sintetico, cfg):
+    from src.train import aplicar_ventana
+    df = gold_sintetico.copy()
+    df.loc[0, "fecha_publicacion_aprox"] = None
+    out = aplicar_ventana(df, df, 60)
+    edad = (pd.Timestamp("2026-10-18", tz="UTC") - pd.to_datetime(out["fecha_publicacion_aprox"], utc=True)).dt.days
+    assert (edad.dropna() <= 60).all() and "MLC-0" in set(out["id_aviso"]) and len(out) < len(df)
+    assert len(aplicar_ventana(df, df, None)) == len(df)
+
+
+def test_variables_derivadas_y_compatibilidad_con_constructor_viejo(gold_sintetico, cfg):
+    from src.common import preparar_datos
+    from src.train import nuevo_constructor
+    df = preparar_datos(gold_sintetico, cfg)
+    c = nuevo_constructor(cfg).fit(df)
+    X = c.transform(df)
+    esperadas = {"sup_por_dorm", "amenidades", "dist_plaza_armas_km", "dist_centro_comuna_km",
+                 "dist_centro_providencia_km", "dist_centro_las_condes_km", "dist_el_golf_km"}
+    assert esperadas <= set(X.columns)
+    assert (X["dist_centro_comuna_km"].dropna() < 5).all()  # el sintético vive en un radio de ~1 km
+    del c.variables_derivadas  # así llegan los constructores pickleados de modelos anteriores
+    assert not (esperadas & set(c.transform(df).columns))

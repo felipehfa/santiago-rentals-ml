@@ -17,7 +17,7 @@
           "gold",
           "datos"
         ],
-        "note": "Solo aptos de Gold. Filtros: costo total hasta 10 M y gastos comunes hasta 50 % del arriendo. Split 70/15/15 por quintil de precio."
+        "note": "Aptos de Gold, costo hasta 10 M y gastos hasta 50 %. Split 70/15/15; train solo con avisos de hasta 60 días."
       },
       {
         "id": "sin-fuga",
@@ -36,7 +36,7 @@
           "seleccion",
           "train"
         ],
-        "note": "Optuna con 50 trials y KFold 5 solo sobre train, bagging de 10 semillas. El mejor se elige por cv_mae, no por test."
+        "note": "Cada corrida reselecciona variables y luego Optuna (50 trials, KFold 5, solo train) y bagging. Se elige por cv_mae."
       },
       {
         "id": "mlflow",
@@ -120,7 +120,7 @@
       "sublabel": "SHAP y regla 1-SE",
       "stage": 2,
       "row": 2,
-      "tag": "offline"
+      "tag": "cada corrida"
     },
     {
       "id": "mlflow",
@@ -207,7 +207,7 @@
       "id": "f-seleccion-train",
       "from": "seleccion",
       "to": "train",
-      "label": "lista fija",
+      "label": "variables",
       "variant": "dashed"
     },
     {
@@ -261,7 +261,7 @@
       "items": [
         "Solo lee gold.aviso_entrenamiento",
         "Costo total hasta 10 M, gastos hasta 50 %",
-        "Split estratificado por precio"
+        "Split por precio; train solo ≤60 días"
       ]
     },
     {

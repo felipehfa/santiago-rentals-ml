@@ -26,16 +26,17 @@ def cargar_config(ruta: Path | None = None) -> dict:
 # Datos
 # ──────────────────────────────────────────────────────────────────────────────
 
-def _conexion_bd():
-    """Conecta a Supabase. Las credenciales salen del entorno (BD_STRING) o del archivo que
-    apunte ENV_FILE; nunca se imprimen."""
+def _conexion_bd(variable: str = "BD_STRING_READ"):
+    """Conecta a Supabase. Las credenciales salen del entorno o del archivo que apunte ENV_FILE; nunca
+    se imprimen. BD_STRING_READ es el rol ml_lectura (entrenamiento); BD_STRING_SCORING, el ml_scoring
+    (predicciones). Con ENV_FILE apuntando al .env del ELT, cae a BD_STRING (rol dueño)."""
     import psycopg2
     from dotenv import load_dotenv
 
     load_dotenv(os.environ.get("ENV_FILE") or RAIZ / ".env")
-    cadena = os.environ.get("BD_STRING")
+    cadena = os.environ.get(variable) or (os.environ.get("BD_STRING") if variable == "BD_STRING_READ" else None)
     if not cadena:
-        raise RuntimeError("Falta BD_STRING (variable de entorno, .env o ENV_FILE)")
+        raise RuntimeError(f"Falta {variable} (variable de entorno, .env o ENV_FILE)")
     return psycopg2.connect(cadena)
 
 
