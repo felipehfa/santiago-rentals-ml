@@ -26,7 +26,7 @@
           "datos",
           "variables"
         ],
-        "note": "precio_m2_sector, nivel_barrio y promedios por comuna solo con train; cada fila de train excluye su propio aviso."
+        "note": "precio_m2_sector, barrio, comuna y modelo de texto solo con train; las filas de train se excluyen a sí mismas."
       },
       {
         "id": "modelado",
@@ -99,7 +99,7 @@
       "id": "variables",
       "type": "security",
       "label": "Variables",
-      "sublabel": "ajustadas solo con train",
+      "sublabel": "ajustadas con train",
       "stage": 1,
       "row": 2,
       "tag": "sin fuga"
@@ -269,7 +269,7 @@
       "title": "Sin fuga de datos",
       "items": [
         "Estadísticas solo con train",
-        "El propio aviso se excluye de sus variables",
+        "Texto: predicción fuera de muestra",
         "En la CV se reajusta por fold"
       ]
     },

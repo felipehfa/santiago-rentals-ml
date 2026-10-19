@@ -61,6 +61,14 @@ Los datos crecen con el tiempo, así que champion y challenger no comparten test
 
 Las variables que dependen del conjunto (`nivel_barrio`, `precio_m2_sector`, imputación de superficie) se ajustan **solo con train**, dentro del pipeline, para que MLflow las guarde junto al modelo.
 
+**Texto del aviso (2026-10-19).** El título y la descripción aportan calidad que las demás variables no ven (remodelación, vista, precio promocional). Se usan de dos formas, ambas dentro de `ConstructorVariables`:
+
+- Palabras clave (`PALABRAS_CLAVE` en `features.py`): columnas de 1 o 0 sobre el texto normalizado.
+- Un modelo de texto (TF-IDF + ridge) que predice `log(costo por m2)` solo con el texto. Su salida entra como la variable `tx_pred_log_m2`. Para las filas de train se calcula **fuera de muestra** (validación cruzada de 5 grupos sobre train), porque con el modelo que las vio la variable conocería su propia respuesta; val, test y avisos nuevos usan el modelo ajustado con todo train. En las pruebas con datos reales la correlación con el precio por m2 es 0,784 en train (fuera de muestra) y 0,778 en test.
+- Antes de usar el texto se **quitan todos los números y símbolos de dinero**: casi la mitad de las descripciones escribe el precio y el modelo no debe poder copiarlo (se usa para detectar avisos caros o baratos).
+- Un hallazgo: el texto delata el **precio promocional** ("precio válido por X meses, después sigue pagando"), avisos cuyo arriendo publicado es menor que el real.
+- En pruebas sobre 3 particiones, las palabras clave bajaron el MAPE cerca de 2 % y, junto al modelo de texto, 6 % (10,86 % a 10,18 %). El texto es en buena parte ubicación (nombres de comunas y barrios), que ya conocen otras variables.
+
 ## 6. MLflow
 
 - **Backend** (metadatos: runs, parámetros, métricas, registry y alias): al inicio SQLite local (`mlflow.db`); al automatizar, **Postgres de Supabase**, en un schema aparte.

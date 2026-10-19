@@ -37,7 +37,7 @@ def nuevo_constructor(cfg: dict) -> ConstructorVariables:
     return ConstructorVariables(
         radio_sector_m=v["radio_sector_m"], multiplicador_iqr=v["multiplicador_iqr"],
         k_suavizado=v["k_suavizado"], n_niveles_barrio=v["n_niveles_barrio"], target=cfg["target"],
-        puntos_referencia=v.get("puntos_referencia"),
+        puntos_referencia=v.get("puntos_referencia"), texto=v.get("texto"),
     )
 
 

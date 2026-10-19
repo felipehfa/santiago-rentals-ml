@@ -9,8 +9,14 @@ En Concepción el comparador del sector incluía el propio costo de la fila, lo 
 target hacia la variable.
 """
 
+import re
+import unicodedata
+
 import numpy as np
 import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import Ridge
+from sklearn.model_selection import KFold
 from sklearn.neighbors import BallTree
 
 from .common import ID_COL
@@ -47,7 +53,7 @@ EXCLUIDAS = [
     "gastos_comunes", "precio_clp", "precio_valor", "precio_moneda", "costo_total_clp",
     "costo_total_uf", "tiene_rebaja", "fecha_precio", "dias_en_mercado", "n_cambios_estado",
     "n_cambios_precio", "primera_vez_visto", "ultima_vez_visto", "fecha_publicacion_aprox",
-    "fecha_publicacion_precision", "estado_publicacion", "construido_en", "uv_rsh",
+    "fecha_publicacion_precision", "estado_publicacion", "construido_en", "uv_rsh", "titulo", "descripcion",
 ]
 
 
@@ -62,6 +68,45 @@ def _a_float(serie: pd.Series) -> pd.Series:
     return serie.map(conv).astype(float)
 
 
+# ──────────────────────────────────────────────────────────────────────────────
+# Texto del aviso (título y descripción)
+# ──────────────────────────────────────────────────────────────────────────────
+
+# Palabras clave que se buscan sobre el texto ya normalizado (sin tildes, sin números). Se evita todo lo que
+# dependa de cifras: el texto puede traer el precio del propio aviso y eso no debe llegar al modelo.
+PALABRAS_CLAVE = {
+    "remodelado": r"remodel|renovad|refaccion",
+    "estrenar": r"a estrenar|estrenar|recien entregad|nuevo proyecto",
+    "vista_panoramica": r"vista panoramic|vista despejad|vista al (cerro|parque|city|skyline)|gran vista"
+                        r"|excelente vista",
+    "terraza": r"terraza", "logia": r"logia", "orient_norte": r"orientacion (norte|nor)",
+    "aire_acond": r"aire acondicionado", "calef_central": r"calefaccion central|losa radiante",
+    "walkin": r"walk.?in", "cocina_equipada": r"cocina (equipada|amoblada|full)",
+    "lujo": r"lujo|premium|exclusiv|penthouse|atico", "duplex_loft": r"duplex|loft|triplex",
+    "impecable": r"impecable|excelente estado|como nuevo", "luminoso": r"luminos|mucha luz",
+    "amoblado_txt": r"amoblad|equipad|full equip", "sin_muebles": r"sin muebl|sin amoblar",
+    "gc_incluidos": r"gastos comunes incluid|gc incluid", "mascotas": r"mascota|pet friendly",
+    "gimnasio": r"gimnasio|gym", "piscina": r"piscina", "quincho": r"quincho",
+    "cowork": r"cowork|sala de estudio", "conserje": r"conserje|porteria", "estudio": r"\bestudio\b|monoambiente",
+    "metro_cerca": r"a pasos del metro|cerca del metro|frente al metro",
+    # Precio promocional: el arriendo publicado vale solo unos meses y después sube. El aviso parece barato.
+    "precio_promocional": r"precio (valido|promocional)|valido por|primeros meses|oferta (de )?lanzamiento"
+                          r"|despues (sigue|pagas|pagar|vuelve)|luego (sigue|pagas|pagar)|mes despues",
+}
+
+
+_RE_CLAVE = {k: re.compile(p) for k, p in PALABRAS_CLAVE.items()}
+
+
+def normalizar_texto(titulo, descripcion) -> str:
+    """Minúsculas, sin tildes, sin dígitos ni símbolos de dinero. Los números se quitan a propósito: si el
+    aviso escribe su precio, el modelo de texto no debe poder copiarlo."""
+    s = f"{titulo or ''} . {descripcion or ''}".lower()
+    s = "".join(c for c in unicodedata.normalize("NFKD", s) if not unicodedata.combining(c))
+    s = re.sub(r"[\d$€]+|\buf\b|\bclp\b|\bpesos\b", " ", s)
+    return re.sub(r"\s+", " ", s).strip()
+
+
 def _haversine_km(lat, lon, lat0, lon0):
     """Distancia en km entre pares de coordenadas en grados (NaN si falta alguna)."""
     p = np.pi / 180
@@ -73,13 +118,15 @@ class ConstructorVariables:
     """Se ajusta con train (`fit`) y transforma cualquier conjunto (`transform`)."""
 
     def __init__(self, radio_sector_m=300, multiplicador_iqr=3, k_suavizado=20, n_niveles_barrio=5,
-                 target="costo_total_clp", puntos_referencia=None):
+                 target="costo_total_clp", puntos_referencia=None, texto=None):
         self.radio_sector_m = radio_sector_m
         self.multiplicador_iqr = multiplicador_iqr
         self.k_suavizado = k_suavizado
         self.n_niveles_barrio = n_niveles_barrio
         self.target = target
         self.puntos_referencia = puntos_referencia or {}
+        self.texto = {"activo": True, "ngram_max": 2, "min_df": 8, "max_features": 30000, "alpha": 3.0, "folds": 5,
+                      **(texto or {})}
         # Los constructores pickleados de modelos anteriores no tienen este atributo: transform lo lee
         # con getattr y, sin él, no agrega las variables nuevas (así el champion viejo sigue funcionando).
         self.variables_derivadas = True
@@ -169,7 +216,51 @@ class ConstructorVariables:
             c: (float(g["latitud"].median()), float(g["longitud"].median()))
             for c, g in coords.dropna().groupby("comuna") if len(g) >= 5
         }
+
+        self.usa_texto = bool(self.texto["activo"]) and "descripcion" in df.columns
+        if self.usa_texto:
+            self._ajustar_texto(df)
         return self
+
+    # ── modelo de texto ───────────────────────────────────────────────────────
+    @staticmethod
+    def _textos(df: pd.DataFrame) -> pd.Series:
+        titulo = df["titulo"] if "titulo" in df.columns else pd.Series([None] * len(df), index=df.index)
+        return pd.Series([normalizar_texto(a, b) for a, b in zip(titulo, df["descripcion"], strict=True)],
+                         index=df.index)
+
+    def _modelo_texto(self):
+        t = self.texto
+        vec = TfidfVectorizer(ngram_range=(1, t["ngram_max"]), min_df=t["min_df"], max_features=t["max_features"],
+                              sublinear_tf=True)
+        return vec, Ridge(alpha=t["alpha"])
+
+    def _ajustar_texto(self, df: pd.DataFrame) -> None:
+        """Ajusta TF-IDF + ridge sobre log(costo por m2 útil) usando SOLO el texto como entrada.
+
+        Para cada aviso de train guarda una predicción fuera de muestra (validación cruzada sobre train): sale de un
+        modelo que no vio el precio de ese aviso. Val, test y avisos nuevos usan el modelo ajustado con todo train.
+        Sin esto, el modelo principal se apoyaría en una variable que conoce la respuesta de las filas de train."""
+        textos = self._textos(df)
+        util = df["superficie_util_m2"].astype(float)
+        ok = (util > 0) & df[self.target].notna() & (textos.str.len() >= 20)
+        y = np.log((df[self.target].astype(float) / util).clip(lower=1))
+        pos_ok = np.flatnonzero(ok.to_numpy())
+        oof = np.full(len(df), np.nan)
+        if len(pos_ok) >= 2 * self.texto["folds"]:
+            for a, b in KFold(self.texto["folds"], shuffle=True, random_state=1).split(np.arange(len(df))):
+                a = np.intersect1d(a, pos_ok)
+                vec, ridge = self._modelo_texto()
+                ridge.fit(vec.fit_transform(textos.iloc[a]), y.iloc[a])
+                b = b[textos.iloc[b].str.len() >= 20]
+                oof[b] = ridge.predict(vec.transform(textos.iloc[b]))
+            self.vec_texto_, self.ridge_texto_ = self._modelo_texto()
+            self.ridge_texto_.fit(self.vec_texto_.fit_transform(textos.iloc[pos_ok]), y.iloc[pos_ok])
+            if hasattr(self.vec_texto_, "stop_words_"):  # lista enorme de términos descartados: no hace falta guardarla
+                del self.vec_texto_.stop_words_
+        else:
+            self.vec_texto_ = self.ridge_texto_ = None
+        self.texto_oof_ = dict(zip(df[ID_COL], oof, strict=True))
 
     # ── transformación ────────────────────────────────────────────────────────
     def transform(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -211,7 +302,38 @@ class ConstructorVariables:
         X["n_comparables_sector"] = n_vecinos
         if getattr(self, "variables_derivadas", False):
             X = self._derivadas(X, df, comuna)
+        if getattr(self, "usa_texto", False):
+            X = self._variables_texto(X, df)
         return X
+
+    def _variables_texto(self, X: pd.DataFrame, df: pd.DataFrame) -> pd.DataFrame:
+        """Palabras clave, largo del texto y la predicción del modelo de texto. Sin texto (o sin la columna) todo
+        queda en NaN: el modelo lo trata como dato ausente."""
+        X = X.copy()
+        n = len(df)
+        nombres = [f"tx_{k}" for k in PALABRAS_CLAVE] + ["tx_largo", "tx_n_pal", "tx_n_excl", "tx_pred_log_m2"]
+        if "descripcion" not in df.columns:
+            return pd.concat([X, pd.DataFrame(np.nan, index=X.index, columns=nombres)], axis=1)
+        textos = self._textos(df).reset_index(drop=True)
+        vacio = (textos.str.len() < 20).to_numpy()
+        cols = {f"tx_{k}": textos.map(lambda s, rx=rx: 1.0 if rx.search(s) else 0.0).to_numpy()
+                for k, rx in _RE_CLAVE.items()}
+        cols["tx_largo"] = textos.str.len().astype(float).to_numpy()
+        cols["tx_n_pal"] = textos.str.split().map(len).astype(float).to_numpy()
+        cols["tx_n_excl"] = df["descripcion"].fillna("").astype(str).str.count("!").astype(float).to_numpy()
+        pred = np.full(n, np.nan)
+        if self.ridge_texto_ is not None:
+            hay = np.flatnonzero(~vacio)
+            if len(hay):
+                pred[hay] = self.ridge_texto_.predict(self.vec_texto_.transform(textos.iloc[hay]))
+            # Filas de train: la predicción fuera de muestra, no la del modelo que las vio
+            oof = df[ID_COL].map(self.texto_oof_).astype(float).to_numpy()
+            en_train = df[ID_COL].isin(self.ids_train_).to_numpy()
+            pred = np.where(en_train, oof, pred)
+        cols["tx_pred_log_m2"] = pred
+        out = pd.DataFrame(cols, index=X.index)
+        out.loc[vacio, [c for c in out.columns if c != "tx_n_excl"]] = np.nan
+        return pd.concat([X, out[nombres]], axis=1)
 
     # ── variables derivadas ───────────────────────────────────────────────────
     def _derivadas(self, X: pd.DataFrame, df: pd.DataFrame, comuna: pd.Series) -> pd.DataFrame:

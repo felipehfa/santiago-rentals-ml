@@ -137,3 +137,63 @@ def test_variables_derivadas_y_compatibilidad_con_constructor_viejo(gold_sinteti
     assert (X["dist_centro_comuna_km"].dropna() < 5).all()  # el sintético vive en un radio de ~1 km
     del c.variables_derivadas  # así llegan los constructores pickleados de modelos anteriores
     assert not (esperadas & set(c.transform(df).columns))
+
+
+def _constructor_con_texto(gold_sintetico, cfg):
+    from src.common import preparar_datos
+    from src.train import nuevo_constructor
+    df = preparar_datos(gold_sintetico, cfg)
+    return df, nuevo_constructor(cfg).fit(df)
+
+
+def test_normalizar_texto_quita_numeros_y_dinero():
+    from src.features import normalizar_texto
+    s = normalizar_texto("Depto Remodelado", "Valor $500.000 mensual, gastos 80.000 o 12 UF. Cerca del Metro")
+    assert not any(c.isdigit() for c in s) and "$" not in s and "uf" not in s.split()
+    assert "remodelado" in s and "metro" in s
+
+
+def test_palabras_clave_incluyen_precio_promocional():
+    from src.features import PALABRAS_CLAVE, normalizar_texto
+    t = normalizar_texto("", "Precio válido por 3 meses, después sigue pagando el valor normal. Depto remodelado")
+    import re
+    assert re.search(PALABRAS_CLAVE["precio_promocional"], t) and re.search(PALABRAS_CLAVE["remodelado"], t)
+    assert not re.search(PALABRAS_CLAVE["precio_promocional"], normalizar_texto("", "Departamento luminoso"))
+
+
+def test_el_modelo_de_texto_no_filtra_el_precio_de_train(gold_sintetico, cfg):
+    """Con texto sin relación con el precio (y con los números quitados), la predicción de texto de las filas de
+    train, que es fuera de muestra, no debe correlacionar con el precio por m2."""
+    df, c = _constructor_con_texto(gold_sintetico, cfg)
+    X = c.transform(df)
+    y = np.log(df["costo_total_clp"] / df["superficie_util_m2"])  # lo que predice el modelo de texto
+    r = np.corrcoef(X["tx_pred_log_m2"].fillna(X["tx_pred_log_m2"].mean()), y)[0, 1]
+    assert abs(r) < 0.25
+
+
+def test_filas_fuera_de_train_usan_el_modelo_completo_y_train_la_prediccion_oof(gold_sintetico, cfg):
+    df, c = _constructor_con_texto(gold_sintetico, cfg)
+    nuevo = df.iloc[:10].copy()
+    nuevo["id_aviso"] = [f"NUEVO-{i}" for i in range(10)]
+    pn = c.transform(nuevo)["tx_pred_log_m2"].to_numpy()
+    esperado = c.ridge_texto_.predict(c.vec_texto_.transform(c._textos(nuevo)))
+    assert np.allclose(pn, esperado)
+    pt = c.transform(df.iloc[:10])["tx_pred_log_m2"].to_numpy()
+    assert np.allclose(pt, [c.texto_oof_[i] for i in df["id_aviso"].iloc[:10]])
+    assert not np.allclose(pt, c.ridge_texto_.predict(c.vec_texto_.transform(c._textos(df.iloc[:10]))))
+
+
+def test_sin_descripcion_las_variables_de_texto_quedan_en_nan(gold_sintetico, cfg):
+    df, c = _constructor_con_texto(gold_sintetico, cfg)
+    X = c.transform(df.drop(columns=["titulo", "descripcion"]))
+    assert X["tx_pred_log_m2"].isna().all() and X["tx_remodelado"].isna().all()
+    vacio = df.copy()
+    vacio["descripcion"] = None
+    vacio["titulo"] = None
+    assert c.transform(vacio)["tx_pred_log_m2"].isna().all()
+
+
+def test_constructor_viejo_sin_texto_no_agrega_variables_de_texto(gold_sintetico, cfg):
+    df, c = _constructor_con_texto(gold_sintetico, cfg)
+    del c.usa_texto
+    assert not [col for col in c.transform(df).columns if col.startswith("tx_")]

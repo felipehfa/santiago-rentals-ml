@@ -51,6 +51,11 @@ Detalle en `docs/01_decisiones.md`. En resumen:
   oferta viejos suelen estar desactualizados. Validación y test quedan completos, para comparar con el champion.
 - Variables derivadas: razones de superficie, equipamiento agregado y distancias en km al centro de la comuna,
   Plaza de Armas, El Golf, Las Condes y Providencia (puntos en `config.yaml`).
+- Texto del aviso (título y descripción, sin números ni símbolos de dinero, para que el precio escrito no se
+  cuele): 26 palabras clave (remodelado, estrenar, terraza, precio promocional, etc.) y un modelo de texto
+  (TF-IDF + ridge) que estima el costo por m2 y entrega una variable más (`tx_pred_log_m2`). Para las filas de
+  train es una predicción fuera de muestra (CV de 5 grupos), así que no conoce su propio precio; val, test y
+  avisos nuevos usan el modelo ajustado con todo train. Vive dentro del constructor y se guarda con el modelo.
 - Target: `costo_total_clp`.
 - Arquitectura del webinar `jcbf08/Webninar_SDC_mlflow`: `train` → `tune` → `register` → `promote` (quality gate) → `predict`, con MLflow y alias `@challenger` / `@champion`.
 - MLflow local al inicio; Postgres y Storage de Supabase al automatizar.

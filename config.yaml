@@ -39,6 +39,15 @@ variables:
   seleccion: features_seleccionadas.json   # si no existe, se usan todas
   # Puntos de referencia [latitud, longitud] para las distancias en km. Son aproximados (unos 300 m de
   # margen) y se pueden afinar. La distancia al centro de la comuna sale de los avisos de train.
+  # Modelo de texto: TF-IDF + ridge sobre el título y la descripción (sin números) que estima log(costo por m2).
+  # Su salida es una variable más; para las filas de train es una predicción fuera de muestra (CV de `folds` grupos).
+  texto:
+    activo: true
+    ngram_max: 2
+    min_df: 8
+    max_features: 30000
+    alpha: 3.0
+    folds: 5
   puntos_referencia:
     plaza_armas: [-33.4378, -70.6505]       # centro de Santiago
     el_golf: [-33.4165, -70.5946]           # eje de oficinas y vivienda de alto precio

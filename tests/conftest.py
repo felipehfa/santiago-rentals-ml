@@ -39,6 +39,11 @@ def gold_sintetico():
     df["costo_total_clp"] = base * sup + rng.normal(0, 30000, n)
     df["precio_clp"] = df["costo_total_clp"] * 0.8
     df["gastos_comunes"] = df["costo_total_clp"] * 0.2
+    # Texto sin relación con el precio (palabras al azar): lo que el modelo de texto "aprenda" de él es ruido.
+    vocab = np.array([f"palabra{i}" for i in range(80)] + ["remodelado", "terraza", "precio valido", "bodega"])
+    df["titulo"] = "Departamento en arriendo"
+    df["descripcion"] = [" ".join(rng.choice(vocab, 40)) + f" valor ${int(p):,} mensual".replace(",", ".")
+                         for p in df["costo_total_clp"]]
     ref = pd.Timestamp("2026-10-18", tz="UTC")
     df["ultima_vez_visto"] = ref
     df["fecha_publicacion_aprox"] = [(ref - pd.Timedelta(days=int(d))).isoformat() for d in rng.integers(0, 150, n)]
