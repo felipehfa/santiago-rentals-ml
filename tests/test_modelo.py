@@ -66,6 +66,41 @@ def test_gate_rechaza_si_no_mejora_y_el_champion_no_esta_degradado():
 def test_gate_promueve_si_el_champion_se_degrado_y_el_challenger_no_es_peor():
     # Peor por 1 % (dentro del margen del 2 %) pero con el champion 10 % degradado: se promueve.
     assert evaluar_gate(PROPIAS, {"mae_challenger": 101, "mae_champion": 100}, 0.10, GATE) == []
+    estricto = {**GATE, "margen_vs_champion": 0.0}
+    assert evaluar_gate(PROPIAS, {"mae_challenger": 101, "mae_champion": 100}, 0.10, estricto)
+
+
+def test_reentrenar_convierte_los_parametros_de_mlflow():
+    from src.reentrenar import convertir
+    assert convertir("12") == 12 and isinstance(convertir("12"), int)
+    assert convertir("0.05") == 0.05
+    assert convertir("reg:squarederror") == "reg:squarederror"
+
+
+def test_gate_exige_que_la_mejora_sea_significativa():
+    gate = {**GATE, "mejora_min": 0.01, "exigir_ic": True}
+    base = {"mae_challenger": 95, "mae_champion": 100}
+    assert evaluar_gate(PROPIAS, {**base, "ic_lo": 1.0}, 0.0, gate) == []
+    assert evaluar_gate(PROPIAS, {**base, "ic_lo": -2.0}, 0.0, gate)            # el IC cruza 0: ruido
+    assert evaluar_gate(PROPIAS, {"mae_challenger": 99.5, "mae_champion": 100, "ic_lo": 1.0}, 0.0, gate)  # <1 %
+
+
+def test_scoring_alcance_y_pendientes():
+    from src.scoring import en_alcance, pendientes
+    df = pd.DataFrame({
+        "id_aviso": list("abcdef"),
+        "comuna": ["nunoa", "nunoa", "nunoa", "nunoa", "maipu", "nunoa"],
+        "apto_entrenamiento": [True, False, False, False, True, True],
+        "motivo_exclusion": [None, "precio_m2_atipico", "sin_detalle", "precio_m2_atipico,sin_coordenadas", None, None],
+        "ultima_vez_visto": pd.to_datetime(["2026-10-01"] * 4 + ["2026-10-01", "2026-10-10"], utc=True),
+    })
+    cfg = {"datos": {"comunas_excluidas": ["maipu"]}, "scoring": {"motivos_predecibles": ["precio_m2_atipico"]}}
+    alcance = en_alcance(df, cfg)
+    # c y d tienen motivos no predecibles; e está en una comuna excluida
+    assert list(alcance["id_aviso"]) == ["a", "b", "f"]
+    previas = pd.DataFrame({"id_aviso": ["a", "f"],
+                            "predicho_en": pd.to_datetime(["2026-10-05", "2026-10-05"], utc=True)})
+    assert list(pendientes(alcance, previas)["id_aviso"]) == ["b", "f"]   # b nunca predicho; f visto después
 
 
 def test_gate_rechaza_si_el_champion_esta_degradado_pero_el_challenger_es_claramente_peor():

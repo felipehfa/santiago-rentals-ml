@@ -14,3 +14,4 @@ data/
 
 # Instrucciones locales para Claude Code (no se versionan; las comunes viven en la carpeta padre)
 CLAUDE.md
+.env.*

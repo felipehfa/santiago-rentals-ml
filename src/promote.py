@@ -6,7 +6,8 @@ Los datos crecen, así que champion y challenger no comparten test. Se comparan 
 filas: el test del challenger sin los avisos que el champion usó para entrenar (ver comparacion.py).
 
 Regla de promoción (umbrales en config.yaml):
-  1. Se promueve si el challenger mejora el MAE del champion en esas filas (más de `mejora_min`), o
+  1. Se promueve si el challenger mejora el MAE del champion en esas filas (más de `mejora_min`) y, con
+     `exigir_ic`, el IC95 de la mejora queda sobre 0, o
   2. si el champion se degradó (su MAE ahí supera su MAE de test original en más de
      `degradacion_umbral`) y el challenger no es peor que el champion por más de `margen_vs_champion`.
   Si no hay champion, solo rigen los criterios absolutos.
@@ -30,7 +31,8 @@ def evaluar_gate(propias: dict, comunes: dict | None, degradacion: float | None,
     """Devuelve los motivos de rechazo (lista vacía = pasa). Función pura, para testearla.
 
     propias:     métricas del challenger sobre su propio test (test_mape, estabilidad_cv_mae).
-    comunes:     {"n", "mae_challenger", "mae_champion"} sobre las filas comunes; None sin champion.
+    comunes:     {"n", "mae_challenger", "mae_champion", "ic_lo"} sobre las filas comunes; None sin champion.
+                 ic_lo = límite inferior del IC95 de MAE(champion) - MAE(challenger); positivo = mejora real.
     degradacion: MAE del champion en las filas comunes / su MAE de test original - 1.
     """
     motivos = []
@@ -45,9 +47,14 @@ def evaluar_gate(propias: dict, comunes: dict | None, degradacion: float | None,
         mejora = 1 - ch / champ
         degradado = degradacion is not None and degradacion > gate["degradacion_umbral"]
         no_peor = ch <= champ * (1 + gate["margen_vs_champion"])
-        if not (mejora > gate["mejora_min"] or (degradado and no_peor)):
+        # Con reentrenamientos frecuentes sobre datos casi iguales, cualquier mejora de MAE es ruido: se exige
+        # además que el IC95 de la diferencia (bootstrap) quede sobre 0.
+        significativa = not gate.get("exigir_ic") or comunes.get("ic_lo", 0.0) > 0
+        if not ((mejora > gate["mejora_min"] and significativa) or (degradado and no_peor)):
             motivos.append(
-                f"no mejora al champion (MAE {ch:,.0f} vs {champ:,.0f}, {mejora:+.1%}) y el champion "
+                f"no mejora al champion (MAE {ch:,.0f} vs {champ:,.0f}, {mejora:+.1%}"
+                + ("" if significativa else "; el IC95 de la mejora cruza 0")
+                + ") y el champion "
                 + ("no está degradado" if not degradado else "está degradado pero el challenger es peor")
             )
     return motivos
@@ -91,10 +98,10 @@ def main() -> int:
             mlflow.pyfunc.load_model(f"models:/{nombre}@{ALIAS_CHALLENGER}"), df, target)
         m_champ, p_champ = comparacion.evaluar(
             mlflow.pyfunc.load_model(f"models:/{nombre}@{ALIAS_CHAMPION}"), df, target)
-        comunes = {"n": len(df), "mae_challenger": m_ch["mae"], "mae_champion": m_champ["mae"]}
         mae_original = run_champ.data.metrics["test_mae"]
         degradacion = m_champ["mae"] / mae_original - 1
         dif, lo, hi = comparacion.diferencia_ic(df[target].to_numpy(), p_champ, p_ch)
+        comunes = {"n": len(df), "mae_challenger": m_ch["mae"], "mae_champion": m_champ["mae"], "ic_lo": lo}
         info = (f"Sobre {len(df)} avisos comunes: MAE challenger {m_ch['mae']:,.0f} vs champion "
                 f"{m_champ['mae']:,.0f} (dif. {dif:+,.0f}, IC95 [{lo:+,.0f}, {hi:+,.0f}]); MAPE "
                 f"{m_ch['mape']:.1f}% vs {m_champ['mape']:.1f}%. Degradación del champion: "

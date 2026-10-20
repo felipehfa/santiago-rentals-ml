@@ -150,7 +150,12 @@ def setup_mlflow(cfg: dict) -> None:
     if uri.startswith("sqlite:///") and not uri.startswith("sqlite:////"):
         uri = "sqlite:///" + str(RAIZ / uri.removeprefix("sqlite:///")).replace("\\", "/")
     mlflow.set_tracking_uri(uri)
-    mlflow.set_experiment(cfg["mlflow"]["experimento"])
+    nombre = cfg["mlflow"]["experimento"]
+    raiz = os.environ.get("MLFLOW_ARTIFACT_ROOT")
+    if raiz and mlflow.get_experiment_by_name(nombre) is None:
+        # Con un backend en base de datos, los artefactos van al bucket solo si el experimento nace con esa ruta.
+        mlflow.create_experiment(nombre, artifact_location=f"{raiz.rstrip('/')}/{nombre}")
+    mlflow.set_experiment(nombre)
 
 
 def registrar_reproducibilidad() -> None:

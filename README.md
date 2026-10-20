@@ -31,11 +31,35 @@ python -m src.tune                  # reselecciona variables y luego Optuna (50 
 python -m src.seleccion_variables   # solo la selección (tune ya la ejecuta; --sin-seleccion la omite)
 python -m src.train                 # modelos base
 python -m src.register              # mejor por cv_mae -> @challenger
+python -m src.reentrenar            # reentrena con los hiperparámetros del último tune (el flujo diario)
+python -m src.scoring               # predice con el champion los avisos pendientes -> gold.predicciones
 python -m src.promote               # quality gate -> @champion (0 promueve, 1 sin challenger, 2 rechaza)
 python -m src.monitoreo            # degradación del champion con avisos nuevos (3 = degradado)
 python -m pytest && python -m ruff check src tests
 mlflow ui --backend-store-uri sqlite:///mlflow.db
 ```
+
+## Automatización (GitHub Actions)
+
+| Workflow | Cuándo | Qué hace |
+|---|---|---|
+| `ci.yml` | cada push y PR | `ruff` y `pytest` (datos sintéticos, sin secrets) |
+| `entrenar.yml` | todos los días 07:30 UTC y a mano | reentrena con los hiperparámetros del último Optuna (`src.reentrenar`); los domingos o con `modo=tune`, Optuna completo; registra el challenger, corre el gate y el monitoreo; si terminó bien, llama a `scoring.yml` |
+| `scoring.yml` | cada 3 horas, al final del entrenamiento y a mano | predice con el `@champion` los avisos de Gold sin predicción de esa versión (nuevos, visitados de nuevo o todos si cambió el modelo) y los guarda en `gold.predicciones` |
+
+- **Primera vez:** lanzar `entrenar` a mano con `modo=tune`; el reentrenamiento diario necesita un `tune` previo.
+- **Gate para correr a diario:** promueve solo con mejora de MAE de al menos 1 % y con el IC95 de la mejora sobre 0
+  (`gate.exigir_ic`), o si el champion está degradado y el challenger no es peor. Así el ruido no cambia el champion
+  ni obliga a repetir todas las predicciones.
+- **MLflow en la nube:** metadatos en Postgres de Supabase (rol `mlflow`, schema `mlflow`) y artefactos en un bucket
+  de Supabase Storage. Variables: `MLFLOW_TRACKING_URI`, `MLFLOW_ARTIFACT_ROOT`, `MLFLOW_S3_ENDPOINT_URL`,
+  `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` y `AWS_DEFAULT_REGION`; en local van en `.env.nube` (ignorado por git),
+  que se carga solo cuando se quiere apuntar a la nube. En GitHub son secrets y variables del repo, junto con
+  `BD_STRING_READ` y `BD_STRING_SCORING`.
+- **Los scrapers no corren aquí:** el portal redirige a las IPs de Actions a un muro de verificación. El ELT sigue local;
+  Actions toma lo que haya llegado a Gold.
+- Las versiones de `requirements.txt` están fijadas: el modelo se guarda con pickle y debe cargarse con las mismas
+  librerías en el PC y en Actions.
 
 La primera corrida descarga Gold a `data/` (fuera de git) y las siguientes la reutilizan.
 
@@ -50,7 +74,7 @@ Detalle en `docs/01_decisiones.md`. En resumen:
 - Train usa solo avisos publicados hasta 60 días antes de la última visita (`datos.ventana_dias`): los precios de
   oferta viejos suelen estar desactualizados. Validación y test quedan completos, para comparar con el champion.
 - Comunas fuera del modelo (`datos.comunas_excluidas`): Las Condes, Vitacura, Lo Barnechea y las periféricas del sur; sus avisos siguen en Gold y se descartan al preparar los datos. Con 12 comunas el MAPE del test es 9,3 %.
-- `mlruns/` conserva solo lo del `@champion` vigente; tras cada promoción se limpia con `mlflow gc`.
+- `mlruns/` conserva solo lo del `@champion` vigente y el último run de cada algoritmo; tras cada promoción se limpia con `mlflow gc`.
 - Variables derivadas: razones de superficie, equipamiento agregado y distancias en km al centro de la comuna,
   Plaza de Armas, El Golf, Las Condes y Providencia (puntos en `config.yaml`).
 - Texto del aviso (título y descripción, sin números ni símbolos de dinero, para que el precio escrito no se

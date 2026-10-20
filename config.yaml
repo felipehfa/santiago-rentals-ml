@@ -98,10 +98,16 @@ etiquetas:
 gate:
   mape_max: null                  # error porcentual medio máximo aceptable en el test propio (%)
   estabilidad_cv_max: null        # coeficiente de variación del MAE entre particiones
-  mejora_min: 0.0                 # el challenger promueve si baja el MAE del champion más que esto
+  mejora_min: 0.01                # el challenger promueve si baja el MAE del champion más que esto (1 %)
+  exigir_ic: true                 # y además el IC95 de la mejora (bootstrap) debe quedar sobre 0: no basta con ruido
   degradacion_umbral: 0.05        # el champion está degradado si su MAE sube más de 5 % vs su test original
-  margen_vs_champion: 0.02        # si el champion está degradado, el challenger no puede ser peor que 2 %
+  margen_vs_champion: 0.0         # si el champion está degradado, el challenger no puede ser peor que él
   n_minimo_comparacion: 100       # avisos comunes necesarios para poder comparar
+
+# Scoring por lotes a gold.predicciones. Además de los aptos, se predicen los excluidos solo por estos motivos
+# (el modelo igual estima su precio esperado, útil para detectar precios atípicos).
+scoring:
+  motivos_predecibles: [precio_m2_atipico, precio_sospechoso, finalizado_antiguo]
 
 # Monitoreo del champion sobre avisos llegados después de su entrenamiento.
 monitoreo:

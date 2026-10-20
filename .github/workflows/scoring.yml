@@ -1,0 +1,35 @@
+# Scoring por lotes: predice con el @champion los avisos de Gold que no tengan predicción de su versión (avisos
+# nuevos o visitados de nuevo) y, si cambió el modelo, todos. Escribe en gold.predicciones con el rol ml_scoring.
+# Corre cada 3 horas (lo que Gold haya recibido entre una corrida y otra) y al final del entrenamiento diario.
+name: scoring
+on:
+  schedule:
+    - cron: "17 */3 * * *"
+  workflow_dispatch:
+  workflow_call:
+
+# Una sola corrida a la vez: dos scoring en paralelo escribirían la misma predicción dos veces.
+concurrency:
+  group: scoring
+  cancel-in-progress: false
+
+jobs:
+  scoring:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      BD_STRING_SCORING: ${{ secrets.BD_STRING_SCORING }}
+      MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
+      MLFLOW_ARTIFACT_ROOT: ${{ vars.MLFLOW_ARTIFACT_ROOT }}
+      MLFLOW_S3_ENDPOINT_URL: ${{ vars.MLFLOW_S3_ENDPOINT_URL }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python -m src.scoring

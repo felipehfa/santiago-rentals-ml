@@ -74,7 +74,7 @@ Las variables que dependen del conjunto (`nivel_barrio`, `precio_m2_sector`, imp
 - **Backend** (metadatos: runs, parámetros, métricas, registry y alias): al inicio SQLite local (`mlflow.db`); al automatizar, **Postgres de Supabase**, en un schema aparte.
 - **Artefactos** (modelos, gráficos): al inicio carpeta local; al automatizar, **Supabase Storage** (compatible con S3) en un bucket privado, con `boto3`.
 - Variables: `MLFLOW_TRACKING_URI`, `MLFLOW_ARTIFACT_ROOT`, `MLFLOW_S3_ENDPOINT_URL` y las claves de acceso. En GitHub van como secrets, nunca en el repo.
-- **Retención:** solo se conservan los artefactos del `@champion` vigente. Las corridas de pruebas y las versiones viejas del registro se eliminan con `mlflow gc` tras cada promoción (el historial de métricas se exporta antes solo si se quiere guardar).
+- **Retención:** solo se conservan los artefactos del `@champion` vigente y el último run de cada algoritmo (guarda los hiperparámetros del reentrenamiento diario). Las corridas de pruebas y las versiones viejas del registro se eliminan con `mlflow gc` tras cada promoción (el historial de métricas se exporta antes solo si se quiere guardar).
 - El cambio de local a Supabase no toca el código, porque `setup_mlflow` lee `MLFLOW_TRACKING_URI`.
 
 ## 7. Entrenamiento, CI y CD

@@ -1,0 +1,77 @@
+# Entrenamiento diario: reentrena con los hiperparámetros del último Optuna, registra el challenger y corre el gate.
+# Los domingos (o con modo=tune) repite la búsqueda completa de Optuna. Si el gate promueve un modelo nuevo, el
+# scoring vuelve a predecir todos los avisos con esa versión. Al final mide la degradación del champion.
+name: entrenar
+on:
+  schedule:
+    - cron: "30 7 * * *"        # 07:30 UTC: madrugada en Chile, después de que Gold se haya actualizado de noche
+  workflow_dispatch:
+    inputs:
+      modo:
+        description: "reentrenar = parámetros del último Optuna; tune = Optuna completo (el primero debe ser tune)"
+        type: choice
+        options: [reentrenar, tune]
+        default: reentrenar
+
+concurrency:
+  group: entrenar
+  cancel-in-progress: false
+
+jobs:
+  entrenar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    outputs:
+      promovido: ${{ steps.gate.outputs.promovido }}
+    env:
+      BD_STRING_READ: ${{ secrets.BD_STRING_READ }}
+      MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
+      MLFLOW_ARTIFACT_ROOT: ${{ vars.MLFLOW_ARTIFACT_ROOT }}
+      MLFLOW_S3_ENDPOINT_URL: ${{ vars.MLFLOW_S3_ENDPOINT_URL }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+
+      - name: Entrenar
+        run: |
+          modo="${{ inputs.modo }}"
+          # Sin entrada manual (cron): los domingos Optuna completo, el resto reentrenar.
+          if [ -z "$modo" ]; then
+            if [ "$(date -u +%u)" = "7" ]; then modo=tune; else modo=reentrenar; fi
+          fi
+          echo "Modo: $modo"
+          if [ "$modo" = "tune" ]; then python -m src.tune --refrescar; else python -m src.reentrenar --refrescar; fi
+
+      - run: python -m src.register
+
+      - name: Gate de promoción
+        id: gate
+        run: |
+          set +e
+          python -m src.promote
+          codigo=$?
+          echo "Código del gate: $codigo (0 promueve, 2 rechaza)"
+          if [ "$codigo" = "0" ]; then echo "promovido=true" >> "$GITHUB_OUTPUT"; else echo "promovido=false" >> "$GITHUB_OUTPUT"; fi
+          # 2 = el gate rechaza al challenger: es un resultado normal, no un error del workflow.
+          [ "$codigo" = "0" ] || [ "$codigo" = "2" ]
+
+      - name: Monitoreo del champion
+        run: |
+          set +e
+          python -m src.monitoreo
+          codigo=$?
+          echo "Código del monitoreo: $codigo (0 normal, 1 sin datos suficientes, 3 champion degradado)"
+          [ "$codigo" -le 3 ]
+
+  scoring:
+    needs: entrenar
+    if: ${{ needs.entrenar.result == 'success' }}
+    uses: ./.github/workflows/scoring.yml
+    secrets: inherit

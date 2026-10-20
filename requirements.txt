@@ -1,15 +1,20 @@
-psycopg2-binary
-python-dotenv
-pyyaml
-numpy
-pandas
-pyarrow
-scipy
-scikit-learn
-xgboost
-lightgbm
-optuna
-mlflow
-boto3
-pytest
-ruff
+# Versiones fijas (las del entorno de desarrollo): un modelo se guarda con pickle y debe cargarse con las mismas
+# librerías con que se entrenó, tanto en el PC como en GitHub Actions. Python 3.11.
+psycopg2-binary==2.9.12
+python-dotenv==1.2.2
+pyyaml==6.0.3
+numpy==2.4.6
+pandas==3.0.3
+pyarrow==24.0.0
+scipy==1.17.1
+scikit-learn==1.9.0
+xgboost==3.2.0
+lightgbm==4.6.0
+optuna==4.9.0
+mlflow==3.17.1
+sqlalchemy==2.0.51
+alembic==1.18.4
+cloudpickle==3.1.2
+boto3==1.43.40
+pytest==9.1.1
+ruff==0.17.1
