@@ -21,15 +21,67 @@ docs/       01_decisiones.md (qué se decidió), 02_plan.md (en qué orden se co
 
 ## Diagramas
 
-Hechos con [Fluyo](https://fluyo.space), cada uno con sus Historias animadas. El `.svg` es la vista estática; el
-`.fluyo.json` se abre con el botón **Abrir** de fluyo.space para reproducir las Historias y exportar el GIF. Se generan con
-los scripts de `docs/diagramas/herramientas/` (ver su `LEEME.md`).
+Hechos con [Fluyo](https://fluyo.space). Cada diagrama es un `.svg` (vista estática, la que se ve aquí) y un `.fluyo.json` en
+`docs/diagramas/`; ese archivo se abre con el botón **Abrir** de fluyo.space para reproducir sus **Historias** (el orden en el
+tiempo de un proceso, animado) y exportar un GIF. Los scripts que los generan están en `docs/diagramas/herramientas/` (ver su
+`LEEME.md`).
+
+### Arquitectura del modelo
 
 ![Arquitectura del modelo](docs/diagramas/ml-arquitectura.svg)
 
+De los datos de Gold al modelo en uso y sus predicciones:
+
+- **Datos y split.** Avisos aptos de Gold de 12 comunas, con costo hasta 10 M y gastos hasta el 50 % del arriendo. Se divide
+  70/15/15 y el entrenamiento solo usa avisos de hasta 60 días.
+- **Variables.** Sin fuga de datos: `precio_m2_sector`, barrio, comuna y el modelo de texto se ajustan solo con train. Incluye
+  variables derivadas, distancias a centros y 26 palabras clave del texto del aviso.
+- **Entrenamiento.** Selección de variables y búsqueda de hiperparámetros (Optuna: 50 pruebas por algoritmo, XGBoost y
+  LightGBM, validación cruzada de 5 partes) con un ensamble de 10 semillas. Elige por el error de la validación cruzada.
+- **MLflow** guarda cada run: métricas, ids de los splits, configuración, commit y el modelo con su constructor de variables.
+- **Gate y `@champion`.** El candidato (`@challenger`) pasa por el gate de promoción (siguiente diagrama); si gana, queda como
+  `@champion`.
+- **Monitoreo** mide la degradación del champion con avisos nuevos (código 3 si empeora).
+- **Scoring por lotes.** El champion predice los avisos sin predicción de su versión o visitados de nuevo y guarda en
+  `gold.predicciones` la etiqueta de mercado (oportunidad, precio de mercado o caro), la confianza y la banda de precio.
+- **Baselines de planilla** (mediana por comuna y dormitorios; precio por m² de la comuna × superficie): lo que haría una
+  persona sin entrenar nada. El modelo debe superarlos.
+
+Historias: *Entrenamiento y promoción de un modelo* y *Scoring de los avisos con el champion*.
+
+### Promoción de modelos
+
 ![Promoción de modelos](docs/diagramas/ml-promocion.svg)
 
+Cómo decide el gate si un modelo nuevo reemplaza al champion. Se evalúan los dos sobre **las mismas filas**: el test del
+challenger sin los avisos que el champion usó para entrenar o validar (ninguno los vio; mínimo 100 avisos). Se calculan el MAE
+y el MAPE de cada uno y la diferencia de MAE con su intervalo de confianza al 95 % (bootstrap). El challenger **se promueve**
+si:
+
+1. el MAE baja al menos 1 % y el intervalo de la mejora es mayor que 0 (no basta con ruido), o
+2. el champion se degradó más de 5 % (su MAE actual contra el de su test original) y el challenger no es peor.
+
+Sin champion, el primero se promueve. Con un modelo nuevo, el scoring vuelve a predecir todos los avisos con esa versión.
+
+Historias: *Mejora significativa: se promueve*, *Empate: el gate rechaza al challenger* y *El champion se degradó: entra el
+challenger*.
+
+### ML automático en GitHub
+
 ![ML automático en GitHub](docs/diagramas/ml-automatizacion.svg)
+
+Qué corre solo en GitHub Actions y con qué condiciones:
+
+- **Entrenamiento diario** (cron a las 07:30 UTC, o a mano con *Run workflow*). Descarga Gold, entrena con Optuna completo
+  (unos 22 minutos), registra el challenger y corre el gate. El primer entrenamiento debe ser un `tune`: el MLflow parte vacío
+  y el primer modelo se promueve sin comparación. Al final corre el monitoreo, que no detiene el flujo.
+- **Scoring** cada 3 horas y al terminar el entrenamiento: predice los avisos que no tienen predicción de la versión vigente o
+  que se visitaron después de la última, y todos si hay un champion nuevo. Escribe con un rol que solo puede insertar en
+  `gold.predicciones`.
+- **CI** en cada push: `ruff` y `pytest`, sin secretos.
+- MLflow vive en Postgres y un bucket de Supabase; los secretos y variables están en el repo de GitHub.
+
+Historias: *Entrenamiento diario: el challenger gana*, *El gate rechaza al challenger* y *Scoring cada 3 horas*.
 
 ## Cómo ejecutar
 

@@ -20,6 +20,17 @@ const EVENTOS_BASE = [
   { ref: "procesa", name: "Procesa", primitive: "OCCURRENCE", sentence: "{target} procesa" },
 ];
 
+/** El SVG de Fluyo sale con fondo transparente: sobre el modo oscuro de GitHub el texto oscuro desaparece. Se le agrega
+ *  un rectángulo blanco del tamaño de su viewBox, justo después de la etiqueta de apertura. */
+export function conFondo(svg, color = "#ffffff") {
+  const abre = svg.match(/<svg[^>]*>/);
+  const vb = abre?.[0].match(/viewBox="([^"]+)"/)?.[1].trim().split(/\s+/).map(Number);
+  if (!abre || !vb || vb.length !== 4) return svg;
+  const [x, y, w, h] = vb;
+  const rect = `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${color}"/>`;
+  return svg.replace(abre[0], abre[0] + "\n" + rect);
+}
+
 export async function construir(spec) {
   const { llamar, cerrar } = await abrir();
   const falla = async (msg, extra = "") => {
@@ -81,6 +92,6 @@ export async function construir(spec) {
   }
   const ex = await llamar("export_diagram", { document: res.document, pageIndex: 0, crop: true });
   const svg = ex.textos.find((t) => t.trim().startsWith("<svg")) ?? ex.textos[ex.textos.length - 1];
-  fs.writeFileSync(path.join(spec.destino, `${spec.archivo}.svg`), svg);
+  fs.writeFileSync(path.join(spec.destino, `${spec.archivo}.svg`), conFondo(svg));
   await cerrar();
 }
