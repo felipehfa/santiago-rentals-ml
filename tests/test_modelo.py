@@ -34,6 +34,36 @@ def test_etiquetas_marcan_los_extremos():
     assert barato.loc[0, "etiqueta"] == "oportunidad" and caro.loc[0, "etiqueta"] == "caro"
 
 
+def test_confianza_y_banda_de_mercado():
+    import json
+    rng = np.random.default_rng(3)
+    real = rng.uniform(300_000, 900_000, 600)
+    pred = real + rng.normal(0, 20_000, 600)
+    cv = rng.uniform(0.005, 0.03, 600)
+    ref = json.loads(json.dumps(etiquetas.ajustar_referencia(real, pred, 10, cv, 3)))
+    assert len(ref["cortes_cv"]) == 2
+    nivel = etiquetas.clasificar_confianza(np.array([0.001, 0.0175, 0.5]), ref)
+    assert list(nivel) == ["alta confianza", "confianza media", "baja confianza"]  # el desacuerdo alto = poca confianza
+    inf, sup = etiquetas.banda_mercado(np.array([500_000.0]), ref)
+    assert inf[0] < 500_000 < sup[0]
+    et = etiquetas.etiquetar(real, pred, cv, ref)
+    assert {"nivel_confianza", "etiqueta_final", "banda_inferior", "banda_superior"} <= set(et.columns)
+
+
+def test_etiquetar_lote_deja_vacio_lo_que_no_tiene_precio_publicado():
+    from src.scoring import etiquetar_lote
+    rng = np.random.default_rng(4)
+    real = rng.uniform(300_000, 900_000, 400)
+    pred = real + rng.normal(0, 20_000, 400)
+    cv = rng.uniform(0.005, 0.03, 400)
+    ref = etiquetas.ajustar_referencia(real, pred, 10, cv, 3)
+    publicado = np.array([float(real[0]), np.nan, float(real[2])])
+    out = etiquetar_lote(publicado, pred[:3], cv[:3], ref, {"umbral_oportunidad": 1.0, "umbral_caro": 1.0})
+    assert out["etiqueta"][1] is None and out["z_robusto"][1] is None   # sin precio publicado no hay etiqueta
+    assert out["nivel_confianza"][1] is not None and out["banda_inferior"][1] is not None  # pero sí confianza y banda
+    assert out["etiqueta"][0] in {"oportunidad", "caro", "precio_de_mercado"}
+
+
 def test_la_referencia_sobrevive_a_json():
     import json
     real = np.linspace(300_000, 900_000, 200)

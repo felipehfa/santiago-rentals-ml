@@ -74,6 +74,10 @@ Detalle en `docs/01_decisiones.md`. En resumen:
   con otros datos hace fallar la corrida.
 - Train usa solo avisos publicados hasta 60 días antes de la última visita (`datos.ventana_dias`): los precios de
   oferta viejos suelen estar desactualizados. Validación y test quedan completos, para comparar con el champion.
+- Etiqueta de mercado y confianza (como en Concepción): el scoring compara el costo total publicado con lo que el modelo
+  espera, normalizado por decil de costo (mediana y MAD): `oportunidad` (z < -1), `caro` (z > 1) o `precio_de_mercado`; y
+  clasifica la confianza por el desacuerdo de las 10 predicciones del ensamble (terciles: alta, media o baja). Guarda
+  también la banda de costo que sería precio de mercado. Todo va en `gold.predicciones`; `--recalcular` repite el scoring.
 - Baselines de planilla (mediana por comuna y dormitorios; precio/m2 de la comuna × superficie): cada run registra su MAE y la ganancia del modelo sobre el mejor (`ganancia_vs_mejor_baseline_pct`).
 - Comunas fuera del modelo (`datos.comunas_excluidas`): Las Condes, Vitacura, Lo Barnechea y las periféricas del sur; sus avisos siguen en Gold y se descartan al preparar los datos. Con 12 comunas el MAPE del test es 9,3 %.
 - `mlruns/` conserva solo lo del `@champion` vigente y el último run de cada algoritmo; tras cada promoción se limpia con `mlflow gc`.

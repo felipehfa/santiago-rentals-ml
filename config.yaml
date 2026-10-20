@@ -89,6 +89,7 @@ seleccion_variables:
 
 etiquetas:
   n_deciles: 10
+  n_grupos_confianza: 3     # terciles del desacuerdo del ensamble: alta, media y baja confianza
   umbral_oportunidad: 1.0
   umbral_caro: 1.0
 

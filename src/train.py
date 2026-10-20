@@ -165,7 +165,10 @@ def registrar_modelo_final(cfg: dict, algoritmo: str, params: dict, d: dict) -> 
     # Referencia del etiquetado: residuos de validación (la validación solo decide el early
     # stopping; el test queda intacto para el gate).
     e = cfg["etiquetas"]
-    ref = etiquetas.ajustar_referencia(d["y_val"].values, pred["val"], e["n_deciles"])
+    m_val = ens.matriz(d["X_val"])
+    cv_val = m_val.std(axis=0) / np.maximum(m_val.mean(axis=0), 1e-6)
+    ref = etiquetas.ajustar_referencia(d["y_val"].values, pred["val"], e["n_deciles"], cv_val,
+                                       e.get("n_grupos_confianza", 3))
     mlflow.log_dict(ref, "referencia_etiquetas.json")
     m_test = ens.matriz(d["X_test"])
     et = etiquetas.etiquetar(d["y_test"].values, m_test.mean(axis=0),
