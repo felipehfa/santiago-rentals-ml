@@ -10,11 +10,11 @@
      {
       "id": 1,
       "shape": "circle",
-      "x": 40,
-      "y": 200,
-      "w": 190,
-      "h": 100,
-      "label": "Cron diario 07:30 UTC",
+      "x": 20,
+      "y": 135,
+      "w": 200,
+      "h": 110,
+      "label": "Cron diario",
       "color": "#8f8f8f",
       "fill": null,
       "border": "solid",
@@ -24,16 +24,17 @@
       "font": null,
       "bold": false,
       "pulse": false,
-      "order": 0
+      "order": 0,
+      "fs": 22
      },
      {
       "id": 2,
       "shape": "rect",
-      "x": 380,
-      "y": 215,
+      "x": 330,
+      "y": 145,
       "w": 200,
-      "h": 70,
-      "label": "1. Entrenar (Optuna)",
+      "h": 90,
+      "label": "1. Entrenar",
       "color": "#9b7fb5",
       "fill": null,
       "border": "solid",
@@ -43,16 +44,17 @@
       "font": null,
       "bold": false,
       "pulse": false,
-      "order": 1
+      "order": 1,
+      "fs": 22
      },
      {
       "id": 3,
       "shape": "cylinder",
-      "x": 800,
-      "y": 195,
-      "w": 210,
+      "x": 640,
+      "y": 130,
+      "w": 200,
       "h": 110,
-      "label": "MLflow (Postgres + bucket)",
+      "label": "MLflow",
       "color": "#c98f5b",
       "fill": null,
       "border": "solid",
@@ -62,14 +64,15 @@
       "font": null,
       "bold": false,
       "pulse": false,
-      "order": 2
+      "order": 2,
+      "fs": 22
      },
      {
       "id": 4,
       "shape": "diamond",
-      "x": 1250,
-      "y": 190,
-      "w": 220,
+      "x": 950,
+      "y": 130,
+      "w": 200,
       "h": 120,
       "label": "2. Gate",
       "color": "#c16a6a",
@@ -81,15 +84,16 @@
       "font": null,
       "bold": false,
       "pulse": false,
-      "order": 3
+      "order": 3,
+      "fs": 22
      },
      {
       "id": 5,
       "shape": "rect",
-      "x": 1700,
-      "y": 215,
-      "w": 190,
-      "h": 70,
+      "x": 1260,
+      "y": 145,
+      "w": 200,
+      "h": 90,
       "label": "@champion",
       "color": "#7bb85b",
       "fill": null,
@@ -100,15 +104,16 @@
       "font": null,
       "bold": false,
       "pulse": false,
-      "order": 4
+      "order": 4,
+      "fs": 22
      },
      {
       "id": 6,
       "shape": "rect",
-      "x": 2100,
-      "y": 215,
-      "w": 190,
-      "h": 70,
+      "x": 1570,
+      "y": 145,
+      "w": 200,
+      "h": 90,
       "label": "4. Monitoreo",
       "color": "#5b9bd0",
       "fill": null,
@@ -119,16 +124,17 @@
       "font": null,
       "bold": false,
       "pulse": false,
-      "order": 5
+      "order": 5,
+      "fs": 22
      },
      {
       "id": 7,
       "shape": "cylinder",
-      "x": 380,
-      "y": 520,
-      "w": 200,
-      "h": 100,
-      "label": "Gold (Supabase)",
+      "x": 330,
+      "y": 395,
+      "w": 230,
+      "h": 110,
+      "label": "Gold",
       "color": "#7fa66b",
       "fill": null,
       "border": "solid",
@@ -138,15 +144,16 @@
       "font": null,
       "bold": false,
       "pulse": false,
-      "order": 6
+      "order": 6,
+      "fs": 22
      },
      {
       "id": 8,
       "shape": "circle",
-      "x": 800,
-      "y": 760,
-      "w": 170,
-      "h": 100,
+      "x": 640,
+      "y": 645,
+      "w": 230,
+      "h": 110,
       "label": "Cron cada 3 h",
       "color": "#8f8f8f",
       "fill": null,
@@ -157,15 +164,16 @@
       "font": null,
       "bold": false,
       "pulse": false,
-      "order": 7
+      "order": 7,
+      "fs": 22
      },
      {
       "id": 9,
       "shape": "rect",
-      "x": 1700,
-      "y": 775,
-      "w": 190,
-      "h": 70,
+      "x": 1260,
+      "y": 655,
+      "w": 200,
+      "h": 90,
       "label": "3. Scoring",
       "color": "#6a9fb5",
       "fill": null,
@@ -176,14 +184,15 @@
       "font": null,
       "bold": false,
       "pulse": false,
-      "order": 8
+      "order": 8,
+      "fs": 22
      },
      {
       "id": 10,
       "shape": "cylinder",
-      "x": 2100,
-      "y": 755,
-      "w": 200,
+      "x": 1600,
+      "y": 640,
+      "w": 250,
       "h": 110,
       "label": "gold.predicciones",
       "color": "#7bb85b",
@@ -195,16 +204,17 @@
       "font": null,
       "bold": false,
       "pulse": false,
-      "order": 9
+      "order": 9,
+      "fs": 22
      },
      {
       "id": 11,
       "shape": "rect",
-      "x": 40,
-      "y": 330,
-      "w": 250,
-      "h": 60,
-      "label": "Manual: Run workflow.\nEl primero debe ser tune.",
+      "x": 10,
+      "y": 270,
+      "w": 288,
+      "h": 77,
+      "label": "07:30 UTC, o a mano.\nEl primero debe ser tune",
       "color": "#8f8f8f",
       "fill": "none",
       "border": "dashed",
@@ -215,16 +225,16 @@
       "bold": false,
       "pulse": false,
       "order": 10,
-      "fs": 13
+      "fs": 17
      },
      {
       "id": 12,
       "shape": "rect",
-      "x": 330,
+      "x": 320,
       "y": 10,
-      "w": 380,
-      "h": 115,
-      "label": "Datos: avisos aptos de 12 comunas.\nTrain: publicados en los últimos 60 días.\nVariables + Optuna: 50 pruebas por\nalgoritmo (XGBoost, LightGBM);\nelige por CV MAE.",
+      "w": 299,
+      "h": 77,
+      "label": "Optuna completo,\nunos 22 minutos",
       "color": "#8f8f8f",
       "fill": "none",
       "border": "dashed",
@@ -235,16 +245,16 @@
       "bold": false,
       "pulse": false,
       "order": 11,
-      "fs": 13
+      "fs": 17
      },
      {
       "id": 13,
       "shape": "rect",
-      "x": 1100,
+      "x": 920,
       "y": 10,
-      "w": 520,
-      "h": 100,
-      "label": "Promueve si:\n• el MAE baja ≥ 1 % y el IC95 de la mejora es > 0, o\n• el champion se degradó > 5 % y el challenger no es peor.\nSin champion: promueve.",
+      "w": 334,
+      "h": 77,
+      "label": "MAE baja ≥ 1 % con\nIC95 > 0, o champion degradado",
       "color": "#8f8f8f",
       "fill": "none",
       "border": "dashed",
@@ -255,16 +265,16 @@
       "bold": false,
       "pulse": false,
       "order": 12,
-      "fs": 13
+      "fs": 17
      },
      {
       "id": 14,
       "shape": "rect",
-      "x": 2060,
-      "y": 330,
-      "w": 290,
-      "h": 75,
-      "label": "Código 3 si el champion se degrada\ncon avisos nuevos.\nNo detiene el flujo.",
+      "x": 1560,
+      "y": 270,
+      "w": 288,
+      "h": 77,
+      "label": "Código 3 si el champion\nse degrada",
       "color": "#8f8f8f",
       "fill": "none",
       "border": "dashed",
@@ -275,16 +285,16 @@
       "bold": false,
       "pulse": false,
       "order": 13,
-      "fs": 13
+      "fs": 17
      },
      {
       "id": 15,
       "shape": "rect",
-      "x": 1000,
-      "y": 540,
-      "w": 580,
-      "h": 140,
-      "label": "Predice los avisos que:\n• no tienen predicción de esta versión, o\n• se visitaron después de su última predicción.\nSi hay champion nuevo, repite todos.\nGuarda etiqueta de mercado, confianza y banda\nde precio. Sin las comunas fuera del modelo.",
+      "x": 890,
+      "y": 400,
+      "w": 437,
+      "h": 121,
+      "label": "Predice avisos sin predicción\nde la versión, o vistos de nuevo;\ntodos si hay champion nuevo",
       "color": "#8f8f8f",
       "fill": "none",
       "border": "dashed",
@@ -295,16 +305,16 @@
       "bold": false,
       "pulse": false,
       "order": 14,
-      "fs": 13
+      "fs": 17
      },
      {
       "id": 16,
       "shape": "rect",
-      "x": 770,
-      "y": 690,
-      "w": 280,
-      "h": 50,
-      "label": "También al terminar el\nentrenamiento diario.",
+      "x": 630,
+      "y": 790,
+      "w": 288,
+      "h": 77,
+      "label": "Y al terminar el\nentrenamiento diario",
       "color": "#8f8f8f",
       "fill": "none",
       "border": "dashed",
@@ -315,16 +325,16 @@
       "bold": false,
       "pulse": false,
       "order": 15,
-      "fs": 13
+      "fs": 17
      },
      {
       "id": 17,
       "shape": "rect",
-      "x": 40,
-      "y": 700,
-      "w": 250,
-      "h": 60,
-      "label": "CI en cada push:\nruff y pytest (sin secrets).",
+      "x": 10,
+      "y": 640,
+      "w": 311,
+      "h": 77,
+      "label": "CI en cada push:\nruff y pytest",
       "color": "#8f8f8f",
       "fill": "none",
       "border": "dashed",
@@ -335,7 +345,7 @@
       "bold": false,
       "pulse": false,
       "order": 16,
-      "fs": 13
+      "fs": 17
      }
     ],
     "edges": [
@@ -354,7 +364,8 @@
       "dashed": false,
       "startArrow": false,
       "endArrow": true,
-      "flowDir": "normal"
+      "flowDir": "normal",
+      "fs": 18
      },
      {
       "id": 19,
@@ -364,14 +375,15 @@
       "toSide": null,
       "route": "ortho",
       "waypoints": [],
-      "label": "lee aptos",
+      "label": "aptos",
       "font": null,
       "bold": false,
       "animated": true,
       "dashed": false,
       "startArrow": false,
       "endArrow": true,
-      "flowDir": "normal"
+      "flowDir": "normal",
+      "fs": 18
      },
      {
       "id": 20,
@@ -381,14 +393,15 @@
       "toSide": null,
       "route": "ortho",
       "waypoints": [],
-      "label": "registra @challenger",
+      "label": "registra",
       "font": null,
       "bold": false,
       "animated": true,
       "dashed": false,
       "startArrow": false,
       "endArrow": true,
-      "flowDir": "normal"
+      "flowDir": "normal",
+      "fs": 18
      },
      {
       "id": 21,
@@ -398,14 +411,15 @@
       "toSide": null,
       "route": "ortho",
       "waypoints": [],
-      "label": "challenger vs champion",
+      "label": "challenger",
       "font": null,
       "bold": false,
       "animated": true,
       "dashed": false,
       "startArrow": false,
       "endArrow": true,
-      "flowDir": "normal"
+      "flowDir": "normal",
+      "fs": 18
      },
      {
       "id": 22,
@@ -422,7 +436,8 @@
       "dashed": false,
       "startArrow": false,
       "endArrow": true,
-      "flowDir": "normal"
+      "flowDir": "normal",
+      "fs": 18
      },
      {
       "id": 23,
@@ -439,7 +454,8 @@
       "dashed": false,
       "startArrow": false,
       "endArrow": true,
-      "flowDir": "normal"
+      "flowDir": "normal",
+      "fs": 18
      },
      {
       "id": 24,
@@ -456,7 +472,8 @@
       "dashed": false,
       "startArrow": false,
       "endArrow": true,
-      "flowDir": "normal"
+      "flowDir": "normal",
+      "fs": 18
      },
      {
       "id": 25,
@@ -473,7 +490,8 @@
       "dashed": false,
       "startArrow": false,
       "endArrow": true,
-      "flowDir": "normal"
+      "flowDir": "normal",
+      "fs": 18
      },
      {
       "id": 26,
@@ -490,7 +508,8 @@
       "dashed": false,
       "startArrow": false,
       "endArrow": true,
-      "flowDir": "normal"
+      "flowDir": "normal",
+      "fs": 18
      },
      {
       "id": 27,
@@ -507,7 +526,8 @@
       "dashed": false,
       "startArrow": false,
       "endArrow": true,
-      "flowDir": "normal"
+      "flowDir": "normal",
+      "fs": 18
      }
     ],
     "nextId": 28,

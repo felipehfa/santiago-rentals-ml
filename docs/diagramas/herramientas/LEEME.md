@@ -27,3 +27,10 @@ node docs/diagramas/herramientas/<nombre>.mjs
 resultado: `captura.ps1 -svg <archivo.svg> -png <salida.png>` (Windows, usa Edge). Los diagramas solo llevan nombres de
 componentes, nunca hosts, cadenas de conexión ni claves. Si cambia la arquitectura, edita el script, regenera y sube el
 `.fluyo.json` y el `.svg` en el mismo commit que el README.
+
+## Legibilidad
+
+GitHub muestra el SVG a menos de la mitad de su tamaño, así que los diagramas se arman compactos: letra de 22 en los nodos, 18 en
+las flechas y 17 en las notas (`lib.mjs`), un ancho total de unos 1.300 a 1.800 px, cajas grandes y juntas, y notas de dos o tres
+líneas cortas. El detalle largo va en el README, no en el diagrama. Al editar un script, revisa el resultado a un ancho de unos
+1.000 px (`captura.ps1`) y comprueba que ninguna nota ni etiqueta se pise con una caja.

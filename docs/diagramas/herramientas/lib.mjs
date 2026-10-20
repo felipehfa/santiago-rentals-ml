@@ -12,7 +12,8 @@ const json = (r) => {
 
 /** Nota: recuadro punteado sin relleno, con saltos de línea manuales (el texto no se ajusta solo). */
 export const nota = (key, x, y, w, h, label) => ({
-  key, shape: "rect", label, x, y, w, h, fs: 13, fill: "none", border: "dashed", color: "Externo",
+  key, shape: "rect", label, x, y, w: Math.round(w * 1.15), h: Math.round(h * 1.1), fs: 17, fill: "none", border: "dashed",
+  color: "Externo",
 });
 
 const EVENTOS_BASE = [
@@ -43,8 +44,9 @@ export async function construir(spec) {
     pageName: spec.pagina,
     theme: "claro",
     customBg: "#ffffff",
-    nodes: spec.nodos,
-    edges: spec.aristas.map((a) => ({ route: "ortho", ...a })),
+    // Letras grandes: el README muestra el SVG a menos de la mitad de su tamaño, así que 14 px no se leen.
+    nodes: spec.nodos.map((n) => ({ fs: 22, ...n })),
+    edges: spec.aristas.map((a) => ({ route: "ortho", fs: 18, ...a })),
   });
   if (base.isError) await falla("create_diagram", base.textos.join("\n"));
   const doc0 = json(base) ?? JSON.parse(base.textos[1]);

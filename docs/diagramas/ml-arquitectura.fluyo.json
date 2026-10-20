@@ -10,10 +10,10 @@
      {
       "id": 1,
       "shape": "cylinder",
-      "x": 40,
-      "y": 290,
-      "w": 200,
-      "h": 100,
+      "x": 30,
+      "y": 120,
+      "w": 230,
+      "h": 110,
       "label": "Gold",
       "color": "#7fa66b",
       "fill": null,
@@ -24,15 +24,16 @@
       "font": null,
       "bold": false,
       "pulse": false,
-      "order": 0
+      "order": 0,
+      "fs": 22
      },
      {
       "id": 2,
       "shape": "rect",
-      "x": 380,
-      "y": 305,
-      "w": 200,
-      "h": 70,
+      "x": 360,
+      "y": 130,
+      "w": 230,
+      "h": 90,
       "label": "Datos y split",
       "color": "#6a9fb5",
       "fill": null,
@@ -43,15 +44,16 @@
       "font": null,
       "bold": false,
       "pulse": false,
-      "order": 1
+      "order": 1,
+      "fs": 22
      },
      {
       "id": 3,
       "shape": "rect",
-      "x": 720,
-      "y": 305,
-      "w": 200,
-      "h": 70,
+      "x": 690,
+      "y": 130,
+      "w": 230,
+      "h": 90,
       "label": "Variables",
       "color": "#6a9fb5",
       "fill": null,
@@ -62,15 +64,16 @@
       "font": null,
       "bold": false,
       "pulse": false,
-      "order": 2
+      "order": 2,
+      "fs": 22
      },
      {
       "id": 4,
       "shape": "rect",
-      "x": 1060,
-      "y": 305,
-      "w": 200,
-      "h": 70,
+      "x": 1020,
+      "y": 130,
+      "w": 230,
+      "h": 90,
       "label": "Entrenamiento",
       "color": "#9b7fb5",
       "fill": null,
@@ -81,15 +84,16 @@
       "font": null,
       "bold": false,
       "pulse": false,
-      "order": 3
+      "order": 3,
+      "fs": 22
      },
      {
       "id": 5,
       "shape": "cylinder",
-      "x": 1400,
-      "y": 290,
-      "w": 200,
-      "h": 100,
+      "x": 1020,
+      "y": 390,
+      "w": 230,
+      "h": 110,
       "label": "MLflow",
       "color": "#c98f5b",
       "fill": null,
@@ -100,14 +104,15 @@
       "font": null,
       "bold": false,
       "pulse": false,
-      "order": 4
+      "order": 4,
+      "fs": 22
      },
      {
       "id": 6,
       "shape": "diamond",
-      "x": 1740,
-      "y": 285,
-      "w": 200,
+      "x": 690,
+      "y": 390,
+      "w": 230,
       "h": 110,
       "label": "Gate",
       "color": "#c16a6a",
@@ -119,15 +124,16 @@
       "font": null,
       "bold": false,
       "pulse": false,
-      "order": 5
+      "order": 5,
+      "fs": 22
      },
      {
       "id": 7,
       "shape": "rect",
-      "x": 2080,
-      "y": 305,
-      "w": 200,
-      "h": 70,
+      "x": 360,
+      "y": 400,
+      "w": 230,
+      "h": 90,
       "label": "@champion",
       "color": "#7bb85b",
       "fill": null,
@@ -138,15 +144,16 @@
       "font": null,
       "bold": false,
       "pulse": false,
-      "order": 6
+      "order": 6,
+      "fs": 22
      },
      {
       "id": 8,
       "shape": "rect",
-      "x": 2380,
-      "y": 305,
-      "w": 160,
-      "h": 70,
+      "x": 30,
+      "y": 400,
+      "w": 230,
+      "h": 90,
       "label": "Monitoreo",
       "color": "#5b9bd0",
       "fill": null,
@@ -157,16 +164,17 @@
       "font": null,
       "bold": false,
       "pulse": false,
-      "order": 7
+      "order": 7,
+      "fs": 22
      },
      {
       "id": 9,
       "shape": "rect",
-      "x": 1740,
-      "y": 640,
-      "w": 200,
-      "h": 70,
-      "label": "Scoring por lotes",
+      "x": 360,
+      "y": 670,
+      "w": 230,
+      "h": 90,
+      "label": "Scoring",
       "color": "#6a9fb5",
       "fill": null,
       "border": "solid",
@@ -176,15 +184,16 @@
       "font": null,
       "bold": false,
       "pulse": false,
-      "order": 8
+      "order": 8,
+      "fs": 22
      },
      {
       "id": 10,
       "shape": "cylinder",
-      "x": 1400,
-      "y": 625,
-      "w": 200,
-      "h": 100,
+      "x": 20,
+      "y": 660,
+      "w": 250,
+      "h": 110,
       "label": "gold.predicciones",
       "color": "#7bb85b",
       "fill": null,
@@ -195,16 +204,17 @@
       "font": null,
       "bold": false,
       "pulse": false,
-      "order": 9
+      "order": 9,
+      "fs": 22
      },
      {
       "id": 11,
       "shape": "rect",
-      "x": 330,
-      "y": 130,
-      "w": 320,
-      "h": 98,
-      "label": "Aptos de Gold de 12 comunas, costo hasta\n10 M y gastos hasta 50 %. Split 70/15/15;\ntrain solo con avisos de hasta 60 días.",
+      "x": 350,
+      "y": 10,
+      "w": 288,
+      "h": 77,
+      "label": "70/15/15; entrena con\navisos de hasta 60 días",
       "color": "#8f8f8f",
       "fill": "none",
       "border": "dashed",
@@ -215,16 +225,16 @@
       "bold": false,
       "pulse": false,
       "order": 10,
-      "fs": 13
+      "fs": 17
      },
      {
       "id": 12,
       "shape": "rect",
-      "x": 670,
-      "y": 130,
-      "w": 320,
-      "h": 98,
-      "label": "Sin fuga: precio_m2_sector, barrio, comuna y\nmodelo de texto solo con train. Derivadas,\ndistancias y 26 palabras clave del texto.",
+      "x": 680,
+      "y": 10,
+      "w": 288,
+      "h": 77,
+      "label": "Sin fuga: ajustadas\nsolo con train",
       "color": "#8f8f8f",
       "fill": "none",
       "border": "dashed",
@@ -235,16 +245,16 @@
       "bold": false,
       "pulse": false,
       "order": 11,
-      "fs": 13
+      "fs": 17
      },
      {
       "id": 13,
       "shape": "rect",
       "x": 1010,
-      "y": 130,
-      "w": 320,
-      "h": 98,
-      "label": "Selección de variables y Optuna: 50 pruebas\npor algoritmo (XGBoost, LightGBM), KFold 5,\nbagging de 10 semillas. Elige por CV MAE.",
+      "y": 10,
+      "w": 288,
+      "h": 77,
+      "label": "Optuna: 50 pruebas\npor algoritmo",
       "color": "#8f8f8f",
       "fill": "none",
       "border": "dashed",
@@ -255,16 +265,16 @@
       "bold": false,
       "pulse": false,
       "order": 12,
-      "fs": 13
+      "fs": 17
      },
      {
       "id": 14,
       "shape": "rect",
-      "x": 1350,
-      "y": 130,
-      "w": 320,
-      "h": 98,
-      "label": "Postgres + bucket. Cada run guarda métricas,\nids de los splits, config, commit, versiones\ny el modelo con su constructor de variables.",
+      "x": 670,
+      "y": 530,
+      "w": 311,
+      "h": 77,
+      "label": "Promueve si el MAE baja\n≥ 1 % con IC95 > 0",
       "color": "#8f8f8f",
       "fill": "none",
       "border": "dashed",
@@ -275,16 +285,16 @@
       "bold": false,
       "pulse": false,
       "order": 13,
-      "fs": 13
+      "fs": 17
      },
      {
       "id": 15,
       "shape": "rect",
-      "x": 1690,
-      "y": 120,
-      "w": 330,
-      "h": 118,
-      "label": "Promueve si el MAE baja ≥ 1 % sobre las\nmismas filas y el IC95 de la mejora es > 0,\no si el champion se degradó > 5 % y el\nchallenger no es peor.",
+      "x": 670,
+      "y": 690,
+      "w": 379,
+      "h": 99,
+      "label": "Etiqueta de mercado,\nconfianza y banda de precio",
       "color": "#8f8f8f",
       "fill": "none",
       "border": "dashed",
@@ -295,72 +305,12 @@
       "bold": false,
       "pulse": false,
       "order": 14,
-      "fs": 13
-     },
-     {
-      "id": 16,
-      "shape": "rect",
-      "x": 40,
-      "y": 520,
-      "w": 340,
-      "h": 98,
-      "label": "Baselines de planilla (sin entrenar): mediana\npor comuna y dormitorios, y precio/m² de la\ncomuna × superficie. El modelo debe superarlos.",
-      "color": "#8f8f8f",
-      "fill": "none",
-      "border": "dashed",
-      "lblPos": "center",
-      "textBg": null,
-      "textColor": null,
-      "font": null,
-      "bold": false,
-      "pulse": false,
-      "order": 15,
-      "fs": 13
-     },
-     {
-      "id": 17,
-      "shape": "rect",
-      "x": 1700,
-      "y": 760,
-      "w": 350,
-      "h": 98,
-      "label": "Predice avisos sin predicción de la versión\nvigente o vistos de nuevo. Guarda etiqueta de\nmercado, confianza y banda de precio.",
-      "color": "#8f8f8f",
-      "fill": "none",
-      "border": "dashed",
-      "lblPos": "center",
-      "textBg": null,
-      "textColor": null,
-      "font": null,
-      "bold": false,
-      "pulse": false,
-      "order": 16,
-      "fs": 13
-     },
-     {
-      "id": 18,
-      "shape": "rect",
-      "x": 2250,
-      "y": 130,
-      "w": 300,
-      "h": 78,
-      "label": "Mide la degradación del champion con\navisos nuevos (código 3 si empeora).",
-      "color": "#8f8f8f",
-      "fill": "none",
-      "border": "dashed",
-      "lblPos": "center",
-      "textBg": null,
-      "textColor": null,
-      "font": null,
-      "bold": false,
-      "pulse": false,
-      "order": 17,
-      "fs": 13
+      "fs": 17
      }
     ],
     "edges": [
      {
-      "id": 19,
+      "id": 16,
       "from": 1,
       "to": 2,
       "fromSide": null,
@@ -374,27 +324,29 @@
       "dashed": false,
       "startArrow": false,
       "endArrow": true,
-      "flowDir": "normal"
+      "flowDir": "normal",
+      "fs": 18
      },
      {
-      "id": 20,
+      "id": 17,
       "from": 2,
       "to": 3,
       "fromSide": null,
       "toSide": null,
       "route": "ortho",
       "waypoints": [],
-      "label": "train/val/test",
+      "label": "splits",
       "font": null,
       "bold": false,
       "animated": true,
       "dashed": false,
       "startArrow": false,
       "endArrow": true,
-      "flowDir": "normal"
+      "flowDir": "normal",
+      "fs": 18
      },
      {
-      "id": 21,
+      "id": 18,
       "from": 3,
       "to": 4,
       "fromSide": null,
@@ -408,27 +360,29 @@
       "dashed": false,
       "startArrow": false,
       "endArrow": true,
-      "flowDir": "normal"
+      "flowDir": "normal",
+      "fs": 18
      },
      {
-      "id": 22,
+      "id": 19,
       "from": 4,
       "to": 5,
-      "fromSide": null,
-      "toSide": null,
+      "fromSide": "s",
+      "toSide": "n",
       "route": "ortho",
       "waypoints": [],
-      "label": "runs y modelo",
+      "label": "runs",
       "font": null,
       "bold": false,
       "animated": true,
       "dashed": false,
       "startArrow": false,
       "endArrow": true,
-      "flowDir": "normal"
+      "flowDir": "normal",
+      "fs": 18
      },
      {
-      "id": 23,
+      "id": 20,
       "from": 5,
       "to": 6,
       "fromSide": null,
@@ -442,10 +396,11 @@
       "dashed": false,
       "startArrow": false,
       "endArrow": true,
-      "flowDir": "normal"
+      "flowDir": "normal",
+      "fs": 18
      },
      {
-      "id": 24,
+      "id": 21,
       "from": 6,
       "to": 7,
       "fromSide": null,
@@ -459,10 +414,11 @@
       "dashed": false,
       "startArrow": false,
       "endArrow": true,
-      "flowDir": "normal"
+      "flowDir": "normal",
+      "fs": 18
      },
      {
-      "id": 25,
+      "id": 22,
       "from": 7,
       "to": 8,
       "fromSide": null,
@@ -476,27 +432,29 @@
       "dashed": false,
       "startArrow": false,
       "endArrow": true,
-      "flowDir": "normal"
+      "flowDir": "normal",
+      "fs": 18
      },
      {
-      "id": 26,
+      "id": 23,
       "from": 7,
       "to": 9,
       "fromSide": "s",
-      "toSide": "e",
+      "toSide": "n",
       "route": "ortho",
       "waypoints": [],
-      "label": "versión vigente",
+      "label": "versión",
       "font": null,
       "bold": false,
       "animated": true,
       "dashed": false,
       "startArrow": false,
       "endArrow": true,
-      "flowDir": "normal"
+      "flowDir": "normal",
+      "fs": 18
      },
      {
-      "id": 27,
+      "id": 24,
       "from": 9,
       "to": 10,
       "fromSide": null,
@@ -510,10 +468,11 @@
       "dashed": false,
       "startArrow": false,
       "endArrow": true,
-      "flowDir": "normal"
+      "flowDir": "normal",
+      "fs": 18
      }
     ],
-    "nextId": 28,
+    "nextId": 25,
     "behaviors": [],
     "scenarios": [
      {
@@ -527,21 +486,21 @@
         "at": 0,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 19
+        "edgeId": 16
        },
        {
         "id": 2,
         "at": 300,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 20
+        "edgeId": 17
        },
        {
         "id": 3,
         "at": 600,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 21
+        "edgeId": 18
        },
        {
         "id": 4,
@@ -555,14 +514,14 @@
         "at": 1600,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 22
+        "edgeId": 19
        },
        {
         "id": 6,
         "at": 1900,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 23
+        "edgeId": 20
        },
        {
         "id": 7,
@@ -576,14 +535,14 @@
         "at": 2500,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 24
+        "edgeId": 21
        },
        {
         "id": 9,
         "at": 2800,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 25
+        "edgeId": 22
        }
       ],
       "arrivalDependencies": [
@@ -642,7 +601,7 @@
         "at": 0,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 26
+        "edgeId": 23
        },
        {
         "id": 2,
@@ -656,7 +615,7 @@
         "at": 900,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 27
+        "edgeId": 24
        },
        {
         "id": 4,

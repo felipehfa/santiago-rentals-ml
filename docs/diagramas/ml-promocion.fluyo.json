@@ -10,10 +10,10 @@
      {
       "id": 1,
       "shape": "rect",
-      "x": 40,
-      "y": 200,
-      "w": 200,
-      "h": 70,
+      "x": 20,
+      "y": 100,
+      "w": 230,
+      "h": 90,
       "label": "@challenger",
       "color": "#9b7fb5",
       "fill": null,
@@ -24,16 +24,17 @@
       "font": null,
       "bold": false,
       "pulse": false,
-      "order": 0
+      "order": 0,
+      "fs": 22
      },
      {
       "id": 2,
       "shape": "rect",
-      "x": 40,
-      "y": 500,
-      "w": 200,
-      "h": 70,
-      "label": "@champion actual",
+      "x": 20,
+      "y": 390,
+      "w": 230,
+      "h": 90,
+      "label": "@champion",
       "color": "#7bb85b",
       "fill": null,
       "border": "solid",
@@ -43,15 +44,16 @@
       "font": null,
       "bold": false,
       "pulse": false,
-      "order": 1
+      "order": 1,
+      "fs": 22
      },
      {
       "id": 3,
       "shape": "rect",
-      "x": 400,
-      "y": 350,
-      "w": 200,
-      "h": 70,
+      "x": 360,
+      "y": 245,
+      "w": 230,
+      "h": 90,
       "label": "Mismas filas",
       "color": "#6a9fb5",
       "fill": null,
@@ -62,16 +64,17 @@
       "font": null,
       "bold": false,
       "pulse": false,
-      "order": 2
+      "order": 2,
+      "fs": 22
      },
      {
       "id": 4,
       "shape": "rect",
-      "x": 760,
-      "y": 350,
-      "w": 200,
-      "h": 70,
-      "label": "MAE, MAPE e IC95",
+      "x": 700,
+      "y": 245,
+      "w": 250,
+      "h": 90,
+      "label": "MAE, MAPE, IC95",
       "color": "#5b9bd0",
       "fill": null,
       "border": "solid",
@@ -81,15 +84,16 @@
       "font": null,
       "bold": false,
       "pulse": false,
-      "order": 3
+      "order": 3,
+      "fs": 22
      },
      {
       "id": 5,
       "shape": "diamond",
-      "x": 1120,
-      "y": 330,
-      "w": 220,
-      "h": 110,
+      "x": 1060,
+      "y": 220,
+      "w": 250,
+      "h": 140,
       "label": "¿Promueve?",
       "color": "#c16a6a",
       "fill": null,
@@ -100,15 +104,16 @@
       "font": null,
       "bold": false,
       "pulse": false,
-      "order": 4
+      "order": 4,
+      "fs": 22
      },
      {
       "id": 6,
       "shape": "rect",
-      "x": 1520,
-      "y": 200,
-      "w": 200,
-      "h": 70,
+      "x": 1430,
+      "y": 100,
+      "w": 250,
+      "h": 90,
       "label": "@champion nuevo",
       "color": "#7bb85b",
       "fill": null,
@@ -119,15 +124,16 @@
       "font": null,
       "bold": false,
       "pulse": false,
-      "order": 5
+      "order": 5,
+      "fs": 22
      },
      {
       "id": 7,
       "shape": "rect",
-      "x": 1520,
-      "y": 500,
-      "w": 200,
-      "h": 70,
+      "x": 1430,
+      "y": 390,
+      "w": 250,
+      "h": 90,
       "label": "Sigue el champion",
       "color": "#8f8f8f",
       "fill": null,
@@ -138,15 +144,16 @@
       "font": null,
       "bold": false,
       "pulse": false,
-      "order": 6
+      "order": 6,
+      "fs": 22
      },
      {
       "id": 8,
       "shape": "rect",
-      "x": 1880,
-      "y": 200,
-      "w": 200,
-      "h": 70,
+      "x": 1430,
+      "y": -80,
+      "w": 250,
+      "h": 90,
       "label": "Scoring repite todo",
       "color": "#6a9fb5",
       "fill": null,
@@ -157,16 +164,17 @@
       "font": null,
       "bold": false,
       "pulse": false,
-      "order": 7
+      "order": 7,
+      "fs": 22
      },
      {
       "id": 9,
       "shape": "rect",
-      "x": 350,
-      "y": 480,
-      "w": 330,
-      "h": 98,
-      "label": "Test del challenger sin los avisos que el\nchampion usó para entrenar o validar: ninguno\nlos vio. Se exigen al menos 100 avisos.",
+      "x": 330,
+      "y": 420,
+      "w": 345,
+      "h": 97,
+      "label": "Test del challenger sin\nlo que vio el champion\n(mínimo 100 avisos)",
       "color": "#8f8f8f",
       "fill": "none",
       "border": "dashed",
@@ -177,16 +185,16 @@
       "bold": false,
       "pulse": false,
       "order": 8,
-      "fs": 13
+      "fs": 17
      },
      {
       "id": 10,
       "shape": "rect",
-      "x": 710,
-      "y": 190,
-      "w": 330,
-      "h": 98,
-      "label": "MAE y MAPE de cada modelo y la diferencia\nde MAE con su intervalo de confianza al 95 %\n(bootstrap sobre los mismos avisos).",
+      "x": 690,
+      "y": 100,
+      "w": 322,
+      "h": 73,
+      "label": "IC95 de la mejora de MAE\npor bootstrap",
       "color": "#8f8f8f",
       "fill": "none",
       "border": "dashed",
@@ -197,16 +205,16 @@
       "bold": false,
       "pulse": false,
       "order": 9,
-      "fs": 13
+      "fs": 17
      },
      {
       "id": 11,
       "shape": "rect",
-      "x": 1060,
-      "y": 520,
-      "w": 380,
-      "h": 138,
-      "label": "Promueve si:\n1. el MAE baja ≥ 1 % y el IC95 de la mejora\n    es > 0, o\n2. el champion se degradó > 5 % y el\n    challenger no es peor. Sin champion: promueve.",
+      "x": 1010,
+      "y": 420,
+      "w": 414,
+      "h": 121,
+      "label": "1. MAE baja ≥ 1 % y IC95 > 0\n2. o el champion se degradó\n   más de 5 % y el challenger\n   no es peor",
       "color": "#8f8f8f",
       "fill": "none",
       "border": "dashed",
@@ -217,32 +225,12 @@
       "bold": false,
       "pulse": false,
       "order": 10,
-      "fs": 13
-     },
-     {
-      "id": 12,
-      "shape": "rect",
-      "x": 1840,
-      "y": 330,
-      "w": 310,
-      "h": 78,
-      "label": "Con una versión nueva, todos los avisos\nse vuelven a predecir con ella.",
-      "color": "#8f8f8f",
-      "fill": "none",
-      "border": "dashed",
-      "lblPos": "center",
-      "textBg": null,
-      "textColor": null,
-      "font": null,
-      "bold": false,
-      "pulse": false,
-      "order": 11,
-      "fs": 13
+      "fs": 17
      }
     ],
     "edges": [
      {
-      "id": 13,
+      "id": 12,
       "from": 1,
       "to": 3,
       "fromSide": null,
@@ -256,10 +244,11 @@
       "dashed": false,
       "startArrow": false,
       "endArrow": true,
-      "flowDir": "normal"
+      "flowDir": "normal",
+      "fs": 18
      },
      {
-      "id": 14,
+      "id": 13,
       "from": 2,
       "to": 3,
       "fromSide": null,
@@ -273,27 +262,29 @@
       "dashed": false,
       "startArrow": false,
       "endArrow": true,
-      "flowDir": "normal"
+      "flowDir": "normal",
+      "fs": 18
      },
      {
-      "id": 15,
+      "id": 14,
       "from": 3,
       "to": 4,
       "fromSide": null,
       "toSide": null,
       "route": "ortho",
       "waypoints": [],
-      "label": "predicciones",
+      "label": "predice",
       "font": null,
       "bold": false,
       "animated": true,
       "dashed": false,
       "startArrow": false,
       "endArrow": true,
-      "flowDir": "normal"
+      "flowDir": "normal",
+      "fs": 18
      },
      {
-      "id": 16,
+      "id": 15,
       "from": 4,
       "to": 5,
       "fromSide": null,
@@ -307,10 +298,11 @@
       "dashed": false,
       "startArrow": false,
       "endArrow": true,
-      "flowDir": "normal"
+      "flowDir": "normal",
+      "fs": 18
      },
      {
-      "id": 17,
+      "id": 16,
       "from": 5,
       "to": 6,
       "fromSide": null,
@@ -324,10 +316,11 @@
       "dashed": false,
       "startArrow": false,
       "endArrow": true,
-      "flowDir": "normal"
+      "flowDir": "normal",
+      "fs": 18
      },
      {
-      "id": 18,
+      "id": 17,
       "from": 5,
       "to": 7,
       "fromSide": null,
@@ -341,14 +334,15 @@
       "dashed": false,
       "startArrow": false,
       "endArrow": true,
-      "flowDir": "normal"
+      "flowDir": "normal",
+      "fs": 18
      },
      {
-      "id": 19,
+      "id": 18,
       "from": 6,
       "to": 8,
-      "fromSide": null,
-      "toSide": null,
+      "fromSide": "n",
+      "toSide": "s",
       "route": "ortho",
       "waypoints": [],
       "label": "versión nueva",
@@ -358,10 +352,11 @@
       "dashed": false,
       "startArrow": false,
       "endArrow": true,
-      "flowDir": "normal"
+      "flowDir": "normal",
+      "fs": 18
      }
     ],
-    "nextId": 20,
+    "nextId": 19,
     "behaviors": [],
     "scenarios": [
      {
@@ -375,14 +370,14 @@
         "at": 0,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 13
+        "edgeId": 12
        },
        {
         "id": 2,
         "at": 200,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 14
+        "edgeId": 13
        },
        {
         "id": 3,
@@ -396,14 +391,14 @@
         "at": 1200,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 15
+        "edgeId": 14
        },
        {
         "id": 5,
         "at": 1500,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 16
+        "edgeId": 15
        },
        {
         "id": 6,
@@ -417,14 +412,14 @@
         "at": 2100,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 17
+        "edgeId": 16
        },
        {
         "id": 8,
         "at": 2400,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 19
+        "edgeId": 18
        }
       ],
       "arrivalDependencies": [
@@ -479,14 +474,14 @@
         "at": 0,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 13
+        "edgeId": 12
        },
        {
         "id": 2,
         "at": 200,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 14
+        "edgeId": 13
        },
        {
         "id": 3,
@@ -500,14 +495,14 @@
         "at": 1200,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 15
+        "edgeId": 14
        },
        {
         "id": 5,
         "at": 1500,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 16
+        "edgeId": 15
        },
        {
         "id": 6,
@@ -521,7 +516,7 @@
         "at": 2100,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 18
+        "edgeId": 17
        }
       ],
       "arrivalDependencies": [
@@ -577,28 +572,28 @@
         "at": 400,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 13
+        "edgeId": 12
        },
        {
         "id": 3,
         "at": 600,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 14
+        "edgeId": 13
        },
        {
         "id": 4,
         "at": 1300,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 15
+        "edgeId": 14
        },
        {
         "id": 5,
         "at": 1600,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 16
+        "edgeId": 15
        },
        {
         "id": 6,
@@ -612,7 +607,7 @@
         "at": 2200,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 17
+        "edgeId": 16
        }
       ],
       "arrivalDependencies": [

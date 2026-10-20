@@ -4,39 +4,41 @@ import { construir, nota } from "./lib.mjs";
 
 const DESTINO = fileURLToPath(new URL("..", import.meta.url));  // docs/diagramas/
 
+// Cuadrícula de 4 columnas (x = 30, 360, 690, 1020) y 3 filas (y = 130, 400, 670): la primera fila va de izquierda a derecha,
+// la segunda de derecha a izquierda y la tercera cierra con el scoring.
+const C = [30, 360, 690, 1020];
+const F = [130, 400, 670];
+
 await construir({
   archivo: "ml-arquitectura",
   destino: DESTINO,
   pagina: "Arquitectura del modelo",
   nodos: [
-    { key: "gold", shape: "cylinder", label: "Gold", color: "Datos", x: 40, y: 290, w: 200, h: 100 },
-    { key: "datos", shape: "rect", label: "Datos y split", color: "Servicio", x: 380, y: 305, w: 200, h: 70 },
-    { key: "vars", shape: "rect", label: "Variables", color: "Servicio", x: 720, y: 305, w: 200, h: 70 },
-    { key: "entrenar", shape: "rect", label: "Entrenamiento", color: "IA", x: 1060, y: 305, w: 200, h: 70 },
-    { key: "mlflow", shape: "cylinder", label: "MLflow", color: "Almacén", x: 1400, y: 290, w: 200, h: 100 },
-    { key: "gate", shape: "diamond", label: "Gate", color: "Alerta", x: 1740, y: 285, w: 200, h: 110 },
-    { key: "champ", shape: "rect", label: "@champion", color: "Éxito", x: 2080, y: 305, w: 200, h: 70 },
-    { key: "monit", shape: "rect", label: "Monitoreo", color: "Info", x: 2380, y: 305, w: 160, h: 70 },
-    { key: "scoring", shape: "rect", label: "Scoring por lotes", color: "Servicio", x: 1740, y: 640, w: 200, h: 70 },
-    { key: "pred", shape: "cylinder", label: "gold.predicciones", color: "Éxito", x: 1400, y: 625, w: 200, h: 100 },
-    nota("n_datos", 330, 130, 320, 98, "Aptos de Gold de 12 comunas, costo hasta\n10 M y gastos hasta 50 %. Split 70/15/15;\ntrain solo con avisos de hasta 60 días."),
-    nota("n_vars", 670, 130, 320, 98, "Sin fuga: precio_m2_sector, barrio, comuna y\nmodelo de texto solo con train. Derivadas,\ndistancias y 26 palabras clave del texto."),
-    nota("n_entrenar", 1010, 130, 320, 98, "Selección de variables y Optuna: 50 pruebas\npor algoritmo (XGBoost, LightGBM), KFold 5,\nbagging de 10 semillas. Elige por CV MAE."),
-    nota("n_mlflow", 1350, 130, 320, 98, "Postgres + bucket. Cada run guarda métricas,\nids de los splits, config, commit, versiones\ny el modelo con su constructor de variables."),
-    nota("n_gate", 1690, 120, 330, 118, "Promueve si el MAE baja ≥ 1 % sobre las\nmismas filas y el IC95 de la mejora es > 0,\no si el champion se degradó > 5 % y el\nchallenger no es peor."),
-    nota("n_baselines", 40, 520, 340, 98, "Baselines de planilla (sin entrenar): mediana\npor comuna y dormitorios, y precio/m² de la\ncomuna × superficie. El modelo debe superarlos."),
-    nota("n_scoring", 1700, 760, 350, 98, "Predice avisos sin predicción de la versión\nvigente o vistos de nuevo. Guarda etiqueta de\nmercado, confianza y banda de precio."),
-    nota("n_monit", 2250, 130, 300, 78, "Mide la degradación del champion con\navisos nuevos (código 3 si empeora)."),
+    { key: "gold", shape: "cylinder", label: "Gold", color: "Datos", x: C[0], y: F[0] - 10, w: 230, h: 110 },
+    { key: "datos", shape: "rect", label: "Datos y split", color: "Servicio", x: C[1], y: F[0], w: 230, h: 90 },
+    { key: "vars", shape: "rect", label: "Variables", color: "Servicio", x: C[2], y: F[0], w: 230, h: 90 },
+    { key: "entrenar", shape: "rect", label: "Entrenamiento", color: "IA", x: C[3], y: F[0], w: 230, h: 90 },
+    { key: "mlflow", shape: "cylinder", label: "MLflow", color: "Almacén", x: C[3], y: F[1] - 10, w: 230, h: 110 },
+    { key: "gate", shape: "diamond", label: "Gate", color: "Alerta", x: C[2], y: F[1] - 10, w: 230, h: 110 },
+    { key: "champ", shape: "rect", label: "@champion", color: "Éxito", x: C[1], y: F[1], w: 230, h: 90 },
+    { key: "monit", shape: "rect", label: "Monitoreo", color: "Info", x: C[0], y: F[1], w: 230, h: 90 },
+    { key: "scoring", shape: "rect", label: "Scoring", color: "Servicio", x: C[1], y: F[2], w: 230, h: 90 },
+    { key: "pred", shape: "cylinder", label: "gold.predicciones", color: "Éxito", x: C[0] - 10, y: F[2] - 10, w: 250, h: 110 },
+    nota("n_datos", C[1] - 10, 10, 250, 70, "70/15/15; entrena con\navisos de hasta 60 días"),
+    nota("n_vars", C[2] - 10, 10, 250, 70, "Sin fuga: ajustadas\nsolo con train"),
+    nota("n_entrenar", C[3] - 10, 10, 250, 70, "Optuna: 50 pruebas\npor algoritmo"),
+    nota("n_gate", C[2] - 20, 530, 270, 70, "Promueve si el MAE baja\n≥ 1 % con IC95 > 0"),
+    nota("n_scoring", C[2] - 20, 690, 330, 90, "Etiqueta de mercado,\nconfianza y banda de precio"),
   ],
   aristas: [
     { from: "gold", to: "datos", label: "aptos" },
-    { from: "datos", to: "vars", label: "train/val/test" },
+    { from: "datos", to: "vars", label: "splits" },
     { from: "vars", to: "entrenar", label: "matrices" },
-    { from: "entrenar", to: "mlflow", label: "runs y modelo" },
+    { from: "entrenar", to: "mlflow", label: "runs", fromSide: "s", toSide: "n" },
     { from: "mlflow", to: "gate", label: "@challenger" },
     { from: "gate", to: "champ", label: "promueve" },
     { from: "champ", to: "monit", label: "mide" },
-    { from: "champ", to: "scoring", label: "versión vigente", fromSide: "s", toSide: "e" },
+    { from: "champ", to: "scoring", label: "versión", fromSide: "s", toSide: "n" },
     { from: "scoring", to: "pred", label: "INSERT" },
   ],
   eventos: [

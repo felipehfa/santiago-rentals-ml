@@ -4,34 +4,38 @@ import { construir, nota } from "./lib.mjs";
 
 const DESTINO = fileURLToPath(new URL("..", import.meta.url));  // docs/diagramas/
 
+// Fila 1: el entrenamiento diario (cron -> entrenar -> MLflow -> gate -> champion -> monitoreo).
+// Fila 3: el scoring (cron cada 3 h -> scoring -> predicciones), que lee Gold y el champion.
+const C = [20, 330, 640, 950, 1260, 1570];
+
 await construir({
   archivo: "ml-automatizacion",
   destino: DESTINO,
   pagina: "ML automático en GitHub",
   nodos: [
-    { key: "cron_e", shape: "circle", label: "Cron diario 07:30 UTC", color: "Externo", x: 40, y: 200, w: 190, h: 100 },
-    { key: "entrenar", shape: "rect", label: "1. Entrenar (Optuna)", color: "IA", x: 380, y: 215, w: 200, h: 70 },
-    { key: "mlflow", shape: "cylinder", label: "MLflow (Postgres + bucket)", color: "Almacén", x: 800, y: 195, w: 210, h: 110 },
-    { key: "gate", shape: "diamond", label: "2. Gate", color: "Alerta", x: 1250, y: 190, w: 220, h: 120 },
-    { key: "champ", shape: "rect", label: "@champion", color: "Éxito", x: 1700, y: 215, w: 190, h: 70 },
-    { key: "monit", shape: "rect", label: "4. Monitoreo", color: "Info", x: 2100, y: 215, w: 190, h: 70 },
-    { key: "gold", shape: "cylinder", label: "Gold (Supabase)", color: "Datos", x: 380, y: 520, w: 200, h: 100 },
-    { key: "cron_s", shape: "circle", label: "Cron cada 3 h", color: "Externo", x: 800, y: 760, w: 170, h: 100 },
-    { key: "scoring", shape: "rect", label: "3. Scoring", color: "Servicio", x: 1700, y: 775, w: 190, h: 70 },
-    { key: "pred", shape: "cylinder", label: "gold.predicciones", color: "Éxito", x: 2100, y: 755, w: 200, h: 110 },
-    nota("n_cron", 40, 330, 250, 60, "Manual: Run workflow.\nEl primero debe ser tune."),
-    nota("n_entrenar", 330, 10, 380, 115, "Datos: avisos aptos de 12 comunas.\nTrain: publicados en los últimos 60 días.\nVariables + Optuna: 50 pruebas por\nalgoritmo (XGBoost, LightGBM);\nelige por CV MAE."),
-    nota("n_gate", 1100, 10, 520, 100, "Promueve si:\n• el MAE baja ≥ 1 % y el IC95 de la mejora es > 0, o\n• el champion se degradó > 5 % y el challenger no es peor.\nSin champion: promueve."),
-    nota("n_monit", 2060, 330, 290, 75, "Código 3 si el champion se degrada\ncon avisos nuevos.\nNo detiene el flujo."),
-    nota("n_scoring", 1000, 540, 580, 140, "Predice los avisos que:\n• no tienen predicción de esta versión, o\n• se visitaron después de su última predicción.\nSi hay champion nuevo, repite todos.\nGuarda etiqueta de mercado, confianza y banda\nde precio. Sin las comunas fuera del modelo."),
-    nota("n_cron_s", 770, 690, 280, 50, "También al terminar el\nentrenamiento diario."),
-    nota("n_ci", 40, 700, 250, 60, "CI en cada push:\nruff y pytest (sin secrets)."),
+    { key: "cron_e", shape: "circle", label: "Cron diario", color: "Externo", x: C[0], y: 135, w: 200, h: 110 },
+    { key: "entrenar", shape: "rect", label: "1. Entrenar", color: "IA", x: C[1], y: 145, w: 200, h: 90 },
+    { key: "mlflow", shape: "cylinder", label: "MLflow", color: "Almacén", x: C[2], y: 130, w: 200, h: 110 },
+    { key: "gate", shape: "diamond", label: "2. Gate", color: "Alerta", x: C[3], y: 130, w: 200, h: 120 },
+    { key: "champ", shape: "rect", label: "@champion", color: "Éxito", x: C[4], y: 145, w: 200, h: 90 },
+    { key: "monit", shape: "rect", label: "4. Monitoreo", color: "Info", x: C[5], y: 145, w: 200, h: 90 },
+    { key: "gold", shape: "cylinder", label: "Gold", color: "Datos", x: C[1], y: 395, w: 230, h: 110 },
+    { key: "cron_s", shape: "circle", label: "Cron cada 3 h", color: "Externo", x: C[2], y: 645, w: 230, h: 110 },
+    { key: "scoring", shape: "rect", label: "3. Scoring", color: "Servicio", x: C[4], y: 655, w: 200, h: 90 },
+    { key: "pred", shape: "cylinder", label: "gold.predicciones", color: "Éxito", x: C[5] + 30, y: 640, w: 250, h: 110 },
+    nota("n_cron", C[0] - 10, 270, 250, 70, "07:30 UTC, o a mano.\nEl primero debe ser tune"),
+    nota("n_entrenar", C[1] - 10, 10, 260, 70, "Optuna completo,\nunos 22 minutos"),
+    nota("n_gate", C[3] - 30, 10, 290, 70, "MAE baja ≥ 1 % con\nIC95 > 0, o champion degradado"),
+    nota("n_monit", C[5] - 10, 270, 250, 70, "Código 3 si el champion\nse degrada"),
+    nota("n_scoring", C[3] - 60, 400, 380, 110, "Predice avisos sin predicción\nde la versión, o vistos de nuevo;\ntodos si hay champion nuevo"),
+    nota("n_cron_s", C[2] - 10, 790, 250, 70, "Y al terminar el\nentrenamiento diario"),
+    nota("n_ci", C[0] - 10, 640, 270, 70, "CI en cada push:\nruff y pytest"),
   ],
   aristas: [
     { from: "cron_e", to: "entrenar", label: "dispara" },
-    { from: "gold", to: "entrenar", label: "lee aptos" },
-    { from: "entrenar", to: "mlflow", label: "registra @challenger" },
-    { from: "mlflow", to: "gate", label: "challenger vs champion" },
+    { from: "gold", to: "entrenar", label: "aptos" },
+    { from: "entrenar", to: "mlflow", label: "registra" },
+    { from: "mlflow", to: "gate", label: "challenger" },
     { from: "gate", to: "champ", label: "promueve" },
     { from: "champ", to: "monit", label: "mide" },
     { from: "cron_s", to: "scoring", label: "dispara" },
