@@ -132,10 +132,13 @@ def registrar_modelo_final(cfg: dict, algoritmo: str, params: dict, d: dict) -> 
     for k in ("val", "test"):
         for nombre, valor in metricas(d[f"y_{k}"], pred[k]).items():
             res[f"{k}_{nombre}"] = valor
-    for nombre, valor in baselines(d["y_train"], d["y_test"].values, d["X_completo_test"]).items():
+    # Los baselines se ajustan con todo lo que el modelo pudo ver (train completo y validación), sin el test.
+    base_tr = pd.concat([d["train_completo"], d["val"]])
+    for nombre, valor in baselines(base_tr, d["test"], cfg["target"]).items():
         res[f"baseline_{nombre}_mae"] = valor
-    res["ganancia_vs_mejor_baseline_mae"] = min(
-        v for k, v in res.items() if k.startswith("baseline_")) - res["test_mae"]
+    mejor_baseline = min(v for k, v in res.items() if k.startswith("baseline_"))
+    res["ganancia_vs_mejor_baseline_mae"] = mejor_baseline - res["test_mae"]
+    res["ganancia_vs_mejor_baseline_pct"] = 100 * (1 - res["test_mae"] / mejor_baseline)
     res["tiempo_bagging_seg"] = segundos
     mlflow.log_metrics(res)
 

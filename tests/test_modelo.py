@@ -70,6 +70,17 @@ def test_gate_promueve_si_el_champion_se_degrado_y_el_challenger_no_es_peor():
     assert evaluar_gate(PROPIAS, {"mae_challenger": 101, "mae_champion": 100}, 0.10, estricto)
 
 
+def test_baselines_de_planilla_son_razonables(gold_sintetico, cfg):
+    from src.common import baselines
+    t = cfg["target"]
+    n = len(gold_sintetico) * 7 // 10
+    out = baselines(gold_sintetico.iloc[:n], gold_sintetico.iloc[n:], t)
+    assert set(out) == {"media_train", "mediana_comuna_dormitorios", "m2_comuna"}
+    assert all(v > 0 for v in out.values())
+    # Con precios que dependen de la comuna y la superficie, las dos reglas de planilla superan a la media global.
+    assert out["m2_comuna"] < out["media_train"] and out["mediana_comuna_dormitorios"] < out["media_train"]
+
+
 def test_limpiar_entorno_quita_saltos_de_linea(monkeypatch):
     import os
 

@@ -145,12 +145,37 @@ def metricas(y_true, y_pred) -> dict:
     }
 
 
-def baselines(y_train: pd.Series, y_true: np.ndarray, X: pd.DataFrame) -> dict:
-    """Referencias que el modelo debe superar: la media de train y el precio por m2 del sector."""
-    out = {"media_train": float(mean_absolute_error(y_true, np.full(len(y_true), y_train.mean())))}
-    if {"precio_m2_sector", "superficie_util_m2"} <= set(X.columns):
-        pred = (X["precio_m2_sector"] * X["superficie_util_m2"]).fillna(y_train.median())
-        out["mercado_m2_sector"] = float(mean_absolute_error(y_true, pred))
+def baselines(train: pd.DataFrame, test: pd.DataFrame, target: str) -> dict:
+    """MAE en test de lo que haría una persona con una planilla, sin entrenar nada. El modelo debe superarlos:
+      - mediana_comuna_dormitorios: mediana del costo total de los avisos de la misma comuna y cantidad de dormitorios;
+      - m2_comuna: precio por m2 mediano de la comuna por la superficie útil del aviso.
+    Los dos se calculan solo con `train` (en la práctica, train completo y validación). `media_train` (siempre la media)
+    queda como cota trivial. Ante una combinación sin datos se cae a la comuna y luego a la mediana global."""
+    y_tr, y_te = train[target].to_numpy(float), test[target].to_numpy(float)
+    mediana_global = float(np.median(y_tr))
+
+    def superficie(d: pd.DataFrame) -> pd.Series:
+        return d["superficie_util_m2"].fillna(d["superficie_total_m2"])
+
+    def dormitorios(d: pd.DataFrame) -> pd.Series:
+        por_comuna = train.groupby("comuna")["dormitorios"].median()
+        return d["dormitorios"].fillna(d["comuna"].map(por_comuna)).fillna(train["dormitorios"].median())
+
+    out = {"media_train": float(mean_absolute_error(y_te, np.full(len(y_te), y_tr.mean())))}
+
+    tr = train.assign(_dorm=dormitorios(train), _sup=superficie(train))
+    te = test.assign(_dorm=dormitorios(test), _sup=superficie(test))
+    por_comuna_dorm = tr.groupby(["comuna", "_dorm"])[target].median()
+    por_comuna = tr.groupby("comuna")[target].median()
+    pred = [por_comuna_dorm.get((c, d), por_comuna.get(c, mediana_global))
+            for c, d in zip(te["comuna"], te["_dorm"], strict=True)]
+    out["mediana_comuna_dormitorios"] = float(mean_absolute_error(y_te, pred))
+
+    m2_comuna = (tr[target] / tr["_sup"]).groupby(tr["comuna"]).median()
+    m2_global = float((tr[target] / tr["_sup"]).median())
+    superficie_te = te["_sup"].fillna(te["_sup"].median())
+    pred = (te["comuna"].map(m2_comuna).fillna(m2_global) * superficie_te).fillna(mediana_global)
+    out["m2_comuna"] = float(mean_absolute_error(y_te, pred))
     return out
 
 
