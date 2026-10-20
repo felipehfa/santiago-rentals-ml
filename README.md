@@ -16,8 +16,20 @@ src/        common, features (sin fuga), models, etiquetas,
             seleccion_variables, train, tune, register, promote
 tests/      datos sintéticos
 docs/       01_decisiones.md (qué se decidió), 02_plan.md (en qué orden se construye)
-            arquitectura_ml.html y promocion_modelos.html (diagramas interactivos; fuente en los .json)
+            diagramas/ (diagramas de proceso hechos con Fluyo: .svg y .fluyo.json; ver más abajo)
 ```
+
+## Diagramas
+
+Hechos con [Fluyo](https://fluyo.space), cada uno con sus Historias animadas. El `.svg` es la vista estática; el
+`.fluyo.json` se abre con el botón **Abrir** de fluyo.space para reproducir las Historias y exportar el GIF. Se generan con
+los scripts de `docs/diagramas/herramientas/` (ver su `LEEME.md`).
+
+![Arquitectura del modelo](docs/diagramas/ml-arquitectura.svg)
+
+![Promoción de modelos](docs/diagramas/ml-promocion.svg)
+
+![ML automático en GitHub](docs/diagramas/ml-automatizacion.svg)
 
 ## Cómo ejecutar
 

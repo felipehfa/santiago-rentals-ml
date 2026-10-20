@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="2135" height="528" viewBox="-100.00 101.00 2135.00 528.00">
+<path d="M 124.00 235.00 L 124.00 263.00 L 124.00 269.00 Q 124.00 275.00 130.00 275.00 L 310.00 275.00 Q 316.00 275.00 316.00 281.00 L 316.00 287.00 L 316.00 303.80" fill="none" stroke="#888888" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M 316.00 312.00 L 312.00 301.00 L 316.00 303.80 L 320.00 301.00 Z" fill="#888888"/>
+<rect x="195.15" y="263.95" width="49.70" height="22.10" fill="#ffffff"/>
+<text x="220.00" y="275.00" font-family="Georgia, serif" font-size="13" fill="#444444" text-anchor="middle" dominant-baseline="middle">evalúa</text>
+<path d="M 124.00 465.00 L 124.00 437.00 L 124.00 431.00 Q 124.00 425.00 130.00 425.00 L 310.00 425.00 Q 316.00 425.00 316.00 419.00 L 316.00 413.00 L 316.00 396.20" fill="none" stroke="#888888" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M 316.00 388.00 L 320.00 399.00 L 316.00 396.20 L 312.00 399.00 Z" fill="#888888"/>
+<rect x="129.87" y="413.95" width="49.70" height="22.10" fill="#ffffff"/>
+<text x="154.72" y="425.00" font-family="Georgia, serif" font-size="13" fill="#444444" text-anchor="middle" dominant-baseline="middle">evalúa</text>
+<path d="M 500.00 350.00 L 528.00 350.00 L 580.00 350.00 L 632.00 350.00 L 648.80 350.00" fill="none" stroke="#888888" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M 657.00 350.00 L 646.00 354.00 L 648.80 350.00 L 646.00 346.00 Z" fill="#888888"/>
+<rect x="537.73" y="338.95" width="84.54" height="22.10" fill="#ffffff"/>
+<text x="580.00" y="350.00" font-family="Georgia, serif" font-size="13" fill="#444444" text-anchor="middle" dominant-baseline="middle">predicciones</text>
+<path d="M 860.00 344.44 L 883.53 344.44 Q 888.00 344.44 888.00 339.97 L 888.00 339.97 Q 888.00 335.50 892.47 335.50 L 993.00 335.50 L 1009.80 335.50" fill="none" stroke="#888888" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M 1018.00 335.50 L 1007.00 339.50 L 1009.80 335.50 L 1007.00 331.50 Z" fill="#888888"/>
+<rect x="905.65" y="324.45" width="60.75" height="22.10" fill="#ffffff"/>
+<text x="936.03" y="335.50" font-family="Georgia, serif" font-size="13" fill="#444444" text-anchor="middle" dominant-baseline="middle">compara</text>
+<path d="M 1186.67 308.33 L 1214.67 308.33 L 1384.00 308.33 Q 1392.00 308.33 1392.00 300.33 L 1392.00 240.50 Q 1392.00 232.50 1400.00 232.50 L 1408.80 232.50" fill="none" stroke="#888888" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M 1417.00 232.50 L 1406.00 236.50 L 1408.80 232.50 L 1406.00 228.50 Z" fill="#888888"/>
+<rect x="1328.49" y="297.28" width="25.52" height="22.10" fill="#ffffff"/>
+<text x="1341.25" y="308.33" font-family="Georgia, serif" font-size="13" fill="#444444" text-anchor="middle" dominant-baseline="middle">sí</text>
+<path d="M 1179.46 355.27 L 1207.46 355.27 L 1429.65 355.27 Q 1437.65 355.27 1437.65 363.27 L 1437.65 437.00 L 1437.65 453.80" fill="none" stroke="#888888" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M 1437.65 462.00 L 1433.65 451.00 L 1437.65 453.80 L 1441.65 451.00 Z" fill="#888888"/>
+<rect x="1350.66" y="344.22" width="25.52" height="22.10" fill="#ffffff"/>
+<text x="1363.42" y="355.27" font-family="Georgia, serif" font-size="13" fill="#444444" text-anchor="middle" dominant-baseline="middle">no</text>
+<path d="M 1620.00 200.00 L 1648.00 200.00 L 1700.00 200.00 L 1752.00 200.00 L 1768.80 200.00" fill="none" stroke="#888888" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M 1777.00 200.00 L 1766.00 204.00 L 1768.80 200.00 L 1766.00 196.00 Z" fill="#888888"/>
+<rect x="1654.22" y="188.95" width="91.56" height="22.10" fill="#ffffff"/>
+<text x="1700.00" y="200.00" font-family="Georgia, serif" font-size="13" fill="#444444" text-anchor="middle" dominant-baseline="middle">versión nueva</text>
+<g id="node-1">
+<rect x="-60.00" y="165.00" width="200" height="70" rx="10" ry="10" fill="rgba(155,127,181,0.18)" stroke="#9b7fb5" stroke-width="2.5"/>
+<text x="40.00" y="200.00" font-family="Georgia, serif" font-size="17.0" fill="#111111" text-anchor="middle" dominant-baseline="middle">@challenger</text>
+</g>
+<g id="node-2">
+<rect x="-60.00" y="465.00" width="200" height="70" rx="10" ry="10" fill="rgba(123,184,91,0.18)" stroke="#7bb85b" stroke-width="2.5"/>
+<text x="40.00" y="500.00" font-family="Georgia, serif" font-size="17.0" fill="#111111" text-anchor="middle" dominant-baseline="middle">@champion actual</text>
+</g>
+<g id="node-3">
+<rect x="300.00" y="315.00" width="200" height="70" rx="10" ry="10" fill="rgba(106,159,181,0.18)" stroke="#6a9fb5" stroke-width="2.5"/>
+<text x="400.00" y="350.00" font-family="Georgia, serif" font-size="17.0" fill="#111111" text-anchor="middle" dominant-baseline="middle">Mismas filas</text>
+</g>
+<g id="node-4">
+<rect x="660.00" y="315.00" width="200" height="70" rx="10" ry="10" fill="rgba(91,155,208,0.18)" stroke="#5b9bd0" stroke-width="2.5"/>
+<text x="760.00" y="350.00" font-family="Georgia, serif" font-size="17.0" fill="#111111" text-anchor="middle" dominant-baseline="middle">MAE, MAPE e IC95</text>
+</g>
+<g id="node-5">
+<polygon points="1120,275.00 1230.00,330 1120,385.00 1010.00,330" fill="rgba(193,106,106,0.18)" stroke="#c16a6a" stroke-width="2.5"/>
+<text x="1120.00" y="330.00" font-family="Georgia, serif" font-size="18.7" fill="#111111" text-anchor="middle" dominant-baseline="middle">¿Promueve?</text>
+</g>
+<g id="node-6">
+<rect x="1420.00" y="165.00" width="200" height="70" rx="10" ry="10" fill="rgba(123,184,91,0.18)" stroke="#7bb85b" stroke-width="2.5"/>
+<text x="1520.00" y="200.00" font-family="Georgia, serif" font-size="17.0" fill="#111111" text-anchor="middle" dominant-baseline="middle">@champion nuevo</text>
+</g>
+<g id="node-7">
+<rect x="1420.00" y="465.00" width="200" height="70" rx="10" ry="10" fill="rgba(143,143,143,0.18)" stroke="#8f8f8f" stroke-width="2.5"/>
+<text x="1520.00" y="500.00" font-family="Georgia, serif" font-size="17.0" fill="#111111" text-anchor="middle" dominant-baseline="middle">Sigue el champion</text>
+</g>
+<g id="node-8">
+<rect x="1780.00" y="165.00" width="200" height="70" rx="10" ry="10" fill="rgba(106,159,181,0.18)" stroke="#6a9fb5" stroke-width="2.5"/>
+<text x="1880.00" y="200.00" font-family="Georgia, serif" font-size="17.0" fill="#111111" text-anchor="middle" dominant-baseline="middle">Scoring repite todo</text>
+</g>
+<g id="node-9">
+<rect x="185.00" y="431.00" width="330" height="98" rx="10" ry="10" fill="none" stroke="#8f8f8f" stroke-width="2.5" stroke-dasharray="9 7"/>
+<text x="350.00" y="463.75" font-family="Georgia, serif" font-size="13.0" fill="#111111" text-anchor="middle" dominant-baseline="middle">Test del challenger sin los avisos que el</text>
+<text x="350.00" y="480.00" font-family="Georgia, serif" font-size="13.0" fill="#111111" text-anchor="middle" dominant-baseline="middle">champion usó para entrenar o validar: ninguno</text>
+<text x="350.00" y="496.25" font-family="Georgia, serif" font-size="13.0" fill="#111111" text-anchor="middle" dominant-baseline="middle">los vio. Se exigen al menos 100 avisos.</text>
+</g>
+<g id="node-10">
+<rect x="545.00" y="141.00" width="330" height="98" rx="10" ry="10" fill="none" stroke="#8f8f8f" stroke-width="2.5" stroke-dasharray="9 7"/>
+<text x="710.00" y="173.75" font-family="Georgia, serif" font-size="13.0" fill="#111111" text-anchor="middle" dominant-baseline="middle">MAE y MAPE de cada modelo y la diferencia</text>
+<text x="710.00" y="190.00" font-family="Georgia, serif" font-size="13.0" fill="#111111" text-anchor="middle" dominant-baseline="middle">de MAE con su intervalo de confianza al 95 %</text>
+<text x="710.00" y="206.25" font-family="Georgia, serif" font-size="13.0" fill="#111111" text-anchor="middle" dominant-baseline="middle">(bootstrap sobre los mismos avisos).</text>
+</g>
+<g id="node-11">
+<rect x="870.00" y="451.00" width="380" height="138" rx="10" ry="10" fill="none" stroke="#8f8f8f" stroke-width="2.5" stroke-dasharray="9 7"/>
+<text x="1060.00" y="487.50" font-family="Georgia, serif" font-size="13.0" fill="#111111" text-anchor="middle" dominant-baseline="middle">Promueve si:</text>
+<text x="1060.00" y="503.75" font-family="Georgia, serif" font-size="13.0" fill="#111111" text-anchor="middle" dominant-baseline="middle">1. el MAE baja ≥ 1 % y el IC95 de la mejora</text>
+<text x="1060.00" y="520.00" font-family="Georgia, serif" font-size="13.0" fill="#111111" text-anchor="middle" dominant-baseline="middle">    es &gt; 0, o</text>
+<text x="1060.00" y="536.25" font-family="Georgia, serif" font-size="13.0" fill="#111111" text-anchor="middle" dominant-baseline="middle">2. el champion se degradó &gt; 5 % y el</text>
+<text x="1060.00" y="552.50" font-family="Georgia, serif" font-size="13.0" fill="#111111" text-anchor="middle" dominant-baseline="middle">    challenger no es peor. Sin champion: promueve.</text>
+</g>
+<g id="node-12">
+<rect x="1685.00" y="291.00" width="310" height="78" rx="10" ry="10" fill="none" stroke="#8f8f8f" stroke-width="2.5" stroke-dasharray="9 7"/>
+<text x="1840.00" y="321.88" font-family="Georgia, serif" font-size="13.0" fill="#111111" text-anchor="middle" dominant-baseline="middle">Con una versión nueva, todos los avisos</text>
+<text x="1840.00" y="338.13" font-family="Georgia, serif" font-size="13.0" fill="#111111" text-anchor="middle" dominant-baseline="middle">se vuelven a predecir con ella.</text>
+</g>
+</svg>
