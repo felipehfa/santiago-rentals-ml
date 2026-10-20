@@ -55,7 +55,10 @@ export async function construir(spec) {
 
   const etiqueta = Object.fromEntries(spec.nodos.map((n) => [n.key, n.label]));
   const idNodo = (key) => {
-    const id = pag.nodes.find((n) => n.label === etiqueta[key])?.id;
+    const norm = (t) => String(t).replace(/\s+/g, " ").trim();  // las etiquetas con saltos de línea vuelven con espacios
+    // Por etiqueta; si el servidor la devuelve distinta (por ejemplo, con saltos de línea), por orden de creación.
+    const id = pag.nodes.find((n) => norm(n.label) === norm(etiqueta[key]))?.id
+      ?? pag.nodes[spec.nodos.findIndex((n) => n.key === key)]?.id;
     if (id === undefined) throw new Error(`nodo desconocido: ${key}`);
     return id;
   };
