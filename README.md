@@ -58,6 +58,7 @@ mlflow ui --backend-store-uri sqlite:///mlflow.db
   `BD_STRING_READ` y `BD_STRING_SCORING`.
 - **Los scrapers no corren aquí:** el portal redirige a las IPs de Actions a un muro de verificación. El ELT sigue local;
   Actions toma lo que haya llegado a Gold.
+- Las credenciales se limpian de espacios y saltos de línea al cargarlas (`common.limpiar_entorno`): un salto final al pegar un secret en GitHub rompía la conexión (el nombre de la base lo incluía).
 - Las versiones de `requirements.txt` están fijadas: el modelo se guarda con pickle y debe cargarse con las mismas
   librerías en el PC y en Actions.
 

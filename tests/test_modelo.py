@@ -70,6 +70,17 @@ def test_gate_promueve_si_el_champion_se_degrado_y_el_challenger_no_es_peor():
     assert evaluar_gate(PROPIAS, {"mae_challenger": 101, "mae_champion": 100}, 0.10, estricto)
 
 
+def test_limpiar_entorno_quita_saltos_de_linea(monkeypatch):
+    import os
+
+    from src.common import limpiar_entorno
+    monkeypatch.setenv("MLFLOW_TRACKING_URI", "postgresql://u:p@h:5432/postgres" + chr(10))
+    monkeypatch.setenv("AWS_ACCESS_KEY_ID", " clave " + chr(13) + chr(10))
+    limpiar_entorno()
+    assert os.environ["MLFLOW_TRACKING_URI"].endswith("/postgres")
+    assert os.environ["AWS_ACCESS_KEY_ID"] == "clave"
+
+
 def test_reentrenar_convierte_los_parametros_de_mlflow():
     from src.reentrenar import convertir
     assert convertir("12") == 12 and isinstance(convertir("12"), int)

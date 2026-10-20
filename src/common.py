@@ -26,6 +26,19 @@ def cargar_config(ruta: Path | None = None) -> dict:
 # Datos
 # ──────────────────────────────────────────────────────────────────────────────
 
+VARIABLES_SECRETAS = ("BD_STRING", "BD_STRING_READ", "BD_STRING_SCORING", "MLFLOW_TRACKING_URI", "MLFLOW_ARTIFACT_ROOT",
+                      "MLFLOW_S3_ENDPOINT_URL", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_DEFAULT_REGION")
+
+
+def limpiar_entorno() -> None:
+    """Quita espacios y saltos de línea de los extremos de las credenciales. Al pegar un secret en GitHub es fácil
+    arrastrar un salto de línea final: el nombre de la base pasa a incluirlo y la conexión falla sin una pista clara."""
+    for nombre in VARIABLES_SECRETAS:
+        valor = os.environ.get(nombre)
+        if valor is not None and valor != valor.strip():
+            os.environ[nombre] = valor.strip()
+
+
 def _conexion_bd(variable: str = "BD_STRING_READ"):
     """Conecta a Supabase. Las credenciales salen del entorno o del archivo que apunte ENV_FILE; nunca
     se imprimen. BD_STRING_READ es el rol ml_lectura (entrenamiento); BD_STRING_SCORING, el ml_scoring
@@ -34,6 +47,7 @@ def _conexion_bd(variable: str = "BD_STRING_READ"):
     from dotenv import load_dotenv
 
     load_dotenv(os.environ.get("ENV_FILE") or RAIZ / ".env")
+    limpiar_entorno()
     cadena = os.environ.get(variable) or (os.environ.get("BD_STRING") if variable == "BD_STRING_READ" else None)
     if not cadena:
         raise RuntimeError(f"Falta {variable} (variable de entorno, .env o ENV_FILE)")
@@ -146,6 +160,7 @@ def baselines(y_train: pd.Series, y_true: np.ndarray, X: pd.DataFrame) -> dict:
 
 def setup_mlflow(cfg: dict) -> None:
     """Sin MLFLOW_TRACKING_URI usa SQLite local. Cambiar a Supabase no toca el código."""
+    limpiar_entorno()
     uri = os.environ.get("MLFLOW_TRACKING_URI") or cfg["mlflow"]["tracking_uri_local"]
     if uri.startswith("sqlite:///") and not uri.startswith("sqlite:////"):
         uri = "sqlite:///" + str(RAIZ / uri.removeprefix("sqlite:///")).replace("\\", "/")
