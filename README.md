@@ -44,7 +44,7 @@ mlflow ui --backend-store-uri sqlite:///mlflow.db
 | Workflow | Cuándo | Qué hace |
 |---|---|---|
 | `ci.yml` | cada push y PR | `ruff` y `pytest` (datos sintéticos, sin secrets) |
-| `entrenar.yml` | todos los días 07:30 UTC y a mano | reentrena con los hiperparámetros del último Optuna (`src.reentrenar`); los domingos o con `modo=tune`, Optuna completo; registra el challenger, corre el gate y el monitoreo; si terminó bien, llama a `scoring.yml` |
+| `entrenar.yml` | todos los días 07:30 UTC y a mano | Optuna completo (`src.tune`, unos 22 min en el runner; a mano también `modo=reentrenar`, con los hiperparámetros del último Optuna); registra el challenger, corre el gate y el monitoreo; si terminó bien, llama a `scoring.yml` |
 | `scoring.yml` | cada 3 horas, al final del entrenamiento y a mano | predice con el `@champion` los avisos de Gold sin predicción de esa versión (nuevos, visitados de nuevo o todos si cambió el modelo) y los guarda en `gold.predicciones` |
 
 - **Primera vez:** lanzar `entrenar` a mano con `modo=tune`; el reentrenamiento diario necesita un `tune` previo.

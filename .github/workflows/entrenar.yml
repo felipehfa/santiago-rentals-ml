@@ -1,6 +1,7 @@
-# Entrenamiento diario: reentrena con los hiperparámetros del último Optuna, registra el challenger y corre el gate.
-# Los domingos (o con modo=tune) repite la búsqueda completa de Optuna. Si el gate promueve un modelo nuevo, el
-# scoring vuelve a predecir todos los avisos con esa versión. Al final mide la degradación del champion.
+# Entrenamiento diario: repite la búsqueda completa de Optuna (unos 22 min en el runner), registra el challenger y corre
+# el gate. Con modo=reentrenar usa en cambio los hiperparámetros del último Optuna (más rápido, solo a mano). Si el gate
+# promueve un modelo nuevo, el scoring vuelve a predecir todos los avisos con esa versión. Al final mide la degradación
+# del champion.
 name: entrenar
 on:
   schedule:
@@ -8,10 +9,10 @@ on:
   workflow_dispatch:
     inputs:
       modo:
-        description: "reentrenar = parámetros del último Optuna; tune = Optuna completo (el primero debe ser tune)"
+        description: "tune = Optuna completo (el primero siempre debe serlo); reentrenar = parámetros del último Optuna"
         type: choice
-        options: [reentrenar, tune]
-        default: reentrenar
+        options: [tune, reentrenar]
+        default: tune
 
 concurrency:
   group: entrenar
@@ -42,10 +43,8 @@ jobs:
       - name: Entrenar
         run: |
           modo="${{ inputs.modo }}"
-          # Sin entrada manual (cron): los domingos Optuna completo, el resto reentrenar.
-          if [ -z "$modo" ]; then
-            if [ "$(date -u +%u)" = "7" ]; then modo=tune; else modo=reentrenar; fi
-          fi
+          # Sin entrada manual (cron): siempre Optuna completo.
+          if [ -z "$modo" ]; then modo=tune; fi
           echo "Modo: $modo"
           if [ "$modo" = "tune" ]; then python -m src.tune --refrescar; else python -m src.reentrenar --refrescar; fi
 
