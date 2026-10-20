@@ -49,6 +49,8 @@ Detalle en `docs/01_decisiones.md`. En resumen:
   con otros datos hace fallar la corrida.
 - Train usa solo avisos publicados hasta 60 días antes de la última visita (`datos.ventana_dias`): los precios de
   oferta viejos suelen estar desactualizados. Validación y test quedan completos, para comparar con el champion.
+- Comunas fuera del modelo (`datos.comunas_excluidas`): Las Condes, Vitacura, Lo Barnechea y las periféricas del sur; sus avisos siguen en Gold y se descartan al preparar los datos. Con 12 comunas el MAPE del test es 9,3 %.
+- `mlruns/` conserva solo lo del `@champion` vigente; tras cada promoción se limpia con `mlflow gc`.
 - Variables derivadas: razones de superficie, equipamiento agregado y distancias en km al centro de la comuna,
   Plaza de Armas, El Golf, Las Condes y Providencia (puntos en `config.yaml`).
 - Texto del aviso (título y descripción, sin números ni símbolos de dinero, para que el precio escrito no se

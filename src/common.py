@@ -66,6 +66,9 @@ def preparar_datos(df: pd.DataFrame, cfg: dict) -> pd.DataFrame:
     target = cfg["target"]
     df = df[df[target].notna() & (df[target] > 0)]
     df = df[df[target] <= cfg["datos"]["costo_total_max_clp"]]
+    excluidas = cfg["datos"].get("comunas_excluidas") or []
+    if excluidas:
+        df = df[~df["comuna"].isin(excluidas)]
     # Sin gastos comunes registrados (NaN) el aviso se conserva: ya lo marca gastos_comunes_faltante.
     maximo = cfg["datos"].get("gastos_comunes_max_pct_arriendo")
     if maximo is not None:

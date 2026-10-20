@@ -23,6 +23,20 @@ datos:
   # Los precios de oferta viejos suelen estar desactualizados (en pruebas, 60 días bajó el MAE ~5 %).
   # null = sin ventana.
   ventana_dias: 60
+  # Comunas fuera del modelo (no interesan: orientales de alto precio y periféricas del sur). Sus avisos siguen en Gold;
+  # solo se descartan al preparar los datos. Lista vacía o null = todas.
+  comunas_excluidas:
+    - las-condes-metropolitana
+    - vitacura-metropolitana
+    - lo-barnechea-metropolitana
+    - la-reina-metropolitana
+    - penalolen-metropolitana
+    - quilicura-metropolitana
+    - maipu-metropolitana
+    - puente-alto-metropolitana
+    - san-bernardo-metropolitana
+    - cerrillos-metropolitana
+    - pedro-aguirre-cerda-metropolitana
 
 target: costo_total_clp
 

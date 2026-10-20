@@ -197,3 +197,12 @@ def test_constructor_viejo_sin_texto_no_agrega_variables_de_texto(gold_sintetico
     df, c = _constructor_con_texto(gold_sintetico, cfg)
     del c.usa_texto
     assert not [col for col in c.transform(df).columns if col.startswith("tx_")]
+
+
+def test_comunas_excluidas_se_descartan(gold_sintetico, cfg):
+    from src.common import preparar_datos
+
+    cfg = {**cfg, "datos": {**cfg["datos"], "comunas_excluidas": ["las-condes", "maipu"]}}
+    out = preparar_datos(gold_sintetico, cfg)
+    assert set(out["comuna"]) == {"nunoa", "santiago"}
+    assert len(out) > 0
