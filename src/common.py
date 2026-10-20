@@ -2,6 +2,7 @@
 
 import hashlib
 import importlib.metadata
+import logging
 import os
 import subprocess
 from pathlib import Path
@@ -15,6 +16,8 @@ from sklearn.model_selection import train_test_split
 
 RAIZ = Path(__file__).resolve().parent.parent
 ID_COL = "id_aviso"
+log = logging.getLogger("ml")
+GOLD_MAX_HORAS = 36  # más viejo que esto, Silver y Gold dejaron de reconstruirse
 
 
 def cargar_config(ruta: Path | None = None) -> dict:
@@ -61,6 +64,11 @@ def descargar_gold(cfg: dict) -> pd.DataFrame:
         df = pd.read_sql(f"SELECT * FROM {cfg['datos']['tabla']} WHERE apto_entrenamiento", con)
     finally:
         con.close()
+    if "construido_en" in df and len(df):
+        edad_h = (pd.Timestamp.now(tz="UTC") - pd.to_datetime(df["construido_en"], utc=True).max()).total_seconds() / 3600
+        if edad_h > GOLD_MAX_HORAS:
+            log.warning("Gold tiene %.0f h de antigüedad (límite %d h): revisar la reconstrucción de Silver y Gold", edad_h, GOLD_MAX_HORAS)
+            print(f"::warning::Gold tiene {edad_h:.0f} h de antigüedad; revisar la reconstrucción de Silver y Gold")
     ruta = RAIZ / cfg["datos"]["snapshot"]
     ruta.parent.mkdir(parents=True, exist_ok=True)
     df.to_parquet(ruta, index=False)

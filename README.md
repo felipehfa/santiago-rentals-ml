@@ -120,6 +120,7 @@ mlflow ui --backend-store-uri sqlite:///mlflow.db
   `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` y `AWS_DEFAULT_REGION`; en local van en `.env.nube` (ignorado por git),
   que se carga solo cuando se quiere apuntar a la nube. En GitHub son secrets y variables del repo, junto con
   `BD_STRING_READ` y `BD_STRING_SCORING`.
+- **Gold fresco:** el orquestador del ELT reconstruye Silver y Gold cada 3 horas. Si al descargar Gold su `construido_en` tiene más de 36 h, el entrenamiento deja una advertencia (`common.GOLD_MAX_HORAS`) en el log y en el resumen del workflow; no aborta.
 - **Los scrapers no corren aquí:** el portal redirige a las IPs de Actions a un muro de verificación. El ELT sigue local;
   Actions toma lo que haya llegado a Gold.
 - Las credenciales se limpian de espacios y saltos de línea al cargarlas (`common.limpiar_entorno`): un salto final al pegar un secret en GitHub rompía la conexión (el nombre de la base lo incluía).
