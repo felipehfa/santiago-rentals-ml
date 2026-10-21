@@ -65,10 +65,12 @@ def descargar_gold(cfg: dict) -> pd.DataFrame:
     finally:
         con.close()
     if "construido_en" in df and len(df):
-        edad_h = (pd.Timestamp.now(tz="UTC") - pd.to_datetime(df["construido_en"], utc=True).max()).total_seconds() / 3600
+        ultima = pd.to_datetime(df["construido_en"], utc=True).max()
+        edad_h = (pd.Timestamp.now(tz="UTC") - ultima).total_seconds() / 3600
         if edad_h > GOLD_MAX_HORAS:
-            log.warning("Gold tiene %.0f h de antigüedad (límite %d h): revisar la reconstrucción de Silver y Gold", edad_h, GOLD_MAX_HORAS)
-            print(f"::warning::Gold tiene {edad_h:.0f} h de antigüedad; revisar la reconstrucción de Silver y Gold")
+            aviso = f"Gold tiene {edad_h:.0f} h de antigüedad (límite {GOLD_MAX_HORAS} h): revisar Silver y Gold"
+            log.warning(aviso)
+            print(f"::warning::{aviso}")
     ruta = RAIZ / cfg["datos"]["snapshot"]
     ruta.parent.mkdir(parents=True, exist_ok=True)
     df.to_parquet(ruta, index=False)
