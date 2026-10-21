@@ -154,7 +154,7 @@
       "y": 645,
       "w": 230,
       "h": 110,
-      "label": "Cron cada 3 h",
+      "label": "Cron cada 30 min",
       "color": "#8f8f8f",
       "fill": null,
       "border": "solid",
@@ -807,7 +807,7 @@
      {
       "id": 3,
       "engineVersion": 2,
-      "name": "Scoring cada 3 horas",
+      "name": "Scoring cada 30 minutos",
       "nextStepId": 7,
       "steps": [
        {

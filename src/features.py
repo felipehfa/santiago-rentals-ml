@@ -53,7 +53,7 @@ EXCLUIDAS = [
     "gastos_comunes", "precio_clp", "precio_valor", "precio_moneda", "costo_total_clp",
     "costo_total_uf", "tiene_rebaja", "fecha_precio", "dias_en_mercado", "n_cambios_estado",
     "n_cambios_precio", "primera_vez_visto", "ultima_vez_visto", "fecha_publicacion_aprox",
-    "fecha_publicacion_precision", "estado_publicacion", "construido_en", "uv_rsh", "titulo", "descripcion",
+    "fecha_publicacion_precision", "estado_publicacion", "construido_en", "uv_rsh", "titulo", "descripcion", "url",
 ]
 
 

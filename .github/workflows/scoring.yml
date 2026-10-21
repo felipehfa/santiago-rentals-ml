@@ -1,10 +1,11 @@
 # Scoring por lotes: predice con el @champion los avisos de Gold que no tengan predicción de su versión (avisos
 # nuevos o visitados de nuevo) y, si cambió el modelo, todos. Escribe en gold.predicciones con el rol ml_scoring.
-# Corre cada 3 horas (lo que Gold haya recibido entre una corrida y otra) y al final del entrenamiento diario.
+# Corre cada 30 minutos (lo que Gold haya recibido desde la corrida anterior; sin pendientes termina en segundos) y al final
+# del entrenamiento diario. Además publica en gold.modelo_vigente las cifras del champion si su versión es nueva.
 name: scoring
 on:
   schedule:
-    - cron: "17 */3 * * *"
+    - cron: "7,37 * * * *"
   workflow_dispatch:
   workflow_call:
 

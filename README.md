@@ -75,13 +75,14 @@ Qué corre solo en GitHub Actions y con qué condiciones:
 - **Entrenamiento diario** (cron a las 07:30 UTC, o a mano con *Run workflow*). Descarga Gold, entrena con Optuna completo
   (unos 22 minutos), registra el challenger y corre el gate. El primer entrenamiento debe ser un `tune`: el MLflow parte vacío
   y el primer modelo se promueve sin comparación. Al final corre el monitoreo, que no detiene el flujo.
-- **Scoring** cada 3 horas y al terminar el entrenamiento: predice los avisos que no tienen predicción de la versión vigente o
+- **Scoring** cada 30 minutos y al terminar el entrenamiento: predice los avisos que no tienen predicción de la versión vigente o
   que se visitaron después de la última, y todos si hay un champion nuevo. Escribe con un rol que solo puede insertar en
-  `gold.predicciones`.
+  `gold.predicciones` y `gold.modelo_vigente`. No predice los avisos con precio sospechoso ni con costo total sobre el tope del
+  entrenamiento (10 millones): solo recibirían una etiqueta sin sentido.
 - **CI** en cada push: `ruff` y `pytest`, sin secretos.
 - MLflow vive en Postgres y un bucket de Supabase; los secretos y variables están en el repo de GitHub.
 
-Historias: *Entrenamiento diario: el challenger gana*, *El gate rechaza al challenger* y *Scoring cada 3 horas*.
+Historias: *Entrenamiento diario: el challenger gana*, *El gate rechaza al challenger* y *Scoring cada 30 minutos*.
 
 ## Cómo ejecutar
 
@@ -109,7 +110,7 @@ mlflow ui --backend-store-uri sqlite:///mlflow.db
 |---|---|---|
 | `ci.yml` | cada push y PR | `ruff` y `pytest` (datos sintéticos, sin secrets) |
 | `entrenar.yml` | todos los días 07:30 UTC y a mano | Optuna completo (`src.tune`, unos 22 min en el runner; a mano también `modo=reentrenar`, con los hiperparámetros del último Optuna); registra el challenger, corre el gate y el monitoreo; si terminó bien, llama a `scoring.yml` |
-| `scoring.yml` | cada 3 horas, al final del entrenamiento y a mano | predice con el `@champion` los avisos de Gold sin predicción de esa versión (nuevos, visitados de nuevo o todos si cambió el modelo) y los guarda en `gold.predicciones` |
+| `scoring.yml` | cada 30 minutos, al final del entrenamiento y a mano | predice con el `@champion` los avisos de Gold sin predicción de esa versión (nuevos, visitados de nuevo o todos si cambió el modelo) y los guarda en `gold.predicciones`; si la versión del champion es nueva, publica sus cifras en `gold.modelo_vigente` (las usa el mapa) |
 
 - **Primera vez:** lanzar `entrenar` a mano con `modo=tune`; el reentrenamiento diario necesita un `tune` previo.
 - **Gate para correr a diario:** promueve solo con mejora de MAE de al menos 1 % y con el IC95 de la mejora sobre 0
@@ -120,7 +121,7 @@ mlflow ui --backend-store-uri sqlite:///mlflow.db
   `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` y `AWS_DEFAULT_REGION`; en local van en `.env.nube` (ignorado por git),
   que se carga solo cuando se quiere apuntar a la nube. En GitHub son secrets y variables del repo, junto con
   `BD_STRING_READ` y `BD_STRING_SCORING`.
-- **Gold fresco:** el orquestador del ELT reconstruye Silver y Gold cada 3 horas. Si al descargar Gold su `construido_en` tiene más de 36 h, el entrenamiento deja una advertencia (`common.GOLD_MAX_HORAS`) en el log y en el resumen del workflow; no aborta.
+- **Gold fresco:** el orquestador del ELT reconstruye Silver y Gold cada hora. Si al descargar Gold su `construido_en` tiene más de 36 h, el entrenamiento deja una advertencia (`common.GOLD_MAX_HORAS`) en el log y en el resumen del workflow; no aborta.
 - **Los scrapers no corren aquí:** el portal redirige a las IPs de Actions a un muro de verificación. El ELT sigue local;
   Actions toma lo que haya llegado a Gold.
 - Las credenciales se limpian de espacios y saltos de línea al cargarlas (`common.limpiar_entorno`): un salto final al pegar un secret en GitHub rompía la conexión (el nombre de la base lo incluía).

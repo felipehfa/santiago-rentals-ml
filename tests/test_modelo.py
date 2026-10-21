@@ -145,6 +145,7 @@ def test_scoring_alcance_y_pendientes():
         "apto_entrenamiento": [True, False, False, False, True, True],
         "motivo_exclusion": [None, "precio_m2_atipico", "sin_detalle", "precio_m2_atipico,sin_coordenadas", None, None],
         "ultima_vez_visto": pd.to_datetime(["2026-10-01"] * 4 + ["2026-10-01", "2026-10-10"], utc=True),
+        "costo_total_clp": [500_000] * 6,
     })
     cfg = {"datos": {"comunas_excluidas": ["maipu"]}, "scoring": {"motivos_predecibles": ["precio_m2_atipico"]}}
     alcance = en_alcance(df, cfg)
@@ -153,6 +154,19 @@ def test_scoring_alcance_y_pendientes():
     previas = pd.DataFrame({"id_aviso": ["a", "f"],
                             "predicho_en": pd.to_datetime(["2026-10-05", "2026-10-05"], utc=True)})
     assert list(pendientes(alcance, previas)["id_aviso"]) == ["b", "f"]   # b nunca predicho; f visto después
+
+
+def test_scoring_deja_fuera_precio_sospechoso_y_costo_sobre_el_tope():
+    from src.scoring import en_alcance
+    df = pd.DataFrame({
+        "id_aviso": list("abcd"),
+        "comuna": ["nunoa"] * 4,
+        "apto_entrenamiento": [True, False, False, True],
+        "motivo_exclusion": [None, "precio_sospechoso,precio_m2_atipico", "precio_m2_atipico", None],
+        "costo_total_clp": [500_000, 1_300_000_000, 12_000_000_000, 11_000_000],
+    })
+    cfg = {"datos": {"costo_total_max_clp": 10_000_000}, "scoring": {"motivos_predecibles": ["precio_m2_atipico"]}}
+    assert list(en_alcance(df, cfg)["id_aviso"]) == ["a"]   # b: precio sospechoso; c y d: sobre el tope
 
 
 def test_gate_rechaza_si_el_champion_esta_degradado_pero_el_challenger_es_claramente_peor():

@@ -5,7 +5,7 @@ import { construir, nota } from "./lib.mjs";
 const DESTINO = fileURLToPath(new URL("..", import.meta.url));  // docs/diagramas/
 
 // Fila 1: el entrenamiento diario (cron -> entrenar -> MLflow -> gate -> champion -> monitoreo).
-// Fila 3: el scoring (cron cada 3 h -> scoring -> predicciones), que lee Gold y el champion.
+// Fila 3: el scoring (cron cada 30 min -> scoring -> predicciones), que lee Gold y el champion.
 const C = [20, 330, 640, 950, 1260, 1570];
 
 await construir({
@@ -20,7 +20,7 @@ await construir({
     { key: "champ", shape: "rect", label: "@champion", color: "Éxito", x: C[4], y: 145, w: 200, h: 90 },
     { key: "monit", shape: "rect", label: "4. Monitoreo", color: "Info", x: C[5], y: 145, w: 200, h: 90 },
     { key: "gold", shape: "cylinder", label: "Gold", color: "Datos", x: C[1], y: 395, w: 230, h: 110 },
-    { key: "cron_s", shape: "circle", label: "Cron cada 3 h", color: "Externo", x: C[2], y: 645, w: 230, h: 110 },
+    { key: "cron_s", shape: "circle", label: "Cron cada 30 min", color: "Externo", x: C[2], y: 645, w: 230, h: 110 },
     { key: "scoring", shape: "rect", label: "3. Scoring", color: "Servicio", x: C[4], y: 655, w: 200, h: 90 },
     { key: "pred", shape: "cylinder", label: "gold.predicciones", color: "Éxito", x: C[5] + 30, y: 640, w: 250, h: 110 },
     nota("n_cron", C[0] - 10, 270, 250, 70, "07:30 UTC, o a mano.\nEl primero debe ser tune"),
@@ -81,7 +81,7 @@ await construir({
       ],
     },
     {
-      nombre: "Scoring cada 3 horas",
+      nombre: "Scoring cada 30 minutos",
       pasos: [
         { ev: "envia", de: "cron_s", a: "scoring", espera: 0 },
         { ev: "envia", de: "gold", a: "scoring", tras: [0] },

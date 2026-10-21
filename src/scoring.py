@@ -6,12 +6,14 @@ Un aviso necesita predicción cuando, para la versión actual del champion:
   - se volvió a visitar después de su última predicción (sus datos pudieron cambiar).
 Por eso correrlo dos veces seguidas no escribe nada la segunda vez.
 
-Alcance: los avisos aptos para entrenar y los excluidos solo por motivos de precio (`scoring.motivos_predecibles`),
-porque el modelo igual puede estimar su precio esperado, que sirve justamente para detectar los atípicos.
-Quedan fuera las comunas de `datos.comunas_excluidas`.
+Alcance: los avisos aptos para entrenar y los excluidos solo por motivos que no ponen en duda el precio publicado
+(`scoring.motivos_predecibles`: precio por m² atípico y finalizado antiguo). Quedan fuera los de precio sospechoso,
+los de costo total sobre `datos.costo_total_max_clp` (el mismo tope del entrenamiento) y las comunas de
+`datos.comunas_excluidas`: un precio absurdo solo produciría una etiqueta sin sentido.
 
 Usa el rol ml_scoring (BD_STRING_SCORING): lee `gold.aviso_entrenamiento` y `gold.predicciones`, e inserta en
-esta última. Códigos de salida: 0 normal (incluso sin pendientes), 1 sin champion.
+esta última y en `gold.modelo_vigente` (las cifras del champion, ver publicar_modelo.py).
+Códigos de salida: 0 normal (incluso sin pendientes), 1 sin champion.
 """
 
 import argparse
@@ -26,6 +28,7 @@ from psycopg2.extras import execute_values
 
 from . import etiquetas
 from .common import ID_COL, _conexion_bd, cargar_config, setup_mlflow
+from .publicar_modelo import publicar as publicar_cifras
 
 ALIAS_CHAMPION = "champion"
 TAMANO_LOTE = 2000
@@ -42,6 +45,9 @@ def en_alcance(df: pd.DataFrame, cfg: dict) -> pd.DataFrame:
         return bool(motivos) and motivos <= ok
 
     df = df[df.apply(predecible, axis=1)]
+    tope = cfg["datos"].get("costo_total_max_clp")
+    if tope is not None:
+        df = df[~(df["costo_total_clp"] > tope)]
     excluidas = cfg["datos"].get("comunas_excluidas") or []
     if excluidas:
         df = df[~df["comuna"].isin(excluidas)]
@@ -121,6 +127,8 @@ def main() -> int:
 
     con = _conexion_bd("BD_STRING_SCORING")
     try:
+        if not args.simular:
+            publicar_cifras(con, cliente, champ, nombre)   # las cifras del modelo que explica el mapa
         gold = pd.read_sql(f"SELECT * FROM {cfg['datos']['tabla']}", con)
         previas = pd.read_sql(
             "SELECT id_aviso, max(predicho_en) AS predicho_en FROM gold.predicciones "

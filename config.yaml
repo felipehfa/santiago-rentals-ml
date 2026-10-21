@@ -108,7 +108,7 @@ gate:
 # Scoring por lotes a gold.predicciones. Además de los aptos, se predicen los excluidos solo por estos motivos
 # (el modelo igual estima su precio esperado, útil para detectar precios atípicos).
 scoring:
-  motivos_predecibles: [precio_m2_atipico, precio_sospechoso, finalizado_antiguo]
+  motivos_predecibles: [precio_m2_atipico, finalizado_antiguo]   # precio_sospechoso no: un precio absurdo no se etiqueta
 
 # Monitoreo del champion sobre avisos llegados después de su entrenamiento.
 monitoreo:
