@@ -90,6 +90,15 @@ PALABRAS_CLAVE = {
     "gimnasio": r"gimnasio|gym", "piscina": r"piscina", "quincho": r"quincho",
     "cowork": r"cowork|sala de estudio", "conserje": r"conserje|porteria", "estudio": r"\bestudio\b|monoambiente",
     "metro_cerca": r"a pasos del metro|cerca del metro|frente al metro",
+    # Estado de la propiedad (no existe como campo del portal: solo aparece si el dueño lo escribe en el texto)
+    "cocina_remodelada": r"cocina (remodel|renovad|nueva)|cocina y bano|banos? (remodel|renovad)",
+    "recien_pintado": r"recien pintad|pintura nueva|recien remodel|recien renovad|recien reparad",
+    "a_reparar": r"a reparar|para reparar|requiere (reparacion|arreglo|remodel)|para remodelar|para renovar"
+                 r"|necesita (reparacion|arreglo|remodel)",
+    "buen_estado": r"mantencion al dia|buen estado|muy buen estado",
+    "entrega_inmediata": r"edificio nuevo|edificio recien|entrega inmediata|primer arriendo|nunca habitad|sin uso",
+    "ventanas_termicas": r"termopanel|doble vidrio|ventanas? (termic|pvc)",
+    "terminaciones": r"terminaciones? (de lujo|premium|de primera|de calidad)|alta calidad",
     # Precio promocional: el arriendo publicado vale solo unos meses y después sube. El aviso parece barato.
     "precio_promocional": r"precio (valido|promocional)|valido por|primeros meses|oferta (de )?lanzamiento"
                           r"|despues (sigue|pagas|pagar|vuelve)|luego (sigue|pagas|pagar)|mes despues",
