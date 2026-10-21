@@ -35,7 +35,8 @@ De los datos de Gold al modelo en uso y sus predicciones:
 - **Datos y split.** Avisos aptos de Gold de 12 comunas, con costo hasta 10 M y gastos hasta el 50 % del arriendo. Se divide
   70/15/15 y el entrenamiento solo usa avisos de hasta 60 días.
 - **Variables.** Sin fuga de datos: `precio_m2_sector`, barrio, comuna y el modelo de texto se ajustan solo con train. Incluye
-  variables derivadas, distancias a centros y 26 palabras clave del texto del aviso.
+  variables derivadas, distancias a centros y 26 palabras clave del texto del aviso. La antigüedad la completa Gold con avisos del mismo
+  punto o vecinos, y `antiguedad_inferida` (0 aviso, 1 mismo punto, 2 vecinos) deja al modelo distinguir el dato real del inferido.
 - **Entrenamiento.** Selección de variables y búsqueda de hiperparámetros (Optuna: 50 pruebas por algoritmo, XGBoost y
   LightGBM, validación cruzada de 5 partes) con un ensamble de 10 semillas. Elige por el error de la validación cruzada.
 - **MLflow** guarda cada run: métricas, ids de los splits, configuración, commit y el modelo con su constructor de variables.

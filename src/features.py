@@ -54,6 +54,7 @@ EXCLUIDAS = [
     "costo_total_uf", "tiene_rebaja", "fecha_precio", "dias_en_mercado", "n_cambios_estado",
     "n_cambios_precio", "primera_vez_visto", "ultima_vez_visto", "fecha_publicacion_aprox",
     "fecha_publicacion_precision", "estado_publicacion", "construido_en", "uv_rsh", "titulo", "descripcion", "url",
+    "antiguedad_origen",
 ]
 
 
@@ -271,6 +272,10 @@ class ConstructorVariables:
         for c in BOOLEANAS:
             X[c] = _a_float(df[c])
         X["superficie_util_m2"] = self._superficie(df)
+        # De dónde salió la antigüedad (Gold la completa con avisos del mismo punto o vecinos): 0 aviso, 1 mismo punto,
+        # 2 vecinos; sin dato queda en NaN. Sin la columna (Gold anterior) todo queda en NaN.
+        origen = df["antiguedad_origen"] if "antiguedad_origen" in df.columns else pd.Series(np.nan, index=df.index)
+        X["antiguedad_inferida"] = origen.map({"aviso": 0.0, "mismo_punto": 1.0, "vecinos": 2.0}).astype(float)
 
         es_train = df[ID_COL].isin(self.ids_train_)
         propio = df[ID_COL].map(self.pm2_propio_).astype(float).fillna(np.nan)
