@@ -65,17 +65,9 @@ def pendientes(df: pd.DataFrame, previas: pd.DataFrame) -> pd.DataFrame:
     return df[prev.isna() | (visto > prev)]
 
 
-def referencia_del_champion(champ, modelo, gold: pd.DataFrame, cfg: dict) -> dict:
-    """Referencia del etiquetado guardada con el champion. Los modelos entrenados antes de que se guardaran los cortes
-    de confianza no los traen: se recalculan puntuando con ese mismo champion sus avisos de validación (ids.json),
-    que es de donde salen en el entrenamiento."""
-    ref = mlflow.artifacts.load_dict(f"runs:/{champ.run_id}/referencia_etiquetas.json")
-    if "cortes_cv" not in ref:
-        val = gold[gold[ID_COL].isin(set(mlflow.artifacts.load_dict(f"runs:/{champ.run_id}/ids.json")["val"]))]
-        cv = modelo.predict(val.reset_index(drop=True))["cv_ensamble"].to_numpy()
-        n = cfg["etiquetas"].get("n_grupos_confianza", 3)
-        ref["cortes_cv"] = np.quantile(cv, np.linspace(0, 1, n + 1)[1:-1]).tolist()
-    return ref
+def referencia_del_champion(champ) -> dict:
+    """Referencia del etiquetado (cortes de costo y error por decil) guardada con el champion."""
+    return mlflow.artifacts.load_dict(f"runs:/{champ.run_id}/referencia_etiquetas.json")
 
 
 def _num(x):
@@ -83,19 +75,17 @@ def _num(x):
     return None if x is None or (isinstance(x, float) and np.isnan(x)) else float(x)
 
 
-def etiquetar_lote(publicado: np.ndarray, pred: np.ndarray, cv: np.ndarray, ref: dict, cfg_etiquetas: dict) -> dict:
-    """Etiqueta, z, confianza y banda de mercado de cada aviso. Los avisos sin precio publicado (NaN) no se etiquetan:
-    quedan en None, pero igual conservan su confianza y su banda, que dependen solo de la predicción."""
+def etiquetar_lote(publicado: np.ndarray, pred: np.ndarray, ref: dict, cfg_etiquetas: dict) -> dict:
+    """Etiqueta, z y banda de mercado de cada aviso. Los avisos sin precio publicado (NaN) no se etiquetan: quedan en
+    None, pero igual conservan su banda, que depende solo de la predicción."""
     n = len(pred)
     hay_precio = ~np.isnan(publicado)
-    out = {k: [None] * n for k in ("etiqueta", "z_robusto", "nivel_confianza", "banda_inferior", "banda_superior")}
+    out = {k: [None] * n for k in ("etiqueta", "z_robusto", "banda_inferior", "banda_superior")}
     umbrales = (cfg_etiquetas["umbral_oportunidad"], cfg_etiquetas["umbral_caro"])
-    if "cortes_cv" in ref:
-        out["nivel_confianza"] = etiquetas.clasificar_confianza(cv, ref).tolist()
     inf, sup = etiquetas.banda_mercado(pred, ref, *umbrales)
     out["banda_inferior"], out["banda_superior"] = inf.tolist(), sup.tolist()
     if hay_precio.any():
-        et = etiquetas.etiquetar(publicado[hay_precio], pred[hay_precio], cv[hay_precio], ref, *umbrales)
+        et = etiquetas.etiquetar(publicado[hay_precio], pred[hay_precio], ref, *umbrales)
         for k, pos in enumerate(np.flatnonzero(hay_precio)):
             out["etiqueta"][pos], out["z_robusto"][pos] = et["etiqueta"].iloc[k], float(et["z_robusto"].iloc[k])
     return out
@@ -145,22 +135,22 @@ def main() -> int:
         huella = champ.tags.get("huella_datos") or cliente.get_run(champ.run_id).data.tags.get("huella_datos")
         faltan = faltan.reset_index(drop=True)
         salida = modelo.predict(faltan)
-        pred, cv = salida["prediccion_clp"].to_numpy(), salida["cv_ensamble"].to_numpy()
+        pred = salida["prediccion_clp"].to_numpy()
 
-        # Etiqueta de mercado y confianza: el precio publicado contra lo que el modelo espera (ver etiquetas.py).
-        ref = referencia_del_champion(champ, modelo, gold, cfg)
+        # Etiqueta de mercado: el precio publicado contra lo que el modelo espera (ver etiquetas.py).
+        ref = referencia_del_champion(champ)
         publicado = faltan[cfg["target"]].to_numpy(float)
-        et = etiquetar_lote(publicado, pred, cv, ref, cfg["etiquetas"])
+        et = etiquetar_lote(publicado, pred, ref, cfg["etiquetas"])
         filas = [
-            (i, nombre, version, huella, float(p), _num(pub), float(c), et["nivel_confianza"][k],
+            (i, nombre, version, huella, float(p), _num(pub),
              _num(et["z_robusto"][k]), et["etiqueta"][k], _num(et["banda_inferior"][k]), _num(et["banda_superior"][k]))
-            for k, (i, p, pub, c) in enumerate(zip(faltan[ID_COL], pred, publicado, cv, strict=True))]
+            for k, (i, p, pub) in enumerate(zip(faltan[ID_COL], pred, publicado, strict=True))]
         with con, con.cursor() as cur:  # una sola transacción: o entra todo o nada
             for k in range(0, len(filas), TAMANO_LOTE):
                 execute_values(
                     cur,
                     "INSERT INTO gold.predicciones (id_aviso, modelo_nombre, modelo_version, huella_datos, "
-                    "costo_total_predicho_clp, costo_total_publicado_clp, cv_ensamble, nivel_confianza, z_robusto, "
+                    "costo_total_predicho_clp, costo_total_publicado_clp, z_robusto, "
                     "etiqueta, banda_inferior_clp, banda_superior_clp) VALUES %s",
                     filas[k:k + TAMANO_LOTE])
         print(f"Guardadas {len(filas)} predicciones de la v{version} en gold.predicciones.")

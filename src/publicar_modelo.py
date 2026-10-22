@@ -38,7 +38,6 @@ def cifras_del_champion(cliente, champ) -> dict:
         "baselines": {k: v for k, v in m.items() if k.startswith("baseline_") and k.endswith("_mae")},
         "importancia": [{"variable": k, "pct": round(100 * v / total, 1)} for k, v in top],
         "cortes_costo": ref["cortes_costo"],
-        "cortes_cv": ref.get("cortes_cv"),
         "etiquetas_test": etiquetas,
     }
 

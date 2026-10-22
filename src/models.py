@@ -127,10 +127,4 @@ class ModeloPrecio(mlflow.pyfunc.PythonModel):
 
     def predict(self, context, model_input, params=None):
         X = self.constructor.transform(model_input)[self.variables]
-        m = self.ensamble.matriz(X)
-        media = m.mean(axis=0)
-        return pd.DataFrame({
-            "prediccion_clp": media,
-            "std_ensamble": m.std(axis=0),
-            "cv_ensamble": m.std(axis=0) / np.where(media == 0, 1e-6, media),
-        })
+        return pd.DataFrame({"prediccion_clp": self.ensamble.predecir(X)})

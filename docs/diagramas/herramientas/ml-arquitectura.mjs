@@ -28,7 +28,7 @@ await construir({
     nota("n_vars", C[2] - 10, 10, 250, 70, "Sin fuga: ajustadas\nsolo con train"),
     nota("n_entrenar", C[3] - 10, 10, 250, 70, "Optuna: 50 pruebas\npor algoritmo"),
     nota("n_gate", C[2] - 20, 530, 270, 70, "Promueve si el MAE baja\n≥ 1 % con IC95 > 0"),
-    nota("n_scoring", C[2] - 20, 690, 330, 90, "Etiqueta de mercado,\nconfianza y banda de precio"),
+    nota("n_scoring", C[2] - 20, 690, 330, 90, "Etiqueta de mercado\ny banda de precio"),
   ],
   aristas: [
     { from: "gold", to: "datos", label: "aptos" },

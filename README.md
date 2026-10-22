@@ -44,7 +44,7 @@ De los datos de Gold al modelo en uso y sus predicciones:
   `@champion`.
 - **Monitoreo** mide la degradación del champion con avisos nuevos (código 3 si empeora).
 - **Scoring por lotes.** El champion predice los avisos sin predicción de su versión o visitados de nuevo y guarda en
-  `gold.predicciones` la etiqueta de mercado (oportunidad, precio de mercado o caro), la confianza y la banda de precio.
+  `gold.predicciones` la etiqueta de mercado (oportunidad, precio de mercado o caro) y la banda de precio.
 - **Baselines de planilla** (mediana por comuna y dormitorios; precio por m² de la comuna × superficie): lo que haría una
   persona sin entrenar nada. El modelo debe superarlos.
 
@@ -141,9 +141,8 @@ Detalle en `docs/01_decisiones.md`. En resumen:
   con otros datos hace fallar la corrida.
 - Train usa solo avisos publicados hasta 60 días antes de la última visita (`datos.ventana_dias`): los precios de
   oferta viejos suelen estar desactualizados. Validación y test quedan completos, para comparar con el champion.
-- Etiqueta de mercado y confianza (como en Concepción): el scoring compara el costo total publicado con lo que el modelo
-  espera, normalizado por decil de costo (mediana y MAD): `oportunidad` (z < -1), `caro` (z > 1) o `precio_de_mercado`; y
-  clasifica la confianza por el desacuerdo de las 10 predicciones del ensamble (terciles: alta, media o baja). Guarda
+- Etiqueta de mercado (como en Concepción): el scoring compara el costo total publicado con lo que el modelo
+  espera, normalizado por decil de costo (mediana y MAD): `oportunidad` (z < -1), `caro` (z > 1) o `precio_de_mercado`. Guarda
   también la banda de costo que sería precio de mercado. Todo va en `gold.predicciones`; `--recalcular` repite el scoring.
 - Baselines de planilla (mediana por comuna y dormitorios; precio/m2 de la comuna × superficie): cada run registra su MAE y la ganancia del modelo sobre el mejor (`ganancia_vs_mejor_baseline_pct`).
 - Comunas fuera del modelo (`datos.comunas_excluidas`): Las Condes, Vitacura, Lo Barnechea y las periféricas del sur; sus avisos siguen en Gold y se descartan al preparar los datos. Con 12 comunas el MAPE del test es 9,3 %.

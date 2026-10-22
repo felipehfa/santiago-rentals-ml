@@ -9,7 +9,7 @@ Plan acordado el 2026-10-17. Complementa [01_decisiones.md](01_decisiones.md): a
 | `01_ingenieria_variables.py` (todo el dataset junto) | Casi todo lo hace Silver/Gold. Solo quedan en el modelo las variables que usan estadísticos del conjunto (`nivel_barrio`, `precio_m2_sector`, imputación de superficie), dentro de `src/features.py` y **ajustadas solo con train**. |
 | `02_seleccion_variables.py` (estabilidad SHAP, curva de k con regla 1-SE, poda por correlación) | `src/seleccion_variables.py`: paso offline que registra su resultado en MLflow y deja la lista en `features_seleccionadas.json`. El CI usa esa lista fija. |
 | `01_xgboost.py` / `02_lightgbm.py` (split estratificado, Optuna, bagging de 10 semillas, métricas, baselines, SHAP) | `src/models.py`, `src/train.py` y `src/tune.py`. Cada modelo es un run de MLflow; cada trial de Optuna, un run hijo. |
-| Etiquetado oportunidad/caro con z robusto por decil y confianza por CV del ensamble | `src/etiquetas.py`. La referencia (mediana y MAD por decil) se calcula con residuos fuera de entrenamiento y se guarda junto al modelo. |
+| Etiquetado oportunidad/caro con z robusto por decil (la confianza por CV del ensamble se quitó el 21-oct-2026) | `src/etiquetas.py`. La referencia (mediana y MAD por decil) se calcula con residuos fuera de entrenamiento y se guarda junto al modelo. |
 
 ## Reglas contra la fuga de datos
 
