@@ -1,0 +1,9 @@
+# Dependabot propone por PR las actualizaciones (las Actions están fijadas por commit; él mantiene el hash al día).
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+# Sin pip a propósito: un modelo guardado con pickle debe cargarse con las mismas versiones con que se entrenó
+# (requirements.txt fija las del entorno de desarrollo); subirlas es una decisión, no un PR automático.

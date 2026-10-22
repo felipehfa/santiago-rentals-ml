@@ -120,4 +120,9 @@
 <text x="10.00" y="629.38" font-family="Georgia, serif" font-size="17.0" fill="#111111" text-anchor="middle" dominant-baseline="middle">CI en cada push:</text>
 <text x="10.00" y="650.63" font-family="Georgia, serif" font-size="17.0" fill="#111111" text-anchor="middle" dominant-baseline="middle">ruff y pytest</text>
 </g>
+<g id="node-18">
+<rect x="-145.50" y="431.50" width="311" height="77" rx="10" ry="10" fill="none" stroke="#8f8f8f" stroke-width="2.5" stroke-dasharray="9 7"/>
+<text x="10.00" y="459.38" font-family="Georgia, serif" font-size="17.0" fill="#111111" text-anchor="middle" dominant-baseline="middle">Vigilante diario: avisa si</text>
+<text x="10.00" y="480.63" font-family="Georgia, serif" font-size="17.0" fill="#111111" text-anchor="middle" dominant-baseline="middle">no hay entrenamiento en 30 h</text>
+</g>
 </svg>

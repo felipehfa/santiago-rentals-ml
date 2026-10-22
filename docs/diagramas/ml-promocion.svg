@@ -76,7 +76,7 @@
 <rect x="803.00" y="359.50" width="414" height="121" rx="10" ry="10" fill="none" stroke="#8f8f8f" stroke-width="2.5" stroke-dasharray="9 7"/>
 <text x="1010.00" y="388.13" font-family="Georgia, serif" font-size="17.0" fill="#111111" text-anchor="middle" dominant-baseline="middle">1. MAE baja ≥ 1 % y IC95 &gt; 0</text>
 <text x="1010.00" y="409.38" font-family="Georgia, serif" font-size="17.0" fill="#111111" text-anchor="middle" dominant-baseline="middle">2. o el champion se degradó</text>
-<text x="1010.00" y="430.63" font-family="Georgia, serif" font-size="17.0" fill="#111111" text-anchor="middle" dominant-baseline="middle">   más de 5 % y el challenger</text>
+<text x="1010.00" y="430.63" font-family="Georgia, serif" font-size="17.0" fill="#111111" text-anchor="middle" dominant-baseline="middle">   más de 3 % y el challenger</text>
 <text x="1010.00" y="451.88" font-family="Georgia, serif" font-size="17.0" fill="#111111" text-anchor="middle" dominant-baseline="middle">   no es peor</text>
 </g>
 </svg>

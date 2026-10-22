@@ -14,6 +14,11 @@ on:
         options: [tune, reentrenar]
         default: tune
 
+# El token de GitHub solo lee el repo. Los secretos van en cada paso que los usa, no en todo el job: así `pip install`
+# (código de terceros) no los ve.
+permissions:
+  contents: read
+
 concurrency:
   group: entrenar
   cancel-in-progress: false
@@ -24,34 +29,52 @@ jobs:
     timeout-minutes: 330
     outputs:
       promovido: ${{ steps.gate.outputs.promovido }}
-    env:
-      BD_STRING_READ: ${{ secrets.BD_STRING_READ }}
-      MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
-      MLFLOW_ARTIFACT_ROOT: ${{ vars.MLFLOW_ARTIFACT_ROOT }}
-      MLFLOW_S3_ENDPOINT_URL: ${{ vars.MLFLOW_S3_ENDPOINT_URL }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4.4.0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5.6.0
         with:
           python-version: "3.11"
           cache: pip
       - run: pip install -r requirements.txt
 
       - name: Entrenar
+        env:
+          MODO: ${{ inputs.modo }}
+          BD_STRING_READ: ${{ secrets.BD_STRING_READ }}
+          MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
+          MLFLOW_ARTIFACT_ROOT: ${{ vars.MLFLOW_ARTIFACT_ROOT }}
+          MLFLOW_S3_ENDPOINT_URL: ${{ vars.MLFLOW_S3_ENDPOINT_URL }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
         run: |
-          modo="${{ inputs.modo }}"
+          modo="$MODO"
           # Sin entrada manual (cron): siempre Optuna completo.
           if [ -z "$modo" ]; then modo=tune; fi
           echo "Modo: $modo"
           if [ "$modo" = "tune" ]; then python -m src.tune --refrescar; else python -m src.reentrenar --refrescar; fi
 
-      - run: python -m src.register
+      - name: Registrar el challenger
+        env:
+          BD_STRING_READ: ${{ secrets.BD_STRING_READ }}
+          MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
+          MLFLOW_ARTIFACT_ROOT: ${{ vars.MLFLOW_ARTIFACT_ROOT }}
+          MLFLOW_S3_ENDPOINT_URL: ${{ vars.MLFLOW_S3_ENDPOINT_URL }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
+        run: python -m src.register
 
       - name: Gate de promoción
         id: gate
+        env:
+          BD_STRING_READ: ${{ secrets.BD_STRING_READ }}
+          MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
+          MLFLOW_ARTIFACT_ROOT: ${{ vars.MLFLOW_ARTIFACT_ROOT }}
+          MLFLOW_S3_ENDPOINT_URL: ${{ vars.MLFLOW_S3_ENDPOINT_URL }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
         run: |
           set +e
           python -m src.promote
@@ -62,6 +85,14 @@ jobs:
           [ "$codigo" = "0" ] || [ "$codigo" = "2" ]
 
       - name: Monitoreo del champion
+        env:
+          BD_STRING_READ: ${{ secrets.BD_STRING_READ }}
+          MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
+          MLFLOW_ARTIFACT_ROOT: ${{ vars.MLFLOW_ARTIFACT_ROOT }}
+          MLFLOW_S3_ENDPOINT_URL: ${{ vars.MLFLOW_S3_ENDPOINT_URL }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
         run: |
           set +e
           python -m src.monitoreo

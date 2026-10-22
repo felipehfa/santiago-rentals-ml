@@ -60,7 +60,7 @@ y el MAPE de cada uno y la diferencia de MAE con su intervalo de confianza al 95
 si:
 
 1. el MAE baja al menos 1 % y el intervalo de la mejora es mayor que 0 (no basta con ruido), o
-2. el champion se degradó más de 5 % (su MAE actual contra el de su test original) y el challenger no es peor.
+2. el champion se degradó más de 3 % (su MAE actual contra el de su test original) y el challenger no es peor.
 
 Sin champion, el primero se promueve. Con un modelo nuevo, el scoring vuelve a predecir todos los avisos con esa versión.
 
@@ -111,6 +111,8 @@ mlflow ui --backend-store-uri sqlite:///mlflow.db
 |---|---|---|
 | `ci.yml` | cada push y PR | `ruff` y `pytest` (datos sintéticos, sin secrets) |
 | `entrenar.yml` | todos los días 07:30 UTC y a mano | Optuna completo (`src.tune`, unos 22 min en el runner; a mano también `modo=reentrenar`, con los hiperparámetros del último Optuna); registra el challenger, corre el gate y el monitoreo; si terminó bien, llama a `scoring.yml` |
+| `vigilante.yml` | todos los días 14:00 UTC y a mano | falla (correo de GitHub) si el último entrenamiento tiene más de 30 h: avisa si el entrenamiento diario no corrió |
+| `limpiar.yml` | solo a mano | `src.limpiar_artefactos`: borra del registro y del bucket los runs y versiones que no sirven (conserva los con alias, el último `tune_` por algoritmo y lo de los últimos 2 días). Por defecto solo simula; borra solo con `aplicar = true` |
 | `scoring.yml` | cada 30 minutos, al final del entrenamiento y a mano | predice con el `@champion` los avisos de Gold sin predicción de esa versión (nuevos, visitados de nuevo o todos si cambió el modelo) y los guarda en `gold.predicciones`; si la versión del champion es nueva, publica sus cifras en `gold.modelo_vigente` (las usa el mapa) |
 
 - **Primera vez:** lanzar `entrenar` a mano con `modo=tune`; el reentrenamiento diario necesita un `tune` previo.
@@ -130,6 +132,15 @@ mlflow ui --backend-store-uri sqlite:///mlflow.db
   librerías en el PC y en Actions.
 
 La primera corrida descarga Gold a `data/` (fuera de git) y las siguientes la reutilizan.
+
+## Seguridad de la automatización
+
+- Este repo es público, así que los logs de Actions también: los errores de conexión a la base y a MLflow se muestran solo con
+  su clase (`src/common.py`), nunca con su texto, que puede traer un fragmento de la cadena. Las conexiones exigen SSL.
+- Los secretos se pasan solo a los pasos que los usan, no a todo el job: `pip install` no los ve. El token de GitHub solo lee el
+  repo (`permissions: contents: read`).
+- Las Actions están fijadas por commit; Dependabot las mantiene al día. Las dependencias de Python no se actualizan solas: un
+  modelo guardado con pickle debe cargarse con las mismas versiones con que se entrenó.
 
 ## Decisiones tomadas
 

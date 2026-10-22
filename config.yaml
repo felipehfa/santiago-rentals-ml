@@ -100,7 +100,8 @@ gate:
   estabilidad_cv_max: null        # coeficiente de variación del MAE entre particiones
   mejora_min: 0.01                # el challenger promueve si baja el MAE del champion más que esto (1 %)
   exigir_ic: true                 # y además el IC95 de la mejora (bootstrap) debe quedar sobre 0: no basta con ruido
-  degradacion_umbral: 0.05        # el champion está degradado si su MAE sube más de 5 % vs su test original
+  degradacion_umbral: 0.03        # el champion está degradado si su MAE sube más de 3 % vs su test original (era 5 %: el
+                                  # 22-oct el v1 llevaba +3,8 % y un challenger mejor en todo no se promovía)
   margen_vs_champion: 0.0         # si el champion está degradado, el challenger no puede ser peor que él
   n_minimo_comparacion: 100       # avisos comunes necesarios para poder comparar
 

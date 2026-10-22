@@ -1,0 +1,27 @@
+name: vigilante
+
+# Revisa una vez al día que el entrenamiento diario (07:30 UTC) haya corrido. Si el último entrenamiento tiene más de 30 horas,
+# la ejecución queda en rojo y GitHub avisa por correo. Solo lee MLflow.
+on:
+  schedule:
+    - cron: "0 14 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  vigilar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4.4.0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5.6.0
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Revisar el último entrenamiento
+        env:
+          MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
+        run: python -m src.vigilar_entrenamiento

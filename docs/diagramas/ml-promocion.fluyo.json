@@ -214,7 +214,7 @@
       "y": 420,
       "w": 414,
       "h": 121,
-      "label": "1. MAE baja ≥ 1 % y IC95 > 0\n2. o el champion se degradó\n   más de 5 % y el challenger\n   no es peor",
+      "label": "1. MAE baja ≥ 1 % y IC95 > 0\n2. o el champion se degradó\n   más de 3 % y el challenger\n   no es peor",
       "color": "#8f8f8f",
       "fill": "none",
       "border": "dashed",
@@ -772,7 +772,7 @@
     "id": 5,
     "name": "Se degradó",
     "primitive": "OCCURRENCE",
-    "sentenceTemplate": "{target} se degradó más de 5 %",
+    "sentenceTemplate": "{target} se degradó más de 3 %",
     "visual": {
      "kind": "token",
      "value": "●"

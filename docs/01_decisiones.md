@@ -48,7 +48,7 @@ Referencia: `github.com/jcbf08/Webninar_SDC_mlflow`. Se copia la estructura de p
 Los datos crecen con el tiempo, así que champion y challenger no comparten test. Se comparan sobre **las mismas filas**: el test del challenger sin los avisos con que se entrenó el champion (train y val). Cada run guarda `ids.json` con sus splits para poder hacerlo.
 
 - **Mejora:** se promueve si el challenger baja el MAE del champion en esas filas.
-- **Degradación:** si el MAE del champion en esas filas supera su MAE de test original en más de `degradacion_umbral` (5 %), se promueve al challenger siempre que no sea peor que `margen_vs_champion` (2 %). Sin ese margen se promovería un modelo claramente peor solo porque el anterior envejeció.
+- **Degradación:** si el MAE del champion en esas filas supera su MAE de test original en más de `degradacion_umbral` (3 %; era 5 % hasta el 22-oct), se promueve al challenger siempre que no sea peor que `margen_vs_champion` (2 %). Sin ese margen se promovería un modelo claramente peor solo porque el anterior envejeció.
 - Se informa también la diferencia de MAE con su intervalo de confianza del 95 % (bootstrap). Con pocos avisos comunes el intervalo suele cruzar 0: la diferencia puede ser ruido.
 - Criterios absolutos opcionales (MAPE máximo, estabilidad entre particiones); `null` mientras no haya datos para calibrarlos.
 - Con menos de `n_minimo_comparacion` avisos comunes no se compara y se rechaza.

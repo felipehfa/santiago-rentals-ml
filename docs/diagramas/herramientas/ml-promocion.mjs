@@ -19,7 +19,7 @@ await construir({
     { key: "scoring", shape: "rect", label: "Scoring repite todo", color: "Servicio", x: 1430, y: -80, w: 250, h: 90 },
     nota("n_filas", 330, 420, 300, 88, "Test del challenger sin\nlo que vio el champion\n(mínimo 100 avisos)"),
     nota("n_metricas", 690, 100, 280, 66, "IC95 de la mejora de MAE\npor bootstrap"),
-    nota("n_criterios", 1010, 420, 360, 110, "1. MAE baja ≥ 1 % y IC95 > 0\n2. o el champion se degradó\n   más de 5 % y el challenger\n   no es peor"),
+    nota("n_criterios", 1010, 420, 360, 110, "1. MAE baja ≥ 1 % y IC95 > 0\n2. o el champion se degradó\n   más de 3 % y el challenger\n   no es peor"),
   ],
   aristas: [
     { from: "challenger", to: "filas", label: "evalúa" },
@@ -33,7 +33,7 @@ await construir({
   eventos: [
     { ref: "promueve", name: "Promueve", primitive: "OCCURRENCE", sentence: "{target} promueve al challenger" },
     { ref: "rechaza", name: "Rechaza", primitive: "OCCURRENCE", sentence: "{target} rechaza al challenger" },
-    { ref: "degradado", name: "Se degradó", primitive: "OCCURRENCE", sentence: "{target} se degradó más de 5 %" },
+    { ref: "degradado", name: "Se degradó", primitive: "OCCURRENCE", sentence: "{target} se degradó más de 3 %" },
   ],
   historias: [
     {

@@ -54,7 +54,12 @@ def _conexion_bd(variable: str = "BD_STRING_READ"):
     cadena = os.environ.get(variable) or (os.environ.get("BD_STRING") if variable == "BD_STRING_READ" else None)
     if not cadena:
         raise RuntimeError(f"Falta {variable} (variable de entorno, .env o ENV_FILE)")
-    return psycopg2.connect(cadena)
+    try:
+        return psycopg2.connect(cadena, sslmode="require", connect_timeout=30)
+    except psycopg2.Error as e:
+        # El texto de psycopg2 puede traer un fragmento de la cadena (incidente del 18-oct) y en este repo público los
+        # logs de Actions son públicos: solo la clase del error, y `from None` para que no aparezca el original.
+        raise RuntimeError(f"No se pudo conectar con {variable} ({type(e).__name__})") from None
 
 
 def descargar_gold(cfg: dict) -> pd.DataFrame:
@@ -196,6 +201,13 @@ def baselines(train: pd.DataFrame, test: pd.DataFrame, target: str) -> dict:
 def setup_mlflow(cfg: dict) -> None:
     """Sin MLFLOW_TRACKING_URI usa SQLite local. Cambiar a Supabase no toca el código."""
     limpiar_entorno()
+    try:
+        _setup_mlflow(cfg)
+    except Exception as e:  # noqa: BLE001 - mismo motivo que en _conexion_bd: el error puede traer la URI con su clave
+        raise RuntimeError(f"No se pudo abrir MLflow ({type(e).__name__})") from None
+
+
+def _setup_mlflow(cfg: dict) -> None:
     uri = os.environ.get("MLFLOW_TRACKING_URI") or cfg["mlflow"]["tracking_uri_local"]
     if uri.startswith("sqlite:///") and not uri.startswith("sqlite:////"):
         uri = "sqlite:///" + str(RAIZ / uri.removeprefix("sqlite:///")).replace("\\", "/")

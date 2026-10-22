@@ -1,0 +1,41 @@
+name: limpiar
+
+# Limpieza del registro y del bucket de MLflow (ver src/limpiar_artefactos.py). Solo a mano. Por defecto SIMULA y dice qué
+# borraría; para borrar hay que elegir aplicar = true. Borrar es irreversible.
+on:
+  workflow_dispatch:
+    inputs:
+      aplicar:
+        description: "true = borra de verdad; false = solo simula"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: entrenar   # nunca en paralelo con un entrenamiento
+  cancel-in-progress: false
+
+jobs:
+  limpiar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4.4.0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5.6.0
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Limpiar
+        env:
+          APLICAR: ${{ inputs.aplicar }}
+          MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
+          MLFLOW_ARTIFACT_ROOT: ${{ vars.MLFLOW_ARTIFACT_ROOT }}
+          MLFLOW_S3_ENDPOINT_URL: ${{ vars.MLFLOW_S3_ENDPOINT_URL }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ vars.AWS_DEFAULT_REGION }}
+        run: |
+          if [ "$APLICAR" = "true" ]; then python -m src.limpiar_artefactos --aplicar; else python -m src.limpiar_artefactos; fi

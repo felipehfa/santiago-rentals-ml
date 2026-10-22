@@ -30,6 +30,7 @@ await construir({
     nota("n_scoring", C[3] - 60, 400, 380, 110, "Predice avisos sin predicción\nde la versión, o vistos de nuevo;\ntodos si hay champion nuevo"),
     nota("n_cron_s", C[2] - 10, 790, 250, 70, "Y al terminar el\nentrenamiento diario"),
     nota("n_ci", C[0] - 10, 640, 270, 70, "CI en cada push:\nruff y pytest"),
+    nota("n_vigilante", C[0] - 10, 470, 270, 70, "Vigilante diario: avisa si\nno hay entrenamiento en 30 h"),
   ],
   aristas: [
     { from: "cron_e", to: "entrenar", label: "dispara" },

@@ -346,11 +346,31 @@
       "pulse": false,
       "order": 16,
       "fs": 17
+     },
+     {
+      "id": 18,
+      "shape": "rect",
+      "x": 10,
+      "y": 470,
+      "w": 311,
+      "h": 77,
+      "label": "Vigilante diario: avisa si\nno hay entrenamiento en 30 h",
+      "color": "#8f8f8f",
+      "fill": "none",
+      "border": "dashed",
+      "lblPos": "center",
+      "textBg": null,
+      "textColor": null,
+      "font": null,
+      "bold": false,
+      "pulse": false,
+      "order": 17,
+      "fs": 17
      }
     ],
     "edges": [
      {
-      "id": 18,
+      "id": 19,
       "from": 1,
       "to": 2,
       "fromSide": null,
@@ -368,7 +388,7 @@
       "fs": 18
      },
      {
-      "id": 19,
+      "id": 20,
       "from": 7,
       "to": 2,
       "fromSide": null,
@@ -386,7 +406,7 @@
       "fs": 18
      },
      {
-      "id": 20,
+      "id": 21,
       "from": 2,
       "to": 3,
       "fromSide": null,
@@ -404,7 +424,7 @@
       "fs": 18
      },
      {
-      "id": 21,
+      "id": 22,
       "from": 3,
       "to": 4,
       "fromSide": null,
@@ -422,7 +442,7 @@
       "fs": 18
      },
      {
-      "id": 22,
+      "id": 23,
       "from": 4,
       "to": 5,
       "fromSide": null,
@@ -440,7 +460,7 @@
       "fs": 18
      },
      {
-      "id": 23,
+      "id": 24,
       "from": 5,
       "to": 6,
       "fromSide": null,
@@ -458,7 +478,7 @@
       "fs": 18
      },
      {
-      "id": 24,
+      "id": 25,
       "from": 8,
       "to": 9,
       "fromSide": null,
@@ -476,7 +496,7 @@
       "fs": 18
      },
      {
-      "id": 25,
+      "id": 26,
       "from": 7,
       "to": 9,
       "fromSide": "s",
@@ -494,7 +514,7 @@
       "fs": 18
      },
      {
-      "id": 26,
+      "id": 27,
       "from": 5,
       "to": 9,
       "fromSide": null,
@@ -512,7 +532,7 @@
       "fs": 18
      },
      {
-      "id": 27,
+      "id": 28,
       "from": 9,
       "to": 10,
       "fromSide": null,
@@ -530,7 +550,7 @@
       "fs": 18
      }
     ],
-    "nextId": 28,
+    "nextId": 29,
     "behaviors": [],
     "scenarios": [
      {
@@ -544,14 +564,14 @@
         "at": 0,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 18
+        "edgeId": 19
        },
        {
         "id": 2,
         "at": 300,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 19
+        "edgeId": 20
        },
        {
         "id": 3,
@@ -565,14 +585,14 @@
         "at": 1400,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 20
+        "edgeId": 21
        },
        {
         "id": 5,
         "at": 1700,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 21
+        "edgeId": 22
        },
        {
         "id": 6,
@@ -586,14 +606,14 @@
         "at": 2300,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 22
+        "edgeId": 23
        },
        {
         "id": 8,
         "at": 2600,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 23
+        "edgeId": 24
        },
        {
         "id": 9,
@@ -607,7 +627,7 @@
         "at": 3500,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 26
+        "edgeId": 27
        },
        {
         "id": 11,
@@ -621,7 +641,7 @@
         "at": 4100,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 27
+        "edgeId": 28
        }
       ],
       "arrivalDependencies": [
@@ -699,14 +719,14 @@
         "at": 0,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 18
+        "edgeId": 19
        },
        {
         "id": 2,
         "at": 300,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 19
+        "edgeId": 20
        },
        {
         "id": 3,
@@ -720,14 +740,14 @@
         "at": 1400,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 20
+        "edgeId": 21
        },
        {
         "id": 5,
         "at": 1700,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 21
+        "edgeId": 22
        },
        {
         "id": 6,
@@ -748,7 +768,7 @@
         "at": 2900,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 23
+        "edgeId": 24
        },
        {
         "id": 9,
@@ -815,21 +835,21 @@
         "at": 0,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 24
+        "edgeId": 25
        },
        {
         "id": 2,
         "at": 300,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 25
+        "edgeId": 26
        },
        {
         "id": 3,
         "at": 600,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 26
+        "edgeId": 27
        },
        {
         "id": 4,
@@ -843,7 +863,7 @@
         "at": 1500,
         "eventTypeId": 1,
         "action": "SEND",
-        "edgeId": 27
+        "edgeId": 28
        },
        {
         "id": 6,
