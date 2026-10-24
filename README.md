@@ -156,7 +156,7 @@ Detalle en `docs/01_decisiones.md`. En resumen:
   espera, normalizado por decil de costo (mediana y MAD): `oportunidad` (z < -1), `caro` (z > 1) o `precio_de_mercado`. Guarda
   también la banda de costo que sería precio de mercado. Todo va en `gold.predicciones`; `--recalcular` repite el scoring.
 - Baselines de planilla (mediana por comuna y dormitorios; precio/m2 de la comuna × superficie): cada run registra su MAE y la ganancia del modelo sobre el mejor (`ganancia_vs_mejor_baseline_pct`).
-- Comunas fuera del modelo (`datos.comunas_excluidas`): Las Condes, Vitacura, Lo Barnechea y las periféricas del sur; sus avisos siguen en Gold y se descartan al preparar los datos. Con 12 comunas el MAPE del test es 9,3 %.
+- Comunas fuera del modelo (`datos.comunas_excluidas`): Las Condes, Vitacura, Lo Barnechea y las periféricas del sur; desde el 24-oct sus avisos ya no están en Gold (se borraron en el ELT) y la lista queda como resguardo. Con 12 comunas el MAPE del test es 9,3 %. Una prueba local del 24-oct (pipeline completo para ambas variantes, mismo test) mostró que entrenar con las 23 comunas no mejora: el MAE en las 12 comunas fue 1,1 % peor (no significativo) y mucho peor en Huechuraba.
 - `mlruns/` conserva solo lo del `@champion` vigente y el último run de cada algoritmo; tras cada promoción se limpia con `mlflow gc`.
 - Variables derivadas: razones de superficie, equipamiento agregado y distancias en km al centro de la comuna,
   Plaza de Armas, El Golf, Las Condes y Providencia (puntos en `config.yaml`).
