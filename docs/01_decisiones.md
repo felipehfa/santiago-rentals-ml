@@ -61,6 +61,8 @@ Los datos crecen con el tiempo, así que champion y challenger no comparten test
 
 Las variables que dependen del conjunto (`nivel_barrio`, `precio_m2_sector`, imputación de superficie) se ajustan **solo con train**, dentro del pipeline, para que MLflow las guarde junto al modelo.
 
+**Excepción conocida: la antigüedad.** Gold completa `antiguedad_anos` (decisión del 21-oct-2026 en el ELT) con la mediana de los avisos del mismo punto o de los vecinos a ~150 m, y lo hace sobre **todos** los avisos, incluidos los que luego caen en validación y test. No usa el target (el precio), así que no hay fuga del objetivo y el riesgo es bajo, pero es una excepción a la regla de arriba: es un estadístico del conjunto que se calcula fuera del pipeline. `antiguedad_origen` llega al modelo como `antiguedad_inferida` (0 aviso, 1 mismo punto, 2 vecinos) para que distinga el dato real del inferido. Si se quisiera cerrar la excepción, habría que mover la imputación al constructor de variables y ajustarla solo con train.
+
 **Texto del aviso (2026-10-19).** El título y la descripción aportan calidad que las demás variables no ven (remodelación, vista, precio promocional). Se usan de dos formas, ambas dentro de `ConstructorVariables`:
 
 - Palabras clave (`PALABRAS_CLAVE` en `features.py`): columnas de 1 o 0 sobre el texto normalizado.
