@@ -175,3 +175,7 @@ Detalle en `docs/01_decisiones.md`. En resumen:
 - Umbrales del quality gate (se fijan tras la primera corrida base).
 - Estrategia de validación definitiva (estratificada por precio, temporal o ambas) y manejo del sesgo de supervivencia entre avisos activos y finalizados.
 - Si el CI y el scoring usan un `Dockerfile` o el runner directo.
+
+## Licencia
+
+[MIT](LICENSE).
