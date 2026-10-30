@@ -85,6 +85,13 @@ Qué corre solo en GitHub Actions y con qué condiciones:
 
 Historias: *Entrenamiento diario: el challenger gana*, *El gate rechaza al challenger* y *Scoring cada 30 minutos*.
 
+### Ciclo MLOps en una fila
+
+![Ciclo MLOps del modelo](docs/diagramas/ml-recorrido-mlops.svg)
+
+Versión corta del diagrama anterior, pensada para compartir: datos, variables, entrenamiento, registro, gate, champion,
+scoring y monitoreo, sin CI ni limpieza. Historias: *Un día de MLOps: el challenger gana* y *El gate rechaza al challenger*.
+
 ## Cómo ejecutar
 
 Con el entorno conda `data-science` y un `.env` propio con `BD_STRING_READ`, el connection string del rol

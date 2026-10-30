@@ -1,0 +1,1078 @@
+{
+ "version": 5,
+ "app": "fluyo",
+ "doc": {
+  "theme": "claro",
+  "pages": [
+   {
+    "name": "Ciclo MLOps del modelo",
+    "nodes": [
+     {
+      "id": 1,
+      "shape": "cylinder",
+      "x": 20,
+      "y": 205,
+      "w": 210,
+      "h": 110,
+      "label": "1. Datos (Gold)",
+      "color": "#7fa66b",
+      "fill": null,
+      "border": "solid",
+      "lblPos": "center",
+      "textBg": null,
+      "textColor": null,
+      "font": null,
+      "bold": false,
+      "pulse": false,
+      "order": 0,
+      "fs": 22
+     },
+     {
+      "id": 2,
+      "shape": "rect",
+      "x": 290,
+      "y": 215,
+      "w": 195,
+      "h": 90,
+      "label": "2. Variables",
+      "color": "#6a9fb5",
+      "fill": null,
+      "border": "solid",
+      "lblPos": "center",
+      "textBg": null,
+      "textColor": null,
+      "font": null,
+      "bold": false,
+      "pulse": false,
+      "order": 1,
+      "fs": 22
+     },
+     {
+      "id": 3,
+      "shape": "rect",
+      "x": 560,
+      "y": 215,
+      "w": 195,
+      "h": 90,
+      "label": "3. Entrenar",
+      "color": "#9b7fb5",
+      "fill": null,
+      "border": "solid",
+      "lblPos": "center",
+      "textBg": null,
+      "textColor": null,
+      "font": null,
+      "bold": false,
+      "pulse": false,
+      "order": 2,
+      "fs": 22
+     },
+     {
+      "id": 4,
+      "shape": "cylinder",
+      "x": 830,
+      "y": 200,
+      "w": 195,
+      "h": 110,
+      "label": "4. MLflow",
+      "color": "#c98f5b",
+      "fill": null,
+      "border": "solid",
+      "lblPos": "center",
+      "textBg": null,
+      "textColor": null,
+      "font": null,
+      "bold": false,
+      "pulse": false,
+      "order": 3,
+      "fs": 22
+     },
+     {
+      "id": 5,
+      "shape": "diamond",
+      "x": 1100,
+      "y": 200,
+      "w": 195,
+      "h": 120,
+      "label": "5. Gate",
+      "color": "#c16a6a",
+      "fill": null,
+      "border": "solid",
+      "lblPos": "center",
+      "textBg": null,
+      "textColor": null,
+      "font": null,
+      "bold": false,
+      "pulse": false,
+      "order": 4,
+      "fs": 22
+     },
+     {
+      "id": 6,
+      "shape": "rect",
+      "x": 1370,
+      "y": 215,
+      "w": 195,
+      "h": 90,
+      "label": "@champion",
+      "color": "#7bb85b",
+      "fill": null,
+      "border": "solid",
+      "lblPos": "center",
+      "textBg": null,
+      "textColor": null,
+      "font": null,
+      "bold": false,
+      "pulse": false,
+      "order": 5,
+      "fs": 22
+     },
+     {
+      "id": 7,
+      "shape": "rect",
+      "x": 1640,
+      "y": 215,
+      "w": 195,
+      "h": 90,
+      "label": "6. Scoring",
+      "color": "#6a9fb5",
+      "fill": null,
+      "border": "solid",
+      "lblPos": "center",
+      "textBg": null,
+      "textColor": null,
+      "font": null,
+      "bold": false,
+      "pulse": false,
+      "order": 6,
+      "fs": 22
+     },
+     {
+      "id": 8,
+      "shape": "circle",
+      "x": 290,
+      "y": 480,
+      "w": 195,
+      "h": 110,
+      "label": "Cron diario",
+      "color": "#8f8f8f",
+      "fill": null,
+      "border": "solid",
+      "lblPos": "center",
+      "textBg": null,
+      "textColor": null,
+      "font": null,
+      "bold": false,
+      "pulse": false,
+      "order": 7,
+      "fs": 22
+     },
+     {
+      "id": 9,
+      "shape": "rect",
+      "x": 1370,
+      "y": 490,
+      "w": 195,
+      "h": 90,
+      "label": "7. Monitoreo",
+      "color": "#5b9bd0",
+      "fill": null,
+      "border": "solid",
+      "lblPos": "center",
+      "textBg": null,
+      "textColor": null,
+      "font": null,
+      "bold": false,
+      "pulse": false,
+      "order": 8,
+      "fs": 22
+     },
+     {
+      "id": 10,
+      "shape": "cylinder",
+      "x": 1615,
+      "y": 475,
+      "w": 245,
+      "h": 110,
+      "label": "gold.predicciones",
+      "color": "#7bb85b",
+      "fill": null,
+      "border": "solid",
+      "lblPos": "center",
+      "textBg": null,
+      "textColor": null,
+      "font": null,
+      "bold": false,
+      "pulse": false,
+      "order": 9,
+      "fs": 22
+     },
+     {
+      "id": 11,
+      "shape": "rect",
+      "x": 10,
+      "y": 80,
+      "w": 247,
+      "h": 73,
+      "label": "Solo avisos aptos,\nsin leer Silver",
+      "color": "#8f8f8f",
+      "fill": "none",
+      "border": "dashed",
+      "lblPos": "center",
+      "textBg": null,
+      "textColor": null,
+      "font": null,
+      "bold": false,
+      "pulse": false,
+      "order": 10,
+      "fs": 17
+     },
+     {
+      "id": 12,
+      "shape": "rect",
+      "x": 270,
+      "y": 80,
+      "w": 247,
+      "h": 73,
+      "label": "SHAP en 30 rondas\ny poda por correlación",
+      "color": "#8f8f8f",
+      "fill": "none",
+      "border": "dashed",
+      "lblPos": "center",
+      "textBg": null,
+      "textColor": null,
+      "font": null,
+      "bold": false,
+      "pulse": false,
+      "order": 11,
+      "fs": 17
+     },
+     {
+      "id": 13,
+      "shape": "rect",
+      "x": 540,
+      "y": 80,
+      "w": 247,
+      "h": 73,
+      "label": "Optuna: 50 pruebas\npor algoritmo",
+      "color": "#8f8f8f",
+      "fill": "none",
+      "border": "dashed",
+      "lblPos": "center",
+      "textBg": null,
+      "textColor": null,
+      "font": null,
+      "bold": false,
+      "pulse": false,
+      "order": 12,
+      "fs": 17
+     },
+     {
+      "id": 14,
+      "shape": "rect",
+      "x": 810,
+      "y": 80,
+      "w": 247,
+      "h": 73,
+      "label": "Cada run: métricas,\nsplits y modelo",
+      "color": "#8f8f8f",
+      "fill": "none",
+      "border": "dashed",
+      "lblPos": "center",
+      "textBg": null,
+      "textColor": null,
+      "font": null,
+      "bold": false,
+      "pulse": false,
+      "order": 13,
+      "fs": 17
+     },
+     {
+      "id": 15,
+      "shape": "rect",
+      "x": 1080,
+      "y": 80,
+      "w": 247,
+      "h": 73,
+      "label": "Mismas filas, MAE ≥ 1 %\ny mejora sobre ruido",
+      "color": "#8f8f8f",
+      "fill": "none",
+      "border": "dashed",
+      "lblPos": "center",
+      "textBg": null,
+      "textColor": null,
+      "font": null,
+      "bold": false,
+      "pulse": false,
+      "order": 14,
+      "fs": 17
+     },
+     {
+      "id": 16,
+      "shape": "rect",
+      "x": 1350,
+      "y": 80,
+      "w": 247,
+      "h": 73,
+      "label": "El único modelo\nque predice",
+      "color": "#8f8f8f",
+      "fill": "none",
+      "border": "dashed",
+      "lblPos": "center",
+      "textBg": null,
+      "textColor": null,
+      "font": null,
+      "bold": false,
+      "pulse": false,
+      "order": 15,
+      "fs": 17
+     },
+     {
+      "id": 17,
+      "shape": "rect",
+      "x": 1620,
+      "y": 80,
+      "w": 247,
+      "h": 73,
+      "label": "Cada 30 minutos,\nlo que haya llegado",
+      "color": "#8f8f8f",
+      "fill": "none",
+      "border": "dashed",
+      "lblPos": "center",
+      "textBg": null,
+      "textColor": null,
+      "font": null,
+      "bold": false,
+      "pulse": false,
+      "order": 16,
+      "fs": 17
+     },
+     {
+      "id": 18,
+      "shape": "rect",
+      "x": 240,
+      "y": 620,
+      "w": 334,
+      "h": 73,
+      "label": "07:30 UTC en GitHub\nActions, todos los días",
+      "color": "#8f8f8f",
+      "fill": "none",
+      "border": "dashed",
+      "lblPos": "center",
+      "textBg": null,
+      "textColor": null,
+      "font": null,
+      "bold": false,
+      "pulse": false,
+      "order": 17,
+      "fs": 17
+     },
+     {
+      "id": 19,
+      "shape": "rect",
+      "x": 1320,
+      "y": 620,
+      "w": 334,
+      "h": 73,
+      "label": "Error con avisos que\nnunca vio; alerta si sube",
+      "color": "#8f8f8f",
+      "fill": "none",
+      "border": "dashed",
+      "lblPos": "center",
+      "textBg": null,
+      "textColor": null,
+      "font": null,
+      "bold": false,
+      "pulse": false,
+      "order": 18,
+      "fs": 17
+     }
+    ],
+    "edges": [
+     {
+      "id": 20,
+      "from": 8,
+      "to": 2,
+      "fromSide": null,
+      "toSide": null,
+      "route": "ortho",
+      "waypoints": [],
+      "label": "dispara",
+      "font": null,
+      "bold": false,
+      "animated": true,
+      "dashed": false,
+      "startArrow": false,
+      "endArrow": true,
+      "flowDir": "normal",
+      "fs": 18
+     },
+     {
+      "id": 21,
+      "from": 1,
+      "to": 2,
+      "fromSide": null,
+      "toSide": null,
+      "route": "ortho",
+      "waypoints": [],
+      "label": "datos",
+      "font": null,
+      "bold": false,
+      "animated": true,
+      "dashed": false,
+      "startArrow": false,
+      "endArrow": true,
+      "flowDir": "normal",
+      "fs": 18
+     },
+     {
+      "id": 22,
+      "from": 2,
+      "to": 3,
+      "fromSide": null,
+      "toSide": null,
+      "route": "ortho",
+      "waypoints": [],
+      "label": "lista",
+      "font": null,
+      "bold": false,
+      "animated": true,
+      "dashed": false,
+      "startArrow": false,
+      "endArrow": true,
+      "flowDir": "normal",
+      "fs": 18
+     },
+     {
+      "id": 23,
+      "from": 3,
+      "to": 4,
+      "fromSide": null,
+      "toSide": null,
+      "route": "ortho",
+      "waypoints": [],
+      "label": "registra",
+      "font": null,
+      "bold": false,
+      "animated": true,
+      "dashed": false,
+      "startArrow": false,
+      "endArrow": true,
+      "flowDir": "normal",
+      "fs": 18
+     },
+     {
+      "id": 24,
+      "from": 4,
+      "to": 5,
+      "fromSide": null,
+      "toSide": null,
+      "route": "ortho",
+      "waypoints": [],
+      "label": "nuevo",
+      "font": null,
+      "bold": false,
+      "animated": true,
+      "dashed": false,
+      "startArrow": false,
+      "endArrow": true,
+      "flowDir": "normal",
+      "fs": 18
+     },
+     {
+      "id": 25,
+      "from": 5,
+      "to": 6,
+      "fromSide": null,
+      "toSide": null,
+      "route": "ortho",
+      "waypoints": [],
+      "label": "sí",
+      "font": null,
+      "bold": false,
+      "animated": true,
+      "dashed": false,
+      "startArrow": false,
+      "endArrow": true,
+      "flowDir": "normal",
+      "fs": 18
+     },
+     {
+      "id": 26,
+      "from": 6,
+      "to": 7,
+      "fromSide": null,
+      "toSide": null,
+      "route": "ortho",
+      "waypoints": [],
+      "label": "versión",
+      "font": null,
+      "bold": false,
+      "animated": true,
+      "dashed": false,
+      "startArrow": false,
+      "endArrow": true,
+      "flowDir": "normal",
+      "fs": 18
+     },
+     {
+      "id": 27,
+      "from": 6,
+      "to": 9,
+      "fromSide": null,
+      "toSide": null,
+      "route": "ortho",
+      "waypoints": [],
+      "label": "mide",
+      "font": null,
+      "bold": false,
+      "animated": true,
+      "dashed": false,
+      "startArrow": false,
+      "endArrow": true,
+      "flowDir": "normal",
+      "fs": 18
+     },
+     {
+      "id": 28,
+      "from": 7,
+      "to": 10,
+      "fromSide": null,
+      "toSide": null,
+      "route": "ortho",
+      "waypoints": [],
+      "label": "INSERT",
+      "font": null,
+      "bold": false,
+      "animated": true,
+      "dashed": false,
+      "startArrow": false,
+      "endArrow": true,
+      "flowDir": "normal",
+      "fs": 18
+     }
+    ],
+    "nextId": 29,
+    "behaviors": [],
+    "scenarios": [
+     {
+      "id": 1,
+      "engineVersion": 2,
+      "name": "Un día de MLOps: el challenger gana",
+      "nextStepId": 15,
+      "steps": [
+       {
+        "id": 1,
+        "at": 0,
+        "eventTypeId": 1,
+        "action": "SEND",
+        "edgeId": 20
+       },
+       {
+        "id": 2,
+        "at": 300,
+        "eventTypeId": 1,
+        "action": "SEND",
+        "edgeId": 21
+       },
+       {
+        "id": 3,
+        "at": 600,
+        "eventTypeId": 2,
+        "action": "OCCURRENCE",
+        "nodeId": 2
+       },
+       {
+        "id": 4,
+        "at": 1200,
+        "eventTypeId": 1,
+        "action": "SEND",
+        "edgeId": 22
+       },
+       {
+        "id": 5,
+        "at": 1500,
+        "eventTypeId": 2,
+        "action": "OCCURRENCE",
+        "nodeId": 3
+       },
+       {
+        "id": 6,
+        "at": 2300,
+        "eventTypeId": 1,
+        "action": "SEND",
+        "edgeId": 23
+       },
+       {
+        "id": 7,
+        "at": 2600,
+        "eventTypeId": 1,
+        "action": "SEND",
+        "edgeId": 24
+       },
+       {
+        "id": 8,
+        "at": 2900,
+        "eventTypeId": 3,
+        "action": "OCCURRENCE",
+        "nodeId": 5
+       },
+       {
+        "id": 9,
+        "at": 3200,
+        "eventTypeId": 1,
+        "action": "SEND",
+        "edgeId": 25
+       },
+       {
+        "id": 10,
+        "at": 3500,
+        "eventTypeId": 1,
+        "action": "SEND",
+        "edgeId": 27
+       },
+       {
+        "id": 11,
+        "at": 3800,
+        "eventTypeId": 2,
+        "action": "OCCURRENCE",
+        "nodeId": 9
+       },
+       {
+        "id": 12,
+        "at": 4400,
+        "eventTypeId": 1,
+        "action": "SEND",
+        "edgeId": 26
+       },
+       {
+        "id": 13,
+        "at": 4700,
+        "eventTypeId": 2,
+        "action": "OCCURRENCE",
+        "nodeId": 7
+       },
+       {
+        "id": 14,
+        "at": 5000,
+        "eventTypeId": 1,
+        "action": "SEND",
+        "edgeId": 28
+       }
+      ],
+      "arrivalDependencies": [
+       {
+        "stepId": 2,
+        "waitsForArrivalOf": [
+         1
+        ]
+       },
+       {
+        "stepId": 3,
+        "waitsForArrivalOf": [
+         1,
+         2
+        ]
+       },
+       {
+        "stepId": 4,
+        "waitsForArrivalOf": [
+         2
+        ]
+       },
+       {
+        "stepId": 5,
+        "waitsForArrivalOf": [
+         4
+        ]
+       },
+       {
+        "stepId": 6,
+        "waitsForArrivalOf": [
+         4
+        ]
+       },
+       {
+        "stepId": 7,
+        "waitsForArrivalOf": [
+         6
+        ]
+       },
+       {
+        "stepId": 8,
+        "waitsForArrivalOf": [
+         7
+        ]
+       },
+       {
+        "stepId": 9,
+        "waitsForArrivalOf": [
+         7
+        ]
+       },
+       {
+        "stepId": 10,
+        "waitsForArrivalOf": [
+         9
+        ]
+       },
+       {
+        "stepId": 11,
+        "waitsForArrivalOf": [
+         10
+        ]
+       },
+       {
+        "stepId": 12,
+        "waitsForArrivalOf": [
+         9
+        ]
+       },
+       {
+        "stepId": 13,
+        "waitsForArrivalOf": [
+         12
+        ]
+       },
+       {
+        "stepId": 14,
+        "waitsForArrivalOf": [
+         12
+        ]
+       }
+      ]
+     },
+     {
+      "id": 2,
+      "engineVersion": 2,
+      "name": "El gate rechaza al challenger",
+      "nextStepId": 13,
+      "steps": [
+       {
+        "id": 1,
+        "at": 0,
+        "eventTypeId": 1,
+        "action": "SEND",
+        "edgeId": 20
+       },
+       {
+        "id": 2,
+        "at": 300,
+        "eventTypeId": 1,
+        "action": "SEND",
+        "edgeId": 21
+       },
+       {
+        "id": 3,
+        "at": 600,
+        "eventTypeId": 2,
+        "action": "OCCURRENCE",
+        "nodeId": 2
+       },
+       {
+        "id": 4,
+        "at": 1200,
+        "eventTypeId": 1,
+        "action": "SEND",
+        "edgeId": 22
+       },
+       {
+        "id": 5,
+        "at": 1500,
+        "eventTypeId": 2,
+        "action": "OCCURRENCE",
+        "nodeId": 3
+       },
+       {
+        "id": 6,
+        "at": 2300,
+        "eventTypeId": 1,
+        "action": "SEND",
+        "edgeId": 23
+       },
+       {
+        "id": 7,
+        "at": 2600,
+        "eventTypeId": 1,
+        "action": "SEND",
+        "edgeId": 24
+       },
+       {
+        "id": 8,
+        "at": 2900,
+        "eventTypeId": 4,
+        "action": "OCCURRENCE",
+        "nodeId": 5
+       },
+       {
+        "id": 9,
+        "at": 3500,
+        "eventTypeId": 5,
+        "action": "OCCURRENCE",
+        "nodeId": 6
+       },
+       {
+        "id": 10,
+        "at": 3800,
+        "eventTypeId": 1,
+        "action": "SEND",
+        "edgeId": 26
+       },
+       {
+        "id": 11,
+        "at": 4100,
+        "eventTypeId": 2,
+        "action": "OCCURRENCE",
+        "nodeId": 7
+       },
+       {
+        "id": 12,
+        "at": 4400,
+        "eventTypeId": 1,
+        "action": "SEND",
+        "edgeId": 28
+       }
+      ],
+      "arrivalDependencies": [
+       {
+        "stepId": 2,
+        "waitsForArrivalOf": [
+         1
+        ]
+       },
+       {
+        "stepId": 3,
+        "waitsForArrivalOf": [
+         1,
+         2
+        ]
+       },
+       {
+        "stepId": 4,
+        "waitsForArrivalOf": [
+         2
+        ]
+       },
+       {
+        "stepId": 5,
+        "waitsForArrivalOf": [
+         4
+        ]
+       },
+       {
+        "stepId": 6,
+        "waitsForArrivalOf": [
+         4
+        ]
+       },
+       {
+        "stepId": 7,
+        "waitsForArrivalOf": [
+         6
+        ]
+       },
+       {
+        "stepId": 8,
+        "waitsForArrivalOf": [
+         7
+        ]
+       },
+       {
+        "stepId": 9,
+        "waitsForArrivalOf": [
+         7
+        ]
+       },
+       {
+        "stepId": 10,
+        "waitsForArrivalOf": [
+         7
+        ]
+       },
+       {
+        "stepId": 11,
+        "waitsForArrivalOf": [
+         10
+        ]
+       },
+       {
+        "stepId": 12,
+        "waitsForArrivalOf": [
+         10
+        ]
+       }
+      ]
+     }
+    ],
+    "nextScenarioId": 3
+   }
+  ],
+  "cur": 0,
+  "customBg": "#ffffff",
+  "eventTypes": [
+   {
+    "id": 1,
+    "name": "Envía",
+    "primitive": "FLOW",
+    "sentenceTemplate": "{source} envía a {target}",
+    "visual": {
+     "kind": "token",
+     "value": "●"
+    },
+    "motion": "normal",
+    "presentation": {
+     "nodeEffects": {
+      "showSymbol": false,
+      "symbolSize": "medium",
+      "message": "",
+      "messageColor": "",
+      "messageSize": "medium",
+      "messageWeight": "normal",
+      "messageFont": "default",
+      "messagePosition": "above",
+      "highlight": false,
+      "blink": false,
+      "dim": false,
+      "fillColor": "",
+      "visualDuration": "normal",
+      "visualDurationMs": 1500
+     },
+     "connectionEffects": {
+      "size": "medium",
+      "style": "direct",
+      "trail": "none",
+      "arrival": "none",
+      "during": "none"
+     }
+    }
+   },
+   {
+    "id": 2,
+    "name": "Procesa",
+    "primitive": "OCCURRENCE",
+    "sentenceTemplate": "{target} procesa",
+    "visual": {
+     "kind": "token",
+     "value": "●"
+    },
+    "motion": "normal",
+    "presentation": {
+     "nodeEffects": {
+      "showSymbol": false,
+      "symbolSize": "medium",
+      "message": "",
+      "messageColor": "",
+      "messageSize": "medium",
+      "messageWeight": "normal",
+      "messageFont": "default",
+      "messagePosition": "above",
+      "highlight": false,
+      "blink": false,
+      "dim": false,
+      "fillColor": "",
+      "visualDuration": "normal",
+      "visualDurationMs": 1500
+     }
+    }
+   },
+   {
+    "id": 3,
+    "name": "Promueve",
+    "primitive": "OCCURRENCE",
+    "sentenceTemplate": "{target} promueve al challenger",
+    "visual": {
+     "kind": "token",
+     "value": "●"
+    },
+    "motion": "normal",
+    "presentation": {
+     "nodeEffects": {
+      "showSymbol": false,
+      "symbolSize": "medium",
+      "message": "",
+      "messageColor": "",
+      "messageSize": "medium",
+      "messageWeight": "normal",
+      "messageFont": "default",
+      "messagePosition": "above",
+      "highlight": false,
+      "blink": false,
+      "dim": false,
+      "fillColor": "",
+      "visualDuration": "normal",
+      "visualDurationMs": 1500
+     }
+    }
+   },
+   {
+    "id": 4,
+    "name": "Rechaza",
+    "primitive": "OCCURRENCE",
+    "sentenceTemplate": "{target} rechaza al challenger",
+    "visual": {
+     "kind": "token",
+     "value": "●"
+    },
+    "motion": "normal",
+    "presentation": {
+     "nodeEffects": {
+      "showSymbol": false,
+      "symbolSize": "medium",
+      "message": "",
+      "messageColor": "",
+      "messageSize": "medium",
+      "messageWeight": "normal",
+      "messageFont": "default",
+      "messagePosition": "above",
+      "highlight": false,
+      "blink": false,
+      "dim": false,
+      "fillColor": "",
+      "visualDuration": "normal",
+      "visualDurationMs": 1500
+     }
+    }
+   },
+   {
+    "id": 5,
+    "name": "Se mantiene",
+    "primitive": "OCCURRENCE",
+    "sentenceTemplate": "{target} sigue igual",
+    "visual": {
+     "kind": "token",
+     "value": "●"
+    },
+    "motion": "normal",
+    "presentation": {
+     "nodeEffects": {
+      "showSymbol": false,
+      "symbolSize": "medium",
+      "message": "",
+      "messageColor": "",
+      "messageSize": "medium",
+      "messageWeight": "normal",
+      "messageFont": "default",
+      "messagePosition": "above",
+      "highlight": false,
+      "blink": false,
+      "dim": false,
+      "fillColor": "",
+      "visualDuration": "normal",
+      "visualDurationMs": 1500
+     }
+    }
+   }
+  ],
+  "nextEventTypeId": 6
+ },
+ "settings": {
+  "speed": 0.5,
+  "dots": 3,
+  "build": false,
+  "stagger": 0.45,
+  "grid": true,
+  "snap": false,
+  "font": "Georgia, serif",
+  "single": false
+ }
+}
