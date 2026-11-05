@@ -101,8 +101,8 @@
 </g>
 <g id="node-14">
 <rect x="1416.00" y="231.50" width="288" height="77" rx="10" ry="10" fill="none" stroke="#8f8f8f" stroke-width="2.5" stroke-dasharray="9 7"/>
-<text x="1560.00" y="259.38" font-family="Georgia, serif" font-size="17.0" fill="#111111" text-anchor="middle" dominant-baseline="middle">Código 3 si el champion</text>
-<text x="1560.00" y="280.63" font-family="Georgia, serif" font-size="17.0" fill="#111111" text-anchor="middle" dominant-baseline="middle">se degrada</text>
+<text x="1560.00" y="259.38" font-family="Georgia, serif" font-size="17.0" fill="#111111" text-anchor="middle" dominant-baseline="middle">Código 3 si su MAPE en</text>
+<text x="1560.00" y="280.63" font-family="Georgia, serif" font-size="17.0" fill="#111111" text-anchor="middle" dominant-baseline="middle">avisos nuevos sube &gt; 3 %</text>
 </g>
 <g id="node-15">
 <rect x="671.50" y="339.50" width="437" height="121" rx="10" ry="10" fill="none" stroke="#8f8f8f" stroke-width="2.5" stroke-dasharray="9 7"/>

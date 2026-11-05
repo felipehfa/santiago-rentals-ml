@@ -1,7 +1,8 @@
 """Paso 1: entrena los modelos base (hiperparámetros por defecto) y registra todo en MLflow.
 
 Es también la base que usa tune.py para el ajuste final: `registrar_modelo_final` entrena el
-ensamble de bagging, evalúa en val y test y guarda el modelo en el run activo.
+ensamble de bagging, evalúa en val y test, lo reentrena con train y val juntos y guarda el modelo
+en el run activo.
 """
 
 import argparse
@@ -117,18 +118,41 @@ def cv_mae(cfg: dict, algoritmo: str, params: dict, folds: list) -> float:
     return float(np.mean(maes))
 
 
+def reentrenar_con_validacion(cfg: dict, d: dict, ens: Ensamble) -> tuple:
+    """Modelo final con train y validación juntos (85 % de los datos, con la misma ventana). El test sigue
+    apartado. Las rondas salen del early stopping de `ens`, escaladas por el aumento de filas."""
+    t = cfg["target"]
+    tv = aplicar_ventana(pd.concat([d["train_completo"], d["val"]], ignore_index=True), d["df"],
+                         cfg["datos"].get("ventana_dias"))
+    constructor = nuevo_constructor(cfg).fit(tv)
+    X_tv, X_test = constructor.transform(tv)[d["variables"]], constructor.transform(d["test"])[d["variables"]]
+    b = cfg["bagging"]
+    final = ens.reentrenar(X_tv, tv[t].astype(float), cfg["semilla"], len(tv) / len(d["train"]), b["max_rondas"])
+    return constructor, final, X_test, len(tv)
+
+
 def registrar_modelo_final(cfg: dict, algoritmo: str, params: dict, d: dict) -> dict:
-    """Entrena el ensamble de bagging con `params`, evalúa y registra en el run activo."""
+    """Entrena el ensamble de bagging con `params`, evalúa y registra en el run activo.
+
+    Con `bagging.reentrenar_con_val`, el modelo registrado se reentrena con train y validación (la validación solo
+    servía para el early stopping). Las métricas `val_*` y la referencia de etiquetas son del ensamble de train, el
+    único que no vio la validación; las `test_*` son del modelo registrado."""
     b = cfg["bagging"]
     t0 = time.time()
     ens = Ensamble(algoritmo, params).fit(
         d["X_train"], d["y_train"], d["X_val"], d["y_val"], b["n_modelos"], cfg["semilla"],
         b["max_rondas"], b["early_stopping"],
     )
+    pred = {k: ens.predecir(d[f"X_{k}"]) for k in ("val", "test")}
+    constructor, final, X_test, n_final = d["constructor"], ens, d["X_test"], len(d["train"])
+    res = {}
+    if b.get("reentrenar_con_val"):
+        for nombre, valor in metricas(d["y_test"], pred["test"]).items():
+            res[f"test_{nombre}_sin_reentrenar"] = valor
+        constructor, final, X_test, n_final = reentrenar_con_validacion(cfg, d, ens)
+        pred["test"] = final.predecir(X_test)
     segundos = time.time() - t0
 
-    pred = {k: ens.predecir(d[f"X_{k}"]) for k in ("val", "test")}
-    res = {}
     for k in ("val", "test"):
         for nombre, valor in metricas(d[f"y_{k}"], pred[k]).items():
             res[f"{k}_{nombre}"] = valor
@@ -146,6 +170,7 @@ def registrar_modelo_final(cfg: dict, algoritmo: str, params: dict, d: dict) -> 
     mlflow.log_params({"algoritmo": algoritmo, "n_variables": len(d["variables"]),
                        "n_modelos_bagging": b["n_modelos"], "semilla": cfg["semilla"],
                        "n_train": len(d["train"]), "n_train_sin_ventana": len(d["train_completo"]),
+                       "n_modelo_final": n_final, "reentrenar_con_val": bool(b.get("reentrenar_con_val")),
                        "ventana_dias": cfg["datos"].get("ventana_dias"),
                        "n_val": len(d["val"]), "n_test": len(d["test"])})
     # Dos runs solo son comparables (cv_mae) si usaron los mismos datos y las mismas variables.
@@ -160,18 +185,17 @@ def registrar_modelo_final(cfg: dict, algoritmo: str, params: dict, d: dict) -> 
     # parte de su conjunto y no deben contarse como "avisos nuevos" en el gate ni en el monitoreo.
     mlflow.log_dict({"train": d["train_completo"][ID_COL].tolist(), "val": d["val"][ID_COL].tolist(),
                      "test": d["test"][ID_COL].tolist()}, "ids.json")
-    mlflow.log_dict({k: float(v) for k, v in ens.shap_nativo(d["X_test"]).items()}, "shap_importancia.json")
+    mlflow.log_dict({k: float(v) for k, v in final.shap_nativo(X_test).items()}, "shap_importancia.json")
 
-    # Referencia del etiquetado: residuos de validación (la validación solo decide el early
-    # stopping; el test queda intacto para el gate).
+    # Referencia del etiquetado: residuos de validación del ensamble de train (la validación solo decide el early
+    # stopping; el test queda intacto para el gate). El modelo final, con más datos, erra un poco menos que eso.
     e = cfg["etiquetas"]
     ref = etiquetas.ajustar_referencia(d["y_val"].values, pred["val"], e["n_deciles"])
     mlflow.log_dict(ref, "referencia_etiquetas.json")
-    et = etiquetas.etiquetar(d["y_test"].values, ens.predecir(d["X_test"]), ref,
-                             e["umbral_oportunidad"], e["umbral_caro"])
+    et = etiquetas.etiquetar(d["y_test"].values, pred["test"], ref, e["umbral_oportunidad"], e["umbral_caro"])
     mlflow.log_dict(et["etiqueta"].value_counts(normalize=True).round(4).to_dict(), "etiquetas_test.json")
 
-    modelo = ModeloPrecio(d["constructor"], ens, d["variables"])
+    modelo = ModeloPrecio(constructor, final, d["variables"])
     mlflow.pyfunc.log_model(
         name="model", python_model=modelo, code_paths=[str(RAIZ / "src")],
         pip_requirements=["mlflow", "xgboost", "lightgbm", "scikit-learn", "pandas", "numpy"],

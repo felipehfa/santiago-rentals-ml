@@ -214,7 +214,7 @@
       "y": 10,
       "w": 288,
       "h": 77,
-      "label": "70/15/15; entrena con\navisos de hasta 60 días",
+      "label": "70/15/15; el final usa\ntrain+val, ≤ 60 días",
       "color": "#8f8f8f",
       "fill": "none",
       "border": "dashed",

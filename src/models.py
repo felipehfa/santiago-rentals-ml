@@ -75,6 +75,26 @@ def entrenar_uno(algoritmo, params, X_tr, y_tr, X_va, y_va, semilla, max_rondas,
                      callbacks=[lgb.early_stopping(early_stopping, verbose=False)])
 
 
+def rondas_usadas(algoritmo, modelo) -> int:
+    """Cantidad de árboles que usa la predicción (la mejor iteración del early stopping)."""
+    return modelo.best_iteration + 1 if algoritmo == "xgboost" else modelo.best_iteration
+
+
+def entrenar_fijo(algoritmo, params, X, y, semilla, rondas):
+    """Un modelo con una cantidad fija de rondas, sin conjunto de validación (para el reentrenamiento final)."""
+    if algoritmo == "xgboost":
+        p = {"objective": OBJETIVO_XGB, "eval_metric": "mae", "tree_method": "hist",
+             "grow_policy": "lossguide", "verbosity": 0, "seed": semilla, "nthread": N_JOBS, **params}
+        m = xgb.train(p, xgb.DMatrix(X, label=y), num_boost_round=rondas)
+        m.set_attr(best_iteration=str(rondas - 1))  # predecir_uno usa best_iteration
+        return m
+    p = {"objective": "regression", "metric": "mae", "verbosity": -1, "seed": semilla,
+         "n_jobs": N_JOBS, "subsample_freq": 1, **params}
+    m = lgb.train(p, lgb.Dataset(X, label=y), num_boost_round=rondas)
+    m.best_iteration = rondas
+    return m
+
+
 def predecir_uno(algoritmo, modelo, X) -> np.ndarray:
     if algoritmo == "xgboost":
         return modelo.predict(xgb.DMatrix(X), iteration_range=(0, modelo.best_iteration + 1))
@@ -95,6 +115,18 @@ class Ensamble:
         ]
         self.columnas = list(X_tr.columns)
         return self
+
+    def reentrenar(self, X, y, semilla_base, escala: float, max_rondas: int) -> "Ensamble":
+        """Ensamble nuevo con los mismos hiperparámetros, entrenado con (X, y) sin early stopping: cada modelo usa
+        las rondas que eligió su par de este ensamble, multiplicadas por `escala` (más datos admiten más árboles)."""
+        nuevo = Ensamble(self.algoritmo, self.params)
+        nuevo.modelos = [
+            entrenar_fijo(self.algoritmo, self.params, X, y, semilla_base + i,
+                          max(1, min(max_rondas, round(rondas_usadas(self.algoritmo, m) * escala))))
+            for i, m in enumerate(self.modelos)
+        ]
+        nuevo.columnas = list(X.columns)
+        return nuevo
 
     def matriz(self, X) -> np.ndarray:
         """(n_modelos, n_filas), sin promediar."""

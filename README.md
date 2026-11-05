@@ -33,16 +33,23 @@ tiempo de un proceso, animado) y exportar un GIF. Los scripts que los generan es
 De los datos de Gold al modelo en uso y sus predicciones:
 
 - **Datos y split.** Avisos aptos de Gold de 12 comunas, con costo hasta 10 M y gastos hasta el 50 % del arriendo. Se divide
-  70/15/15 y el entrenamiento solo usa avisos de hasta 60 días.
+  70/15/15 (estratificado por quintil de costo) y el entrenamiento solo usa avisos de hasta 60 días. La validación decide el
+  early stopping y la referencia de las etiquetas; el test no lo ve ningún paso del entrenamiento.
 - **Variables.** Sin fuga de datos: `precio_m2_sector`, barrio, comuna y el modelo de texto se ajustan solo con train. Incluye
   variables derivadas, distancias a centros y 33 palabras clave del texto del aviso (incluye el estado de la propiedad: cocina remodelada, recién pintado, a reparar, buen estado, entrega inmediata, ventanas térmicas, terminaciones). La antigüedad la completa Gold con avisos del mismo
   punto o vecinos, y `antiguedad_inferida` (0 aviso, 1 mismo punto, 2 vecinos) deja al modelo distinguir el dato real del inferido.
 - **Entrenamiento.** Selección de variables y búsqueda de hiperparámetros (Optuna: 50 pruebas por algoritmo, XGBoost y
   LightGBM, validación cruzada de 5 partes) con un ensamble de 10 semillas. Elige por el error de la validación cruzada.
+  El modelo que se registra se **reentrena con train y validación juntos** (85 %, `bagging.reentrenar_con_val`), con las
+  rondas del early stopping escaladas por el aumento de filas; el test sigue apartado y `test_*` mide ese modelo final
+  (`test_*_sin_reentrenar`, el ensamble del 70 %, queda como referencia).
 - **MLflow** guarda cada run: métricas, ids de los splits, configuración, commit y el modelo con su constructor de variables.
 - **Gate y `@champion`.** El candidato (`@challenger`) pasa por el gate de promoción (siguiente diagrama); si gana, queda como
   `@champion`.
-- **Monitoreo** mide la degradación del champion con avisos nuevos (código 3 si empeora).
+- **Monitoreo** mide la degradación del champion con los avisos que llegaron después de entrenarlo: código 3 si su MAPE ahí
+  supera en más de 3 % al MAPE de su test. Usa el error en % y no el MAE en pesos porque los avisos nuevos traen otra mezcla
+  de precios (el 3-nov, con más avisos caros, el MAE de v16 subía 16 % con el MAPE casi igual). Solo concluye con al menos
+  50 avisos nuevos de 3 días distintos.
 - **Scoring por lotes.** El champion predice los avisos sin predicción de su versión o visitados de nuevo y guarda en
   `gold.predicciones` la etiqueta de mercado (oportunidad, precio de mercado o caro) y la banda de precio.
 - **Baselines de planilla** (mediana por comuna y dormitorios; precio por m² de la comuna × superficie): lo que haría una

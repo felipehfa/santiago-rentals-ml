@@ -24,6 +24,20 @@ def test_ensamble_predice_una_fila_por_aviso():
         assert set(e.shap_nativo(X)) == set("abcd")
 
 
+def test_reentrenar_usa_las_rondas_del_early_stopping_escaladas():
+    from src.models import predecir_uno, rondas_usadas
+    rng = np.random.default_rng(1)
+    X = pd.DataFrame(rng.normal(size=(150, 3)), columns=list("abc"))
+    y = X["a"] * 3 + rng.normal(0, 0.1, 150)
+    for alg in ("xgboost", "lightgbm"):
+        e = Ensamble(alg, PARAMS_BASE[alg]).fit(X[:100], y[:100], X[100:], y[100:], 2, 1, 200, 10)
+        f = e.reentrenar(X, y, 1, 1.5, 200)
+        for m_e, m_f in zip(e.modelos, f.modelos, strict=True):
+            assert rondas_usadas(alg, m_f) == min(200, round(rondas_usadas(alg, m_e) * 1.5))
+        assert f.matriz(X).shape == (2, 150) and len(predecir_uno(alg, f.modelos[0], X)) == 150
+        assert np.mean(np.abs(f.predecir(X) - y)) < np.mean(np.abs(y - y.mean()))
+
+
 def test_etiquetas_marcan_los_extremos():
     rng = np.random.default_rng(2)
     real = rng.uniform(300_000, 900_000, 500)
@@ -193,6 +207,18 @@ def test_error_por_semana_agrupa_por_semana_de_primera_vez_visto():
     assert out["n"].tolist() == [2, 1] and out["mae"].tolist() == [15.0, 0.0]
 
 
+def test_monitoreo_exige_avisos_de_varios_dias(cfg):
+    from src.monitoreo import dias_distintos, falta_muestra
+    mon = cfg["monitoreo"]
+    # 23:30 del 2-nov en Chile es 02:30 UTC del 3-nov: cuenta como el día 2 de Santiago
+    df = pd.DataFrame({"primera_vez_visto": pd.to_datetime(
+        ["2026-11-03 02:30", "2026-11-02 15:00", "2026-11-03 15:00"], utc=True)})
+    assert dias_distintos(df) == 2
+    assert "mínimo" in falta_muestra(mon["n_minimo"] - 1, 5, mon)
+    assert "días" in falta_muestra(500, mon["dias_minimos"] - 1, mon)
+    assert falta_muestra(500, mon["dias_minimos"], mon) is None
+
+
 def test_preparar_de_punta_a_punta(gold_sintetico, cfg, tmp_path, monkeypatch):
     ruta = tmp_path / "gold.parquet"
     gold_sintetico.to_parquet(ruta, index=False)
@@ -202,6 +228,27 @@ def test_preparar_de_punta_a_punta(gold_sintetico, cfg, tmp_path, monkeypatch):
     d = preparar(cfg)
     assert len(d["X_train"]) == len(d["train"]) and list(d["X_train"].columns) == d["variables"]
     assert not d["X_train"].columns.duplicated().any()
+
+
+def test_modelo_final_reentrenado_con_train_y_val(gold_sintetico, cfg, tmp_path):
+    import mlflow
+
+    from src.train import registrar_modelo_final
+    ruta = tmp_path / "gold.parquet"
+    gold_sintetico.to_parquet(ruta, index=False)
+    cfg["datos"]["snapshot"] = str(ruta)
+    cfg["bagging"].update(n_modelos=2, max_rondas=60, reentrenar_con_val=True)
+    cfg["variables"]["seleccion"] = str(tmp_path / "sin_seleccion.json")  # todas las variables del sintético
+    d = preparar(cfg)
+    mlflow.set_tracking_uri(f"sqlite:///{(tmp_path / 'mlflow.db').as_posix()}")
+    mlflow.set_experiment("prueba")  # su carpeta de artefactos queda junto a la base, en tmp_path
+    with mlflow.start_run() as run:
+        r = registrar_modelo_final(cfg, "lightgbm", PARAMS_BASE["lightgbm"], d)
+    p = mlflow.get_run(run.info.run_id).data.params
+    assert int(p["n_modelo_final"]) > int(p["n_train"]) and "test_mae_sin_reentrenar" in r
+    modelo = mlflow.pyfunc.load_model(f"runs:/{run.info.run_id}/model")
+    pred = modelo.predict(d["test"])["prediccion_clp"].to_numpy()
+    assert np.isclose(np.mean(np.abs(pred - d["y_test"].to_numpy())), r["test_mae"])
 
 
 def test_preparar_descarta_gastos_comunes_absurdos(gold_sintetico, cfg):

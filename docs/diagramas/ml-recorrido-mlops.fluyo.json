@@ -374,7 +374,7 @@
       "y": 620,
       "w": 334,
       "h": 73,
-      "label": "Error con avisos que\nnunca vio; alerta si sube",
+      "label": "Error % con avisos que\nnunca vio; alerta si sube",
       "color": "#8f8f8f",
       "fill": "none",
       "border": "dashed",

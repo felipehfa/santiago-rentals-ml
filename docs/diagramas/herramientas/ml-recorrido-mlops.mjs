@@ -31,7 +31,7 @@ await construir({
     nota("n_champ", C[5] - 20, 80, 215, 66, "El único modelo\nque predice"),
     nota("n_scoring", C[6] - 20, 80, 215, 66, "Cada 30 minutos,\nlo que haya llegado"),
     nota("n_cron", C[1] - 50, 620, 290, 66, "07:30 UTC en GitHub\nActions, todos los días"),
-    nota("n_monit", C[5] - 50, 620, 290, 66, "Error con avisos que\nnunca vio; alerta si sube"),
+    nota("n_monit", C[5] - 50, 620, 290, 66, "Error % con avisos que\nnunca vio; alerta si sube"),
   ],
   aristas: [
     { from: "cron", to: "sel", label: "dispara" },

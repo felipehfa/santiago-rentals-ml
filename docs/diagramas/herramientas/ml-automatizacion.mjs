@@ -26,7 +26,7 @@ await construir({
     nota("n_cron", C[0] - 10, 270, 250, 70, "07:30 UTC, o a mano.\nEl primero debe ser tune"),
     nota("n_entrenar", C[1] - 10, 10, 260, 70, "Optuna completo,\nunos 22 minutos"),
     nota("n_gate", C[3] - 30, 10, 290, 70, "MAE baja ≥ 1 % con\nIC95 > 0, o champion degradado"),
-    nota("n_monit", C[5] - 10, 270, 250, 70, "Código 3 si el champion\nse degrada"),
+    nota("n_monit", C[5] - 10, 270, 250, 70, "Código 3 si su MAPE en\navisos nuevos sube > 3 %"),
     nota("n_scoring", C[3] - 60, 400, 380, 110, "Predice avisos sin predicción\nde la versión, o vistos de nuevo;\ntodos si hay champion nuevo"),
     nota("n_cron_s", C[2] - 10, 790, 250, 70, "Y al terminar el\nentrenamiento diario"),
     nota("n_ci", C[0] - 10, 640, 270, 70, "CI en cada push:\nruff y pytest"),

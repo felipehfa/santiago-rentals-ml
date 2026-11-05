@@ -24,7 +24,7 @@ await construir({
     { key: "monit", shape: "rect", label: "Monitoreo", color: "Info", x: C[0], y: F[1], w: 230, h: 90 },
     { key: "scoring", shape: "rect", label: "Scoring", color: "Servicio", x: C[1], y: F[2], w: 230, h: 90 },
     { key: "pred", shape: "cylinder", label: "gold.predicciones", color: "Éxito", x: C[0] - 10, y: F[2] - 10, w: 250, h: 110 },
-    nota("n_datos", C[1] - 10, 10, 250, 70, "70/15/15; entrena con\navisos de hasta 60 días"),
+    nota("n_datos", C[1] - 10, 10, 250, 70, "70/15/15; el final usa\ntrain+val, ≤ 60 días"),
     nota("n_vars", C[2] - 10, 10, 250, 70, "Sin fuga: ajustadas\nsolo con train"),
     nota("n_entrenar", C[3] - 10, 10, 250, 70, "Optuna: 50 pruebas\npor algoritmo"),
     nota("n_gate", C[2] - 20, 530, 270, 70, "Promueve si el MAE baja\n≥ 1 % con IC95 > 0"),

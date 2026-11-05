@@ -78,6 +78,9 @@ bagging:
   n_modelos: 10
   max_rondas: 1000
   early_stopping: 50
+  # El modelo registrado se reentrena con train y validación juntos (85 %), con las rondas del early stopping escaladas
+  # por el aumento de filas. El test sigue apartado para el gate. false = se registra el ensamble de train (70 %).
+  reentrenar_con_val: true
 
 seleccion_variables:
   n_modelos: 30
@@ -113,3 +116,6 @@ scoring:
 # Monitoreo del champion sobre avisos llegados después de su entrenamiento.
 monitoreo:
   n_minimo: 50                    # con menos avisos nuevos no se concluye nada
+  dias_minimos: 3                 # y tienen que venir de al menos 3 días distintos de primera aparición
+  degradacion_umbral: 0.03        # degradado si el MAPE en avisos nuevos supera en más de 3 % al MAPE de test. Se mide
+                                  # en % y no en pesos: los avisos nuevos traen otra mezcla de precios (análisis del 4-nov)

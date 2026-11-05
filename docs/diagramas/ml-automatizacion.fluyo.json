@@ -274,7 +274,7 @@
       "y": 270,
       "w": 288,
       "h": 77,
-      "label": "Código 3 si el champion\nse degrada",
+      "label": "Código 3 si su MAPE en\navisos nuevos sube > 3 %",
       "color": "#8f8f8f",
       "fill": "none",
       "border": "dashed",
