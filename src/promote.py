@@ -8,8 +8,9 @@ filas: el test del challenger sin los avisos que el champion usó para entrenar 
 Regla de promoción (umbrales en config.yaml):
   1. Se promueve si el challenger mejora el MAE del champion en esas filas (más de `mejora_min`) y, con
      `exigir_ic`, el IC95 de la mejora queda sobre 0, o
-  2. si el champion se degradó (su MAE ahí supera su MAE de test original en más de
+  2. si el champion se degradó (su MAPE ahí supera su MAPE de test original en más de
      `degradacion_umbral`) y el challenger no es peor que el champion por más de `margen_vs_champion`.
+     Se usa el MAPE porque el MAE en pesos depende de la mezcla de precios de las filas comunes.
   Si no hay champion, solo rigen los criterios absolutos.
   Criterios absolutos (`null` = no se aplica): MAPE máximo en test y estabilidad entre particiones.
 """
@@ -33,7 +34,7 @@ def evaluar_gate(propias: dict, comunes: dict | None, degradacion: float | None,
     propias:     métricas del challenger sobre su propio test (test_mape, estabilidad_cv_mae).
     comunes:     {"n", "mae_challenger", "mae_champion", "ic_lo"} sobre las filas comunes; None sin champion.
                  ic_lo = límite inferior del IC95 de MAE(champion) - MAE(challenger); positivo = mejora real.
-    degradacion: MAE del champion en las filas comunes / su MAE de test original - 1.
+    degradacion: MAPE del champion en las filas comunes / su MAPE de test original - 1.
     """
     motivos = []
     if gate.get("mape_max") is not None and propias["test_mape"] > gate["mape_max"]:
@@ -98,14 +99,16 @@ def main() -> int:
             mlflow.pyfunc.load_model(f"models:/{nombre}@{ALIAS_CHALLENGER}"), df, target)
         m_champ, p_champ = comparacion.evaluar(
             mlflow.pyfunc.load_model(f"models:/{nombre}@{ALIAS_CHAMPION}"), df, target)
-        mae_original = run_champ.data.metrics["test_mae"]
-        degradacion = m_champ["mae"] / mae_original - 1
+        # La degradación va en MAPE: el MAE en pesos sube solo con avisos más caros en las filas comunes (el 5-nov
+        # marcaba +4,7 % para v16 con el MAPE casi igual al de su test).
+        mae_original, mape_original = run_champ.data.metrics["test_mae"], run_champ.data.metrics["test_mape"]
+        degradacion = m_champ["mape"] / mape_original - 1
         dif, lo, hi = comparacion.diferencia_ic(df[target].to_numpy(), p_champ, p_ch)
         comunes = {"n": len(df), "mae_challenger": m_ch["mae"], "mae_champion": m_champ["mae"], "ic_lo": lo}
         info = (f"Sobre {len(df)} avisos comunes: MAE challenger {m_ch['mae']:,.0f} vs champion "
                 f"{m_champ['mae']:,.0f} (dif. {dif:+,.0f}, IC95 [{lo:+,.0f}, {hi:+,.0f}]); MAPE "
-                f"{m_ch['mape']:.1f}% vs {m_champ['mape']:.1f}%. Degradación del champion: "
-                f"{degradacion:+.1%} (MAE original {mae_original:,.0f}).")
+                f"{m_ch['mape']:.1f}% vs {m_champ['mape']:.1f}%. Degradación del champion (MAPE): "
+                f"{degradacion:+.1%} (MAPE original {mape_original:.1f}%, MAE original {mae_original:,.0f}).")
         print(info)
         cliente.set_model_version_tag(nombre, ch.version, "comparacion", info[:250])
 

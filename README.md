@@ -67,7 +67,8 @@ y el MAPE de cada uno y la diferencia de MAE con su intervalo de confianza al 95
 si:
 
 1. el MAE baja al menos 1 % y el intervalo de la mejora es mayor que 0 (no basta con ruido), o
-2. el champion se degradó más de 3 % (su MAE actual contra el de su test original) y el challenger no es peor.
+2. el champion se degradó más de 3 % (su MAPE en esas filas contra el de su test original; en % y no en pesos, porque
+   el MAE sube solo si las filas comunes traen avisos más caros) y el challenger no es peor.
 
 Sin champion, el primero se promueve. Con un modelo nuevo, el scoring vuelve a predecir todos los avisos con esa versión.
 
