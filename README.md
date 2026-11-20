@@ -1,5 +1,12 @@
 # santiago-rentals-ml
 
+> **⏸ Proyecto en pausa desde el 20-nov-2026.** La base de Supabase dejó de aceptar conexiones el 20-nov a las 02:49
+> (hora de Chile) y se detuvo todo el pipeline: el scraping local, Silver y Gold (repo ELT) están detenidos.
+> Los workflows programados quedaron desactivados: `entrenar`, `scoring` y `vigilante` en `santiago-rentals-ml`, y
+> `publicar` y `vigilante` en `santiago-rentals-vis`. El último modelo y las últimas predicciones siguen en la base.
+> Para reanudar: comprobar que la base acepta conexiones, reactivar esos workflows (`gh workflow enable`) y reanudar el orquestador
+> del repo ELT.
+
 Etapa de desarrollo del modelo de ML para estimar si un arriendo de departamento en la Región Metropolitana está caro, barato o a precio de mercado.
 
 ## Contrato con `santiago-rentals-elt`
